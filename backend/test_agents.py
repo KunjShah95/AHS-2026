@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 import shutil
 import asyncio
 from app.agents.repository_ingestion import RepositoryIngestionAgent
