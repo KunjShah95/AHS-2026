@@ -12,10 +12,12 @@ import { Link } from "react-router-dom"
 import { Terminal, Cpu, Network, ChevronRight, Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
+import heroImg from "@/assets/images/hero.png"
+import featureImg from "@/assets/images/feature.png"
+
 // --- ASSETS ---
-// Assuming these exist from generation step
-const HERO_IMG = "/src/assets/images/hero.png"
-const FEATURE_IMG = "/src/assets/images/feature.png"
+const HERO_IMG = heroImg
+const FEATURE_IMG = featureImg
 
 export default function Landing() {
   const [scanned, setScanned] = useState(false)
@@ -52,7 +54,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
           
           {/* Left: Copy */}
           <motion.div 
@@ -66,7 +68,7 @@ export default function Landing() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
               </span>
-              <span className="text-xs font-mono text-primary tracking-wider uppercase">v2.0 Context Engine Live</span>
+              <span className="text-xs font-mono text-primary tracking-wider uppercase"> Onboarding Engineer</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-display font-medium tracking-tight leading-[1.1]">

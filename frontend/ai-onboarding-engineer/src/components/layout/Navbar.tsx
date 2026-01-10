@@ -1,4 +1,3 @@
-import React from "react"
 import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -19,35 +18,39 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
       <div className="container flex h-16 items-center px-4">
         <Link to="/" className="mr-8 flex items-center space-x-2">
-          <Code2 className="h-6 w-6 text-primary animate-pulse" />
-          <span className="hidden font-bold sm:inline-block">
-            Onboarding<span className="text-primary">.ai</span>
-          </span>
-        </Link>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            {/* Optional search or other items */}
+          <div className="flex items-center space-x-2 border border-primary/20 bg-primary/5 rounded-full px-3 py-1">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="font-mono text-xs font-medium tracking-wider text-primary uppercase">
+              Cortex
+            </span>
           </div>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
+        </Link>
+        <div className="flex flex-1 items-center justify-center space-x-2">
+          <nav className="flex items-center space-x-8 text-sm font-medium">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
                 className={cn(
-                  "flex items-center space-x-2 transition-colors hover:text-foreground/80",
+                  "flex items-center space-x-2 transition-colors hover:text-primary",
                   location.pathname === item.path
-                    ? "text-foreground"
-                    : "text-foreground/60"
+                    ? "text-primary"
+                    : "text-muted-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4" />
                 <span className="hidden md:inline-block">{item.name}</span>
               </Link>
             ))}
-            <Button variant="shiny" size="sm" asChild>
-              <Link to="/analysis">Get Started</Link>
-            </Button>
           </nav>
+          <div className="absolute right-4 flex items-center space-x-2">
+             <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Link to="/login">Login</Link>
+            </Button>
+             <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+              <Link to="/register">Register</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </nav>

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.core.security import get_current_user
 from pydantic import BaseModel
 from app.services.ingestion import IngestionService
 from app.services.intelligence import CodeIntelligenceService
@@ -12,7 +13,7 @@ class IngestRequest(BaseModel):
     github_url: str = None
 
 @router.post("/process")
-async def process_repository(request: IngestRequest):
+async def process_repository(request: IngestRequest, user=Depends(get_current_user)):
     """
     Full pipeline: Ingest -> Intelligence -> Learning Graph -> Tasks
     """
