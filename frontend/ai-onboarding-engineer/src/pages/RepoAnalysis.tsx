@@ -5,22 +5,52 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, Search } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { api } from "@/lib/api"
+import { useAuth } from "@/hooks/useAuth"
+import { saveRepoAnalysis } from "@/lib/db"
 
 export default function RepoAnalysis() {
   const [repoUrl, setRepoUrl] = useState("")
   const [analyzing, setAnalyzing] = useState(false)
+  const [error, setError] = useState("")
   const navigate = useNavigate()
+  const { user } = useAuth()
 
-  const handleAnalyze = (e: React.FormEvent) => {
+  const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!repoUrl) return
-    setAnalyzing(true)
     
-    // Simulate analysis delay
-    setTimeout(() => {
-      setAnalyzing(false)
-      navigate("/roadmap")
-    }, 2000)
+    if (!user) {
+        navigate("/login")
+        return
+    }
+
+    setAnalyzing(true)
+    setError("")
+    
+    try {
+        const repoName = repoUrl.split('/').pop()?.replace('.git', '') || 'repo';
+        const repoPath = `repos/${user.uid}/${repoName}`;
+
+        const response = await api.post<Record<string, unknown>>('/ingestion/process', {
+            repo_path: repoPath, // Backend requires this
+            github_url: repoUrl
+        });
+
+        // Save analysis directly to Firestore
+        await saveRepoAnalysis(user.uid, repoUrl, response);
+        
+        // Navigate to roadmap with data (or rely on fetching from DB in next page)
+        // For now, let's pass state
+        navigate("/roadmap", { state: { analysisData: response } })
+
+    } catch (err: unknown) {
+        console.error("Analysis failed:", err);
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        setError(errorMessage || "Failed to analyze repository. Please check the URL and try again.")
+    } finally {
+        setAnalyzing(false)
+    }
   }
 
   return (
@@ -49,6 +79,9 @@ export default function RepoAnalysis() {
                   onChange={(e) => setRepoUrl(e.target.value)}
                 />
               </div>
+              
+              {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
               <Button type="submit" size="lg" className="h-12 w-full text-base font-semibold" disabled={analyzing}>
                 {analyzing ? (
                   <>
