@@ -5,6 +5,15 @@ import type { User } from 'firebase/auth';
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signInWithGithub: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+export const AuthContext = createContext<AuthContextType>({ 
+  user: null, 
+  loading: true,
+  signInWithGoogle: async () => {},
+  signInWithGithub: async () => {},
+  logout: async () => {},
+});

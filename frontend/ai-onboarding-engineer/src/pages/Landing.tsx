@@ -54,7 +54,7 @@ export default function Landing() {
           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start h-full pt-32">
           
           {/* Left: Copy */}
           <motion.div 
@@ -106,10 +106,10 @@ export default function Landing() {
              initial={{ opacity: 0, scale: 0.95 }}
              animate={{ opacity: 1, scale: 1 }}
              transition={{ delay: 0.2, duration: 0.8 }}
-             className="relative hidden lg:block"
+             className="relative hidden lg:flex items-center justify-center mt-20"
           >
             <div 
-              className="relative rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl p-6 overflow-hidden shadow-2xl group"
+              className="relative w-full rounded-xl border border-white/10 bg-black/40 backdrop-blur-xl p-6 overflow-hidden shadow-2xl group"
               onMouseEnter={() => setScanned(true)}
               onMouseLeave={() => setScanned(false)}
             >

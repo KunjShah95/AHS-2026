@@ -2,9 +2,11 @@ import { Link, useLocation } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Code2, GitBranch, Layers, LayoutDashboard, Search } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
 export function Navbar() {
   const location = useLocation()
+  const { user, logout } = useAuth()
   
   const navItems = [
     { name: "Analysis", path: "/analysis", icon: Search },
@@ -25,8 +27,9 @@ export function Navbar() {
             </span>
           </div>
         </Link>
-        <div className="flex flex-1 items-center justify-center space-x-2">
-          <nav className="flex items-center space-x-8 text-sm font-medium">
+        {/* Centered Navigation */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden md:block">
+           <nav className="flex items-center space-x-6 text-sm font-medium">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -39,18 +42,31 @@ export function Navbar() {
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                <span className="hidden md:inline-block">{item.name}</span>
+                <span>{item.name}</span>
               </Link>
             ))}
           </nav>
-          <div className="absolute right-4 flex items-center space-x-2">
-             <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link to="/login">Login</Link>
-            </Button>
-             <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link to="/register">Register</Link>
-            </Button>
-          </div>
+        </div>
+
+        {/* Right Side Buttons */}
+        <div className="ml-auto flex items-center space-x-2">
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground mr-2 hidden md:block">{user.email}</span>
+              <Button variant="ghost" size="sm" onClick={logout} className="hover:bg-primary/10 text-primary">
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button variant="default" size="sm" asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link to="/register">Register</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </nav>
