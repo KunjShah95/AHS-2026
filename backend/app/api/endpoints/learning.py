@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.services.learning_graph import LearningGraphService
+from app.agents.learning_graph import LearningGraphContextAgent
 from app.models.graph import CodeGraph
 
 router = APIRouter()
@@ -20,7 +20,7 @@ async def generate_learning_path(request: LearningPathRequest):
         # In a real app, strict validation needed.
         cg = CodeGraph(**request.code_graph)
         
-        service = LearningGraphService()
+        service = LearningGraphContextAgent()
         learning_path = service.construct_learning_path(cg)
         
         return learning_path.model_dump()
