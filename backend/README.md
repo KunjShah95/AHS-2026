@@ -1,4 +1,4 @@
-# Codebase Intelligence Layer
+.# Codebase Intelligence Layer
 
 This is the backend service for the AI-driven codebase onboarding system. It provides APIs to ingest repositories, build dependency graphs, construct learning paths, and generate educational tasks.
 
