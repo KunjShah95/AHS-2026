@@ -48,10 +48,10 @@ export default function Landing() {
           <img 
             src={HERO_IMG} 
             alt="Neural Network Code Background" 
-            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
+            className="w-full h-full object-cover opacity-20 mix-blend-luminosity"
           />
           <div className="absolute inset-0 bg-linear-to-b from-background/80 via-background/50 to-background" />
-          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-40 contrast-150 mix-blend-overlay"></div>
         </div>
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start h-full pt-32">
@@ -73,7 +73,7 @@ export default function Landing() {
 
             <h1 className="text-5xl md:text-7xl font-display font-medium tracking-tight leading-[1.1]">
               Onboard engineers <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-white to-primary/50">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-white to-primary/93">
                 at the speed of AI.
               </span>
             </h1>
