@@ -52,7 +52,7 @@ class RepositoryIngestionAgent:
         if os.path.dirname(rel_path) == "": # Root directory
              return filename.lower() in ["main.py", "index.js", "app.py", "server.ts", "manage.py", "wsgi.py"]
         return False
-    def analyze_modules(self, file_tree: List[Dict]) -> List[Dict]:
+    async def analyze_modules(self, file_tree: List[Dict]) -> List[Dict]:
         """
         Uses Vertex AI to label modules if needed (Module Purpose).
         To save tokens, we only analyze top-level or structural files.
@@ -90,3 +90,5 @@ class RepositoryIngestionAgent:
             ".md": "markdown"
         }
         return mapping.get(ext, "unknown")
+
+
