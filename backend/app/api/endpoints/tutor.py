@@ -14,20 +14,14 @@ class QuestionRequest(BaseModel):
 
 @router.post("/ask")
 async def ask_tutor(request: QuestionRequest):
-    # Reconstruct graph object from dict
-    graph_data = request.context_graph
-    # Validation skipped for brevity
-    # We need to parse back to CodeGraph model, simplistic approach:
-    # This requires the client to send back the full graph they got from /ingestion/process
-    # Not efficient but functional for V0 demo.
-    
-    # In reality, we'd hydrate `CodeGraph` from the dict
-    # But `CodeGraph` expects Pydantic objects.
-    # Let's just pass the dict to service if we change service signature, 
-    # or quick-fix:
-    
-    # Mocking the reconstruction for the stub
-    # service = TutorService()
-    # answer = service.answer_question(request.question, code_graph)
-    
-    return {"answer": "Tutor endpoint is reachable. Implement graph hydration for full functionality."}
+    try:
+        # Reconstruct graph object from dict
+        # This assumes the frontend sends back the exact JSON structure received from /ingestion/process
+        code_graph = CodeGraph(**request.context_graph)
+        
+        service = TutorService()
+        answer = service.answer_question(request.question, code_graph)
+        
+        return {"answer": answer}
+    except Exception as e:
+        return {"answer": f"Error processing question: {str(e)}"}

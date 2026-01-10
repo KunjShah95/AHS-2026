@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interactive Architecture Explorer | AI Onboarding Engineer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .node-glow-primary { box-shadow: 0 0 15px rgba(13, 89, 242, 0.4); }
+        .node-glow-danger { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+        .node-glow-success { box-shadow: 0 0 15px rgba(34, 197, 94, 0.4); }
+        .graph-grid {
+            background-image: radial-gradient(circle, #282e39 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .connection-pulse {
+            stroke-dasharray: 10;
+        }
+        .workspace-canvas {
+            cursor: grab;
+        }
+        .workspace-canvas:active {
+            cursor: grabbing;
+        }
+        .tab-active {
+            @apply border-primary text-primary border-b-2;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-hidden h-screen flex flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#282e39] bg-background-light dark:bg-background-dark px-6 py-3 shrink-0">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<h2 class="text-lg font-bold leading-tight tracking-tight">Interactive Architecture Explorer</h2>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold">AI Onboarding Engine</p>
+</div>
+</div>
+<label class="flex flex-col min-w-64 h-10">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-400 flex border-none bg-slate-100 dark:bg-[#282e39] items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-slate-100 dark:bg-[#282e39] text-sm focus:ring-0 placeholder:text-slate-500 px-4 rounded-r-lg" placeholder="Search modules, files, or symbols..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="flex items-center gap-6">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Graph</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Docs</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">PR Analysis</a>
+<a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#">Settings</a>
+</nav>
+<div class="h-6 w-px bg-slate-200 dark:bg-[#282e39]"></div>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#282e39] hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#282e39] hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBz5gRkrWKGvIu0VYnLmXpId6xhY_8VwN0yTU4e8Cfv7r9u5iq68MS5iNV0_6ER-li4H3fiwjkRumblja8RBW1TppO5vC2KneRZShdDuAMOabDGONVmJqqv_f_knEBn_8288g9bU8Fjg203JpaTmMJxvjdxIELMDvs7TDHQhAUL3KjAwBmctaQbtLjxCbGl9rgL_VmqYh6k4ElZCvkpZ0V6j0T1gLTIIMZFW6Xn-kOongnbxM4kRV7zy-LLgi05o5Er4ORR8TFdx78");'></div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<aside class="w-64 border-r border-slate-200 dark:border-[#282e39] flex flex-col bg-background-light dark:bg-background-dark shrink-0">
+<div class="p-4 border-b border-slate-200 dark:border-[#282e39]">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm">terminal</span>
+<h3 class="text-sm font-bold truncate">Repo: Core-Engine</h3>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-slate-500 text-xs">v2.4.0-stable</p>
+<span class="flex items-center gap-1 text-[10px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded">
+<span class="size-1.5 bg-green-500 rounded-full"></span> HEALTHY
+                </span>
+</div>
+</div>
+<div class="p-4 border-b border-slate-200 dark:border-[#282e39]">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">View Filters</p>
+<div class="space-y-2">
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-xs font-medium text-slate-400 group-hover:text-slate-200">API Calls</span>
+<div class="relative inline-flex items-center">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-7 h-4 bg-slate-300 peer-focus:outline-none dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-xs font-medium text-slate-400 group-hover:text-slate-200">Type Imports</span>
+<div class="relative inline-flex items-center">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-7 h-4 bg-slate-300 peer-focus:outline-none dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+<label class="flex items-center justify-between cursor-pointer group">
+<span class="text-xs font-medium text-slate-400 group-hover:text-slate-200">Event Emitters</span>
+<div class="relative inline-flex items-center">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-7 h-4 bg-slate-300 peer-focus:outline-none dark:bg-slate-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary"></div>
+</div>
+</label>
+</div>
+</div>
+<div class="flex flex-col p-4 gap-1">
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<p class="text-sm font-medium">Architecture Graph</p>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#282e39] text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<p class="text-sm font-medium">Dependencies</p>
+</button>
+<button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#282e39] text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">report_problem</span>
+<p class="text-sm font-medium">Risk Analysis</p>
+</button>
+</div>
+<div class="mt-auto p-4">
+<div class="p-3 rounded-lg bg-primary/10 border border-primary/20">
+<p class="text-xs font-bold text-primary mb-1 uppercase tracking-wider">Onboarding Tip</p>
+<p class="text-[11px] text-slate-500 leading-relaxed">Click any node to see a 'pulse' of its upstream and downstream dependencies.</p>
+</div>
+</div>
+</aside>
+<section class="flex-1 relative bg-slate-50 dark:bg-[#0a0a0a] graph-grid overflow-hidden workspace-canvas">
+<div class="absolute inset-0 origin-center scale-100">
+<svg class="absolute inset-0 pointer-events-none" height="100%" width="100%">
+<path class="connection-pulse" d="M 300 350 L 550 250" opacity="0.6" stroke="#0d59f2" stroke-width="2"></path>
+<path d="M 300 350 L 530 480" opacity="0.2" stroke="#64748b" stroke-dasharray="2,4" stroke-width="1.5"></path>
+<path d="M 550 250 L 730 200" opacity="0.4" stroke="#22c55e" stroke-width="2"></path>
+<path d="M 550 250 L 780 340" opacity="0.4" stroke="#ef4444" stroke-width="2"></path>
+</svg>
+<div class="absolute top-[320px] left-[200px] flex flex-col items-center gap-3 group cursor-pointer">
+<div class="size-16 rounded-xl bg-background-dark border-2 border-primary flex items-center justify-center text-primary node-glow-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[32px]">memory</span>
+</div>
+<div class="px-3 py-1 bg-background-dark/80 backdrop-blur rounded-full border border-primary/30 text-[11px] font-bold">core-engine</div>
+</div>
+<div class="absolute top-[210px] left-[550px] flex flex-col items-center gap-3 group cursor-pointer">
+<div class="size-14 rounded-xl bg-background-dark border-2 border-primary/60 flex items-center justify-center text-primary/80 group-hover:border-primary group-hover:text-primary transition-all hover:scale-110">
+<span class="material-symbols-outlined text-[28px]">lock</span>
+</div>
+<div class="px-3 py-1 bg-background-dark/80 backdrop-blur rounded-full border border-primary/40 text-[11px] font-bold shadow-lg">auth-service</div>
+</div>
+<div class="absolute top-[160px] left-[730px] flex flex-col items-center gap-3 group cursor-pointer">
+<div class="size-12 rounded-xl bg-background-dark border-2 border-green-500/40 flex items-center justify-center text-green-500/60 group-hover:border-green-500 group-hover:text-green-500 transition-all node-glow-success">
+<span class="material-symbols-outlined text-[24px]">list_alt</span>
+</div>
+<div class="px-3 py-1 bg-background-dark/80 backdrop-blur rounded-full border border-green-500/30 text-[11px] font-bold text-green-500">logger-utils</div>
+</div>
+<div class="absolute top-[300px] left-[760px] flex flex-col items-center gap-3 group cursor-pointer">
+<div class="size-14 rounded-xl bg-background-dark border-2 border-red-500/40 flex items-center justify-center text-red-500/60 group-hover:border-red-500 group-hover:text-red-500 transition-all node-glow-danger">
+<span class="material-symbols-outlined text-[28px]">payments</span>
+</div>
+<div class="px-3 py-1 bg-background-dark/80 backdrop-blur rounded-full border border-red-500/30 text-[11px] font-bold text-red-500">payments-v2</div>
+</div>
+<div class="absolute top-[450px] left-[520px] flex flex-col items-center gap-3 group cursor-pointer">
+<div class="size-14 rounded-xl bg-background-dark border-2 border-slate-700 flex items-center justify-center text-slate-400 group-hover:border-primary transition-all">
+<span class="material-symbols-outlined text-[28px]">database</span>
+</div>
+<div class="px-3 py-1 bg-background-dark/80 backdrop-blur rounded-full border border-slate-700 text-[11px] font-bold">db-adapter</div>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 flex items-center gap-4">
+<div class="flex flex-col gap-1 p-1 bg-background-light dark:bg-[#1b1f27] rounded-lg shadow-xl border border-slate-200 dark:border-slate-800">
+<button class="flex size-9 items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="h-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<button class="flex size-9 items-center justify-center rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="flex size-11 items-center justify-center rounded-lg bg-background-light dark:bg-[#1b1f27] shadow-xl border border-slate-200 dark:border-slate-800 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+<div class="absolute top-6 left-6 p-4 bg-background-light/80 dark:bg-[#1b1f27]/80 backdrop-blur-md rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Risk Legend</p>
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+<span class="text-xs font-medium">Core / High Risk</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></div>
+<span class="text-xs font-medium">Utility / Safe</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="h-[2px] w-4 bg-primary/60 border-t border-primary border-dashed"></div>
+<span class="text-xs font-medium">API Dependency</span>
+</div>
+</div>
+<div class="absolute bottom-6 right-6 size-32 bg-background-light dark:bg-[#1b1f27] rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden pointer-events-none opacity-80">
+<div class="w-full h-full bg-slate-800/50 flex items-center justify-center">
+<div class="size-16 border-2 border-primary/30 relative">
+<div class="absolute top-2 left-2 size-2 bg-primary/60"></div>
+<div class="absolute top-8 left-10 size-2 bg-primary/60"></div>
+<div class="absolute bottom-4 right-4 size-2 bg-red-500/60"></div>
+</div>
+</div>
+<div class="absolute top-6 left-6 size-12 border border-primary bg-primary/10"></div>
+</div>
+</section>
+<aside class="w-[420px] border-l border-slate-200 dark:border-[#282e39] bg-background-light dark:bg-background-dark flex flex-col overflow-hidden shrink-0">
+<div class="p-6 border-b border-slate-200 dark:border-[#282e39]">
+<div class="flex justify-between items-start mb-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+<p class="text-xs font-bold text-primary uppercase tracking-widest">Selected Module</p>
+</div>
+<h1 class="text-3xl font-bold tracking-tight">auth-service</h1>
+</div>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-[#282e39] rounded-lg text-slate-400">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<p class="text-slate-500 text-sm leading-relaxed">
+                Responsible for JWT validation, user session management, and OAuth2 delegation flows. This module serves as the primary gatekeeper for all API requests.
+            </p>
+<div class="flex gap-3 mt-6">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                    Open in IDE
+                </button>
+<button class="bg-slate-100 dark:bg-[#282e39] text-slate-900 dark:text-white px-4 rounded-lg text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                    Explain
+                </button>
+</div>
+</div>
+<nav class="flex border-b border-slate-200 dark:border-[#282e39] px-6">
+<button class="px-4 py-3 text-xs font-bold uppercase tracking-wider tab-active transition-all">Files</button>
+<button class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-300 transition-all border-b-2 border-transparent">Dependencies</button>
+<button class="px-4 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-slate-300 transition-all border-b-2 border-transparent flex items-center gap-1.5">
+                Notes
+                <span class="size-2 bg-primary rounded-full"></span>
+</button>
+</nav>
+<div class="flex-1 overflow-y-auto">
+<div class="p-6 space-y-4">
+<div class="flex items-center justify-between">
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Ranked Key Files</h4>
+<span class="text-[9px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold border border-primary/20 uppercase">Intelligence active</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-[#1b1f27] border border-slate-200 dark:border-slate-800 rounded-lg group cursor-pointer hover:border-primary/50">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">description</span>
+<div class="flex flex-col truncate">
+<p class="text-sm font-medium truncate">AuthMiddleware.ts</p>
+<p class="text-[11px] text-slate-500">Token validation logic</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px] opacity-0 group-hover:opacity-100">launch</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-[#1b1f27] border border-slate-200 dark:border-slate-800 rounded-lg group cursor-pointer hover:border-primary/50">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">description</span>
+<div class="flex flex-col truncate">
+<p class="text-sm font-medium truncate">SessionStore.ts</p>
+<p class="text-[11px] text-slate-500">Redis interaction layer</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px] opacity-0 group-hover:opacity-100">launch</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-slate-100 dark:bg-[#1b1f27] border border-slate-200 dark:border-slate-800 rounded-lg group cursor-pointer hover:border-primary/50">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">description</span>
+<div class="flex flex-col truncate">
+<p class="text-sm font-medium truncate">OAuthProvider.ts</p>
+<p class="text-[11px] text-slate-500">External identity bridges</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-[18px] opacity-0 group-hover:opacity-100">launch</span>
+</div>
+</div>
+<div class="pt-4 mt-6 border-t border-slate-200 dark:border-[#282e39] space-y-4">
+<div>
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Direct Coupling</p>
+<div class="flex flex-wrap gap-2">
+<div class="flex items-center gap-2 px-2.5 py-1.5 bg-slate-100 dark:bg-[#282e39] rounded-lg border border-slate-200 dark:border-slate-700">
+<span class="size-1.5 rounded-full bg-red-500"></span>
+<span class="text-[11px] font-medium">core-engine</span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 bg-slate-100 dark:bg-[#282e39] rounded-lg border border-slate-200 dark:border-slate-700">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+<span class="text-[11px] font-medium">logger-utils</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto p-6 bg-slate-100/50 dark:bg-slate-900/30 border-t border-slate-200 dark:border-[#282e39]">
+<div class="flex justify-between items-center mb-2">
+<p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Test Coverage</p>
+<p class="text-xs font-bold text-green-500">92%</p>
+</div>
+<div class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-green-500 w-[92%]"></div>
+</div>
+</div>
+</aside>
+</main>
+
+</body></html>

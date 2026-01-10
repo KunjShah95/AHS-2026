@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interactive Learning Roadmap - AI Onboarding Engineer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body {
+                font-family: 'Space Grotesk', sans-serif;
+            }
+        }
+        .roadmap-line {
+            background: linear-gradient(180deg, #0d59f2 0%, #0d59f2 60%, #3b4354 100%);
+        }
+        .node-active-glow {
+            box-shadow: 0 0 15px rgba(13, 89, 242, 0.3);
+        }
+        .tooltip-content {
+            @apply invisible opacity-0 absolute z-50 p-3 bg-slate-800 text-white text-xs rounded-lg shadow-xl border border-slate-700 w-48 -translate-x-1/2 left-1/2 bottom-full mb-2 transition-all;
+        }
+        .has-tooltip:hover .tooltip-content {
+            @apply visible opacity-100;
+        }
+        .node-card:focus-within .file-tree-expand {
+            @apply block;
+        }
+        .file-tree-expand {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#282e39] bg-white dark:bg-background-dark px-10 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined text-3xl">auto_awesome</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Onboarding Engineer</h2>
+</div>
+<label class="flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full overflow-hidden">
+<div class="text-[#9ca6ba] flex border-none bg-slate-100 dark:bg-[#282e39] items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-slate-900 dark:text-white focus:outline-0 focus:ring-0 border-none bg-slate-100 dark:bg-[#282e39] h-full placeholder:text-[#9ca6ba] px-4 pl-2 text-base font-normal" placeholder="Search roadmap..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary" href="#">Roadmap</a>
+<a class="text-slate-600 dark:text-[#9ca6ba] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Documentation</a>
+<a class="text-slate-600 dark:text-[#9ca6ba] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Community</a>
+</div>
+<div class="flex gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-slate-100 dark:bg-[#282e39] text-slate-900 dark:text-white gap-2 text-sm font-bold min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCB-0aoI2BW0u7DBAYdnxyA02uviQwf-cfsZSXnrXIeFgvg5X8uwrtvHmLC8ckzVD_aDiAe74hrtEgL6BJSVRMOXFEFRjvFrbtZyyu2k37mJUzx_AqCg6-URbuon0ZCviu_XgV8Uemjff4T1FdljKPSoogU4LjadxySqNnDgr9hDpnV8m7sSKgzqn-9Uul0E_SIrjuOPClnXKHoMRO7XgxRyWN0yJfaUz0TKiferWDWj33iiteb7J3yvenQe9fBWf5Qit3Q5retlKA");'></div>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-65px)] overflow-hidden">
+<aside class="w-64 border-r border-slate-200 dark:border-[#282e39] flex flex-col justify-between p-4 bg-white dark:bg-background-dark shrink-0">
+<div class="flex flex-col gap-6">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-base font-bold">Project Nebula</h1>
+<p class="text-slate-500 dark:text-[#9ca6ba] text-xs font-mono">v4.1.2-enterprise</p>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-[#9ca6ba] hover:bg-slate-50 dark:hover:bg-[#1b1f27] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<p class="text-sm font-medium">Overview</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1">map</span>
+<p class="text-sm font-bold">Roadmap</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-[#9ca6ba] hover:bg-slate-50 dark:hover:bg-[#1b1f27] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-xl">terminal</span>
+<p class="text-sm font-medium">Commands</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-[#9ca6ba] hover:bg-slate-50 dark:hover:bg-[#1b1f27] transition-all cursor-pointer">
+<span class="material-symbols-outlined text-xl">group</span>
+<p class="text-sm font-medium">Mentors</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<div class="bg-slate-50 dark:bg-[#1b1f27] p-3 rounded-lg border border-slate-200 dark:border-[#282e39]">
+<div class="flex justify-between items-center mb-2">
+<p class="text-xs font-bold text-slate-400 dark:text-[#9ca6ba] uppercase tracking-wider">Progress</p>
+<p class="text-xs font-bold text-primary">40%</p>
+</div>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-[#3b4354] rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 40%;"></div>
+</div>
+</div>
+<button class="flex w-full cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold tracking-tight hover:brightness-110 transition-all gap-2">
+<span class="material-symbols-outlined text-lg">bolt</span>
+<span>Ask AI Assistant</span>
+</button>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0a0f18] p-8">
+<div class="max-w-4xl mx-auto">
+<div class="mb-12 flex justify-between items-end">
+<div>
+<h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Interactive Learning Roadmap</h2>
+<p class="text-slate-600 dark:text-[#9ca6ba]">Accelerate your codebase understanding through a guided module tour.</p>
+</div>
+<button class="flex items-center gap-2 bg-slate-200 dark:bg-[#282e39] px-4 py-2 rounded-lg text-sm font-bold hover:bg-slate-300 dark:hover:bg-[#343b49] transition-all">
+<span class="material-symbols-outlined text-lg">settings_suggest</span>
+                    Customize Path
+                </button>
+</div>
+<div class="relative">
+<div class="grid grid-cols-[60px_1fr] gap-x-6 mb-12 relative group">
+<div class="flex flex-col items-center">
+<button class="z-20 bg-emerald-500 text-white rounded-full p-2 border-4 border-slate-50 dark:border-[#0a0f18] shadow-lg transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-2xl font-bold">check</span>
+</button>
+<div class="w-1 bg-emerald-500 h-full absolute top-10"></div>
+</div>
+<div class="node-card outline-none" tabindex="0">
+<div class="bg-white dark:bg-[#1b1f27] p-6 rounded-xl border border-slate-200 dark:border-[#282e39] shadow-sm transition-all hover:shadow-md cursor-pointer opacity-70 hover:opacity-100">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Environment Setup</h3>
+<p class="text-sm text-slate-500 dark:text-[#9ca6ba]">Initial dev configuration and dependencies.</p>
+</div>
+<div class="relative has-tooltip">
+<span class="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">Low Risk</span>
+<div class="tooltip-content">
+<p class="font-bold mb-1">Standard Setup</p>
+<p class="text-[10px] leading-normal text-slate-300">Automated with Docker and Makefile. No complex system dependencies required.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4 text-xs text-slate-400 dark:text-[#9ca6ba] font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 20m</span>
+<span class="flex items-center gap-1 text-emerald-500 font-bold"><span class="material-symbols-outlined text-sm">check_circle</span> Verified</span>
+</div>
+<button class="flex items-center gap-1 text-primary text-xs font-bold hover:underline">
+<span class="material-symbols-outlined text-sm">play_circle</span> Replay Tour
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-[60px_1fr] gap-x-6 mb-12 relative group">
+<div class="flex flex-col items-center">
+<button class="z-20 bg-primary text-white rounded-full p-2 border-4 border-slate-50 dark:border-[#0a0f18] node-active-glow ring-2 ring-primary/30 transition-transform hover:scale-110">
+<span class="material-symbols-outlined text-2xl font-bold">play_arrow</span>
+</button>
+<div class="w-1 roadmap-line h-full absolute top-10"></div>
+</div>
+<div class="node-card outline-none" tabindex="0">
+<div class="bg-white dark:bg-[#1b1f27] p-6 rounded-xl border-2 border-primary shadow-xl ring-1 ring-primary/10 transition-all hover:border-blue-400 cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-primary text-[10px] font-bold uppercase tracking-widest bg-primary/10 px-2 py-0.5 rounded">Current Focus</span>
+<span class="text-amber-500 text-[10px] font-bold uppercase tracking-widest bg-amber-500/10 px-2 py-0.5 rounded">Action Required</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white">Data Models &amp; Schema</h3>
+<p class="text-slate-600 dark:text-[#9ca6ba] mt-1">Deep dive into PostgreSQL definitions and TypeORM entities.</p>
+</div>
+<div class="relative has-tooltip">
+<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider cursor-help">Med Risk</span>
+<div class="tooltip-content">
+<p class="font-bold mb-1">Schema Complexity</p>
+<p class="text-[10px] leading-normal text-slate-300">Involves multi-tenant isolation logic and complex relational constraints in the Workspace entity.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 mb-6">
+<button class="flex items-center gap-2 bg-primary hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg text-sm transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">play_circle</span>
+                                    Start Guided Tour
+                                </button>
+<button class="flex items-center gap-2 text-slate-500 dark:text-[#9ca6ba] hover:text-white transition-colors text-sm font-medium border border-slate-200 dark:border-[#282e39] px-4 py-2 rounded-lg">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+                                    View File Tree
+                                </button>
+</div>
+<div class="file-tree-expand bg-slate-50 dark:bg-[#111318] p-4 rounded-lg mb-6 border border-slate-200 dark:border-[#282e39]">
+<p class="text-xs font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">Included Files</p>
+<div class="space-y-1 font-mono text-xs">
+<div class="flex items-center gap-2 text-amber-400"><span class="material-symbols-outlined text-sm">folder</span> src/models</div>
+<div class="flex items-center gap-2 pl-4 text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined text-sm">description</span> user.entity.ts</div>
+<div class="flex items-center gap-2 pl-4 text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined text-sm">description</span> workspace.entity.ts</div>
+<div class="flex items-center gap-2 text-amber-400"><span class="material-symbols-outlined text-sm">folder</span> migrations</div>
+<div class="flex items-center gap-2 pl-4 text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined text-sm">settings_ethernet</span> 20231012_init.sql</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-xs text-slate-500 dark:text-[#9ca6ba] font-medium border-t border-slate-100 dark:border-[#282e39] pt-4">
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 45m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">description</span> 12 Files</span>
+</div>
+<span class="text-primary italic">AI Ready: Context mapped</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-[60px_1fr] gap-x-6 mb-12 relative">
+<div class="flex flex-col items-center">
+<div class="z-10 bg-slate-200 dark:bg-[#282e39] text-slate-400 dark:text-[#3b4354] rounded-full p-2 border-4 border-slate-50 dark:border-[#0a0f18]">
+<span class="material-symbols-outlined text-2xl">lock</span>
+</div>
+<div class="w-1 bg-slate-200 dark:bg-[#282e39] h-full absolute top-10"></div>
+</div>
+<div class="node-card outline-none" tabindex="0">
+<div class="bg-white dark:bg-[#1b1f27] p-6 rounded-xl border border-slate-200 dark:border-[#282e39] shadow-sm grayscale opacity-50 transition-all hover:opacity-70 cursor-not-allowed">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Core Business Logic</h3>
+<p class="text-sm text-slate-500 dark:text-[#9ca6ba]">Service layer, controllers, and validation logic.</p>
+</div>
+<div class="relative has-tooltip">
+<span class="px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold uppercase tracking-wider">High Risk</span>
+<div class="tooltip-content">
+<p class="font-bold mb-1">Architecture Critical</p>
+<p class="text-[10px] leading-normal text-slate-300">This module contains the primary transaction logic. High potential for side effects if misconfigured.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-400 dark:text-[#9ca6ba] font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 1h 30m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">lock</span> Requires Schema Verified</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-[60px_1fr] gap-x-6 relative">
+<div class="flex flex-col items-center">
+<div class="z-10 bg-slate-200 dark:bg-[#282e39] text-slate-400 dark:text-[#3b4354] rounded-full p-2 border-4 border-slate-50 dark:border-[#0a0f18]">
+<span class="material-symbols-outlined text-2xl">lock</span>
+</div>
+</div>
+<div class="node-card outline-none" tabindex="0">
+<div class="bg-white dark:bg-[#1b1f27] p-6 rounded-xl border border-slate-200 dark:border-[#282e39] shadow-sm grayscale opacity-50 transition-all hover:opacity-70 cursor-not-allowed">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">API &amp; External Integrations</h3>
+<p class="text-sm text-slate-500 dark:text-[#9ca6ba]">GraphQL gateway and microservice comms.</p>
+</div>
+<div class="relative has-tooltip">
+<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">Med Risk</span>
+<div class="tooltip-content">
+<p class="font-bold mb-1">Third-party Dependencies</p>
+<p class="text-[10px] leading-normal text-slate-300">Requires Stripe and Auth0 credentials for testing. Mocking layer is complex.</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 text-xs text-slate-400 dark:text-[#9ca6ba] font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">schedule</span> 40m</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">lock</span> Locked</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<aside class="w-80 border-l border-slate-200 dark:border-[#282e39] bg-white dark:bg-background-dark p-0 flex flex-col overflow-hidden shrink-0">
+<div class="p-4 border-b border-slate-200 dark:border-[#282e39] bg-slate-50 dark:bg-[#111318]">
+<h3 class="text-sm font-bold text-slate-900 dark:text-white flex items-center justify-between">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-lg text-primary">folder_open</span>
+                    Current Context
+                </span>
+<span class="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded uppercase">Active</span>
+</h3>
+<p class="text-[11px] text-[#9ca6ba] font-mono mt-1">/src/modules/data-models/**</p>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-1">
+<div class="flex items-center gap-2 py-1 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group transition-all">
+<span class="material-symbols-outlined text-amber-400 text-xl">folder</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">entities</span>
+</div>
+<div class="flex items-center gap-2 py-1.5 pl-6 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group border-l-2 border-transparent hover:border-primary transition-all">
+<span class="material-symbols-outlined text-blue-400 text-xl">description</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm text-slate-600 dark:text-white truncate font-mono">user.entity.ts</p>
+<p class="text-[10px] text-emerald-500 font-bold uppercase tracking-tighter">Core Model</p>
+</div>
+</div>
+<div class="flex items-center gap-2 py-1.5 pl-6 cursor-pointer bg-primary/5 px-2 rounded group border-l-2 border-primary transition-all">
+<span class="material-symbols-outlined text-blue-400 text-xl">description</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm text-primary font-bold truncate font-mono">workspace.entity.ts</p>
+<p class="text-[10px] text-primary/70 font-bold uppercase tracking-tighter">Current Target</p>
+</div>
+</div>
+<div class="flex items-center gap-2 py-1.5 pl-6 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group border-l-2 border-transparent hover:border-primary transition-all">
+<span class="material-symbols-outlined text-blue-400 text-xl">description</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm text-slate-600 dark:text-white truncate font-mono">role.entity.ts</p>
+</div>
+</div>
+<div class="flex items-center gap-2 py-1 mt-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group transition-all">
+<span class="material-symbols-outlined text-amber-400 text-xl">folder</span>
+<span class="text-sm font-medium text-slate-700 dark:text-slate-300">migrations</span>
+</div>
+<div class="flex items-center gap-2 py-1.5 pl-6 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group border-l-2 border-transparent hover:border-primary transition-all">
+<span class="material-symbols-outlined text-purple-400 text-xl">settings_ethernet</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm text-slate-600 dark:text-white truncate font-mono">16892-initial-db.sql</p>
+</div>
+</div>
+<div class="flex items-center gap-2 py-1.5 pl-6 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#1b1f27] px-2 rounded group border-l-2 border-transparent hover:border-primary transition-all">
+<span class="material-symbols-outlined text-purple-400 text-xl">settings_ethernet</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-sm text-slate-600 dark:text-white truncate font-mono">16905-add-stripe-id.sql</p>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-[#111318] border-t border-slate-200 dark:border-[#282e39]">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">smart_toy</span>
+<p class="text-[11px] font-bold text-slate-500 dark:text-[#9ca6ba] uppercase tracking-widest">Active Insight</p>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic border-l-2 border-primary pl-3">
+                "Focus on the 'Workspace' entity as it contains the multi-tenancy logic used across all modules. This is the heart of our data isolation strategy."
+            </p>
+</div>
+</aside>
+</div>
+
+</body></html>
