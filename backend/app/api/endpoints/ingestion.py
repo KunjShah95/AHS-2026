@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.core.security import get_current_user
 from pydantic import BaseModel
 from app.agents.repository_ingestion import RepositoryIngestionAgent
 from app.agents.code_intelligence import CodeIntelligenceAgent
