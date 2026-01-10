@@ -7,6 +7,16 @@ app = FastAPI(
     version="0.1.0"
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"], # Update with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Include routers (commented out until created)
 app.include_router(ingestion.router, prefix="/ingestion", tags=["ingestion"])
 app.include_router(learning.router, prefix="/learning", tags=["learning"])
