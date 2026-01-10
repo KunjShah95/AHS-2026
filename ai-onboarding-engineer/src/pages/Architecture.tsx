@@ -1,63 +1,76 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, ArrowRight, CheckCircle2, Database, Globe, Layers, Lock, Server } from "lucide-react"
+import { AlertCircle, ArrowRight, CheckCircle2, Layers, Loader2, Network } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import type { LucideIcon } from "lucide-react"
 
-// Mock Architecture Data
-const modules = [
-  { 
-    id: "frontend", 
-    label: "Frontend (React)", 
-    icon: Globe, 
-    x: 400, y: 100, 
-    details: "Handles user interaction and UI rendering. Uses React + Vite.",
-    risk: "safe"
-  },
-  { 
-    id: "api", 
-    label: "API Gateway", 
-    icon: Server, 
-    x: 400, y: 250, 
-    details: "Routes requests, handles authentication, and rate limiting.",
-    risk: "moderate"
-  },
-  { 
-    id: "auth", 
-    label: "Auth Service", 
-    icon: Lock, 
-    x: 200, y: 400, 
-    details: "Manages users, sessions, and JWTs. Critical security module.",
-    risk: "critical"
-  },
-  { 
-    id: "core", 
-    label: "Core Logic", 
-    icon: Layers, 
-    x: 600, y: 400, 
-    details: "Business rules and data processing engines.",
-    risk: "safe"
-  },
-  { 
-    id: "db", 
-    label: "Database", 
-    icon: Database, 
-    x: 400, y: 550, 
-    details: "PostgreSQL storage for all persistent data.",
-    risk: "critical"
-  },
-]
+interface Module {
+  id: string
+  label: string
+  icon: LucideIcon
+  x: number
+  y: number
+  details: string
+  risk: string
+}
 
-const connections = [
-  { from: "frontend", to: "api" },
-  { from: "api", to: "auth" },
-  { from: "api", to: "core" },
-  { from: "auth", to: "db" },
-  { from: "core", to: "db" },
-]
+interface Connection {
+  from: string
+  to: string
+}
 
 export default function Architecture() {
-  const [selectedModule, setSelectedModule] = useState(modules[0])
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  // TODO: These will become useState when Firebase integration is complete
+  const modules: Module[] = []
+  const connections: Connection[] = []
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null)
+
+  useEffect(() => {
+    const loadArchitecture = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        // TODO: Fetch architecture data from Firebase for the user's current repository
+        // const architecture = await getArchitectureForUser(user.uid)
+        // setModules(architecture.modules)
+        // setConnections(architecture.connections)
+        // setSelectedModule(architecture.modules[0])
+        setLoading(false)
+      } catch (error) {
+        console.error("Error loading architecture:", error)
+        setLoading(false)
+      }
+    }
+
+    loadArchitecture()
+  }, [user])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (modules.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-6">
+        <Network className="h-16 w-16 text-muted-foreground/30 mb-4" />
+        <h3 className="text-lg font-semibold mb-2">No Architecture Data</h3>
+        <p className="text-sm text-muted-foreground max-w-md text-center">
+          Analyze a repository first to visualize its architecture and understand module relationships.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6 h-[calc(100vh-4rem)]">
@@ -70,10 +83,6 @@ export default function Architecture() {
               {connections.map((conn, idx) => {
                 const from = modules.find(m => m.id === conn.from)!
                 const to = modules.find(m => m.id === conn.to)!
-                // Simple straight lines for now, or bezier
-                // Adjust coords based on container (this is tricky without real measurements, using mocked relative positions)
-                // To make it responsive, we use percentages or a fixed viewBox. 
-                // Let's use a fixed viewBox 800x800 for simplicity in this demo.
                 return (
                   <motion.line 
                     key={idx}
@@ -96,12 +105,12 @@ export default function Architecture() {
                   key={mod.id}
                   onClick={() => setSelectedModule(mod)}
                   className={`absolute p-4 rounded-xl border backdrop-blur-md transition-all duration-300 w-40 flex flex-col items-center gap-2 group/node
-                    ${selectedModule.id === mod.id 
+                    ${selectedModule?.id === mod.id 
                       ? "bg-primary text-primary-foreground border-primary shadow-[0_0_30px_-5px_hsl(var(--primary))]" 
                       : "bg-card border-border hover:border-primary/50"
                     }
                   `}
-                  style={{ left: mod.x - 80, top: mod.y - 40 }} // center alignment
+                  style={{ left: mod.x - 80, top: mod.y - 40 }}
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   whileHover={{ scale: 1.05 }}
@@ -123,71 +132,73 @@ export default function Architecture() {
 
       {/* Details Panel */}
       <AnimatePresence mode="wait">
-        <motion.div 
-          key={selectedModule.id}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 20 }}
-          transition={{ duration: 0.2 }}
-          className="w-full lg:w-96"
-        >
-          <Card className="h-full border-t border-x-0 lg:border-l lg:border-y border-b lg:border-r-0 lg:rounded-l-none lg:rounded-r-xl bg-card/50 backdrop-blur-xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                 <div className="p-3 bg-primary/10 rounded-lg">
-                    <selectedModule.icon className="w-6 h-6 text-primary" />
-                 </div>
-                 <Badge variant={
-                    selectedModule.risk === 'critical' ? 'destructive' : 
-                    selectedModule.risk === 'moderate' ? 'default' : 
-                    'secondary' // Using secondary for 'safe' usually means green/neutral in our theme
-                 }>
-                    {selectedModule.risk === 'safe' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
-                    {selectedModule.risk.toUpperCase()}
-                 </Badge>
-              </div>
-              <CardTitle className="mt-4 text-2xl">{selectedModule.label}</CardTitle>
-              <CardDescription>Module ID: {selectedModule.id}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <h4 className="text-sm font-medium mb-1 text-muted-foreground">Responsibility</h4>
-                <p className="text-sm leading-relaxed">{selectedModule.details}</p>
-              </div>
-              
-              <div>
-                <h4 className="text-sm font-medium mb-2 text-muted-foreground">Dependencies</h4>
-                <div className="flex flex-wrap gap-2">
-                   {connections.filter(c => c.from === selectedModule.id).map(c => (
-                     <Badge key={c.to} variant="outline" className="pl-1">
-                        <ArrowRight className="w-3 h-3 mr-1 opacity-50" />
-                        {modules.find(m => m.id === c.to)?.label}
-                     </Badge>
-                   ))}
-                   {connections.filter(c => c.from === selectedModule.id).length === 0 && (
-                     <span className="text-xs text-muted-foreground italic">None</span>
-                   )}
+        {selectedModule && (
+          <motion.div 
+            key={selectedModule.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.2 }}
+            className="w-full lg:w-96"
+          >
+            <Card className="h-full border-t border-x-0 lg:border-l lg:border-y border-b lg:border-r-0 lg:rounded-l-none lg:rounded-r-xl bg-card/50 backdrop-blur-xl">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                   <div className="p-3 bg-primary/10 rounded-lg">
+                      <selectedModule.icon className="w-6 h-6 text-primary" />
+                   </div>
+                   <Badge variant={
+                      selectedModule.risk === 'critical' ? 'destructive' : 
+                      selectedModule.risk === 'moderate' ? 'default' : 
+                      'secondary'
+                   }>
+                      {selectedModule.risk === 'safe' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                      {selectedModule.risk.toUpperCase()}
+                   </Badge>
                 </div>
-              </div>
+                <CardTitle className="mt-4 text-2xl">{selectedModule.label}</CardTitle>
+                <CardDescription>Module ID: {selectedModule.id}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h4 className="text-sm font-medium mb-1 text-muted-foreground">Responsibility</h4>
+                  <p className="text-sm leading-relaxed">{selectedModule.details}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Dependencies</h4>
+                  <div className="flex flex-wrap gap-2">
+                     {connections.filter(c => c.from === selectedModule.id).map(c => (
+                       <Badge key={c.to} variant="outline" className="pl-1">
+                          <ArrowRight className="w-3 h-3 mr-1 opacity-50" />
+                          {modules.find(m => m.id === c.to)?.label}
+                       </Badge>
+                     ))}
+                     {connections.filter(c => c.from === selectedModule.id).length === 0 && (
+                       <span className="text-xs text-muted-foreground italic">None</span>
+                     )}
+                  </div>
+                </div>
 
-               <div>
-                <h4 className="text-sm font-medium mb-2 text-muted-foreground">Key Files</h4>
-                <div className="space-y-1">
-                   {/* Mock files */}
-                   <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
-                      <Layers className="w-3 h-3" />
-                      src/{selectedModule.id}/index.ts
-                   </div>
-                   <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
-                      <Layers className="w-3 h-3" />
-                      src/{selectedModule.id}/types.ts
-                   </div>
+                 <div>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Key Files</h4>
+                  <div className="space-y-1">
+                     <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
+                        <Layers className="w-3 h-3" />
+                        src/{selectedModule.id}/index.ts
+                     </div>
+                     <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
+                        <Layers className="w-3 h-3" />
+                        src/{selectedModule.id}/types.ts
+                     </div>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   )
 }
+

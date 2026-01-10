@@ -51,7 +51,7 @@ export default function Login() {
     setError("")
     try {
       await signInWithEmailAndPassword(auth, email, password)
-      navigate("/")
+      navigate("/dashboard")
     } catch (err: unknown) {
       console.error(err)
       if (err instanceof Error) {
@@ -69,7 +69,7 @@ export default function Login() {
     setError("")
     try {
       await signInWithGithub()
-      navigate("/")
+      navigate("/dashboard")
     } catch (err: unknown) {
       console.error(err)
       if (err instanceof Error) {
@@ -87,7 +87,7 @@ export default function Login() {
     setError("")
     try {
       await signInWithGoogle()
-      navigate("/")
+      navigate("/dashboard")
     } catch (err: unknown) {
       console.error(err)
       if (err instanceof Error) {
