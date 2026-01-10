@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.services.impact import ImpactAnalysisService
+from app.agents.change_impact import ChangeImpactAgent
 from app.models.graph import CodeGraph
 
 router = APIRouter()
@@ -12,10 +12,6 @@ class ImpactRequest(BaseModel):
 
 @router.post("/impact")
 async def analyze_impact(request: ImpactRequest):
-    service = ImpactAnalysisService()
-    # Mocking hydration again, assuming code_graph is compatible structure
-    # In real app: use CodeGraph(**request.code_graph)
+    agent = ChangeImpactAgent()
     cg = CodeGraph(**request.code_graph)
-    
-    result = service.calculate_impact(cg, request.changed_module)
-    return result
+    return agent.analyze(request.changed_module, cg)
