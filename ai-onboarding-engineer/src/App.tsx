@@ -8,24 +8,27 @@ import Dashboard from "./pages/Dashboard"
 import Tasks from "./pages/Tasks"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
+import { AuthProvider } from "./context/AuthContext"
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Landing />} />
-          <Route path="analysis" element={<RepoAnalysis />} />
-          <Route path="roadmap" element={<Roadmap />} />
-          <Route path="architecture" element={<Architecture />} />
-          <Route path="tasks" element={<Tasks />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Landing />} />
+            <Route path="analysis" element={<RepoAnalysis />} />
+            <Route path="roadmap" element={<Roadmap />} />
+            <Route path="architecture" element={<Architecture />} />
+            <Route path="tasks" element={<Tasks />} />
 
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
-      </Routes>
-    </Router>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   )
 }
 
