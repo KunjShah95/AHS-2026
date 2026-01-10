@@ -1,48 +1,83 @@
-import React from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { CheckCircle2, Circle, Clock, FileText } from "lucide-react"
+import { CheckCircle2, Circle, Clock, FileText, Loader2, BookOpen } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useLocation } from "react-router-dom"
 
-// Mock Data
-const roadmapSteps = [
-  {
-    id: 1,
-    title: "Environment Setup & Config",
-    description: "Understand how the app is configured and built.",
-    files: ["package.json", "vite.config.ts", ".env.example"],
-    time: "15 min",
-    difficulty: "Beginner",
-    status: "completed",
-  },
-  {
-    id: 2,
-    title: "Project Structure Overview",
-    description: "Learn the folder organization and key architectural decisions.",
-    files: ["src/components", "src/pages", "src/lib"],
-    time: "30 min",
-    difficulty: "Beginner",
-    status: "current",
-  },
-  {
-    id: 3,
-    title: "Authentication Flow",
-    description: "Deep dive into how user sessions are managed.",
-    files: ["src/auth/AuthProvider.tsx", "src/lib/session.ts"],
-    time: "45 min",
-    difficulty: "Intermediate",
-    status: "locked",
-  },
-  {
-    id: 4,
-    title: "Core Data Fetching",
-    description: "Understanding API clients and data hooks.",
-    files: ["src/api/client.ts", "src/hooks/useData.ts"],
-    time: "1 hour",
-    difficulty: "Advanced",
-    status: "locked",
-  },
-]
+interface RoadmapStep {
+  id: number
+  title: string
+  description: string
+  files: string[]
+  time: string
+  difficulty: string
+  status: string
+}
 
 export default function Roadmap() {
+  const { user } = useAuth()
+  const location = useLocation()
+  const [loading, setLoading] = useState(true)
+  const [roadmapSteps, setRoadmapSteps] = useState<RoadmapStep[]>([])
+
+  useEffect(() => {
+    const loadRoadmap = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        // Check if we have analysis data from navigation state
+        const analysisData = location.state?.analysisData
+
+        if (analysisData) {
+          // TODO: Parse analysisData and generate roadmap steps
+          // For now, show empty state
+          setRoadmapSteps([])
+        } else {
+          // TODO: Fetch roadmap from Firebase for the user's current repository
+          // const roadmap = await getRoadmapForUser(user.uid)
+          // setRoadmapSteps(roadmap)
+        }
+        
+        setLoading(false)
+      } catch (error) {
+        console.error("Error loading roadmap:", error)
+        setLoading(false)
+      }
+    }
+
+    loadRoadmap()
+  }, [user, location.state])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (roadmapSteps.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto py-12">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-bold mb-2">Learning Roadmap</h1>
+          <p className="text-muted-foreground">Your personalized path to mastering this codebase.</p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-16 border border-border/50 rounded-2xl bg-card/30">
+          <BookOpen className="h-16 w-16 text-muted-foreground/30 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Roadmap Available</h3>
+          <p className="text-sm text-muted-foreground max-w-md text-center">
+            Analyze a repository first to generate your personalized learning roadmap.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-4xl mx-auto py-12">
       <div className="mb-10 text-center">

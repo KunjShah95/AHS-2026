@@ -1,45 +1,47 @@
-import React, { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, Circle, Code, FileCode, GitPullRequest, Play } from "lucide-react"
+import { CheckCircle2, Circle, Code, FileCode, GitPullRequest, Play, Loader2, ListTodo } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
 
-const tasks = [
-  {
-    id: 1,
-    title: "Update API Base URL",
-    description: "The API endpoint has changed. Update the base URL configuration in the environment file and client.",
-    difficulty: "Beginner",
-    estimatedTime: "10m",
-    files: ["src/lib/api.ts", ".env.example"],
-    status: "pending", // pending, in-progress, completed
-    marketing: "Good First Issue"
-  },
-  {
-    id: 2,
-    title: "Add Loading State to Dashboard",
-    description: "Users aren't seeing feedback when the dashboard loads. Add a skeleton loader or spinner.",
-    difficulty: "Intermediate",
-    estimatedTime: "30m",
-    files: ["src/pages/Dashboard.tsx", "src/components/ui/skeleton.tsx"],
-    status: "pending",
-    marketing: "UI Improvement"
-  },
-  {
-    id: 3,
-    title: "Fix Typo in Auth Error Message",
-    description: "Users report seeing 'Passowrd' instead of 'Password' on login failure.",
-    difficulty: "Beginner",
-    estimatedTime: "5m",
-    files: ["src/auth/AuthProvider.tsx"],
-    status: "completed",
-    marketing: "Bug Fix"
-  }
-]
+interface Task {
+  id: number
+  title: string
+  description: string
+  difficulty: string
+  estimatedTime: string
+  files: string[]
+  status: string
+  marketing: string
+}
 
 export default function Tasks() {
-  const [taskList, setTaskList] = useState(tasks)
+  const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const [taskList, setTaskList] = useState<Task[]>([])
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        // TODO: Fetch tasks from Firebase for the user's current repository
+        // const tasks = await getTasksForUser(user.uid)
+        // setTaskList(tasks)
+        setLoading(false)
+      } catch (error) {
+        console.error("Error loading tasks:", error)
+        setLoading(false)
+      }
+    }
+
+    loadTasks()
+  }, [user])
 
   const toggleStatus = (id: number) => {
     setTaskList(taskList.map(t => {
@@ -49,6 +51,33 @@ export default function Tasks() {
       }
       return t
     }))
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (taskList.length === 0) {
+    return (
+      <div className="py-12 max-w-5xl mx-auto">
+        <div className="mb-10 text-center">
+          <h1 className="text-3xl font-bold mb-2">Practice Tasks</h1>
+          <p className="text-muted-foreground">Get hands-on with the codebase through simulated, safe-to-fail tasks.</p>
+        </div>
+
+        <div className="flex flex-col items-center justify-center py-16 border border-border/50 rounded-2xl bg-card/30">
+          <ListTodo className="h-16 w-16 text-muted-foreground/30 mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Tasks Available</h3>
+          <p className="text-sm text-muted-foreground max-w-md text-center">
+            Tasks will be generated after you analyze a repository and complete the initial roadmap.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
