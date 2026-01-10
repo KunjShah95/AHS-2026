@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Interactive Task Learning | AI Onboarding Engineer</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                        "editor-bg": "#0d1117",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        @layer base {
+            body { font-family: 'Space Grotesk', sans-serif; }
+            .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        }
+        .code-line-active { background-color: rgba(13, 89, 242, 0.1); border-left: 2px solid #0d59f2; }
+        .success-confetti {
+            animation: bounce-subtle 0.5s ease-out;
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-[#282e39] bg-white dark:bg-background-dark px-6 py-3 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">terminal</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">AI Onboarding Engineer</h2>
+</div>
+<label class="flex min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-slate-400 dark:text-[#9ca6ba] flex bg-slate-100 dark:bg-[#282e39] items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full border-none bg-slate-100 dark:bg-[#282e39] text-slate-900 dark:text-white focus:ring-0 h-full placeholder:text-slate-400 dark:placeholder:text-[#9ca6ba] px-4 rounded-r-lg pl-2 text-sm font-normal" placeholder="Search tasks or files..."/>
+</div>
+</label>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-primary text-sm font-medium border-b-2 border-primary py-1" href="#">Tasks</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary text-sm font-medium transition-colors" href="#">Documentation</a>
+</nav>
+<div class="h-8 w-px bg-slate-200 dark:bg-[#282e39]"></div>
+<button class="relative flex items-center justify-center gap-2 rounded-lg h-10 px-4 bg-orange-500/10 text-orange-600 dark:text-orange-400 text-sm font-bold border border-orange-500/20 hover:bg-orange-500/20 transition-all">
+<span class="material-symbols-outlined text-lg">psychology</span>
+            Stuck? Ask Tutor
+        </button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 border-2 border-primary/20" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA2dbddSARVTJADpzwoj03K9LEZ-ncGk8TJDnimGYFi0M66tr-2j6s3AzffwRFnbZIw0nZf2G42vWGYauEikcdhLyk7dgCaiM93qonODzVagLZ1p8Q06tq68myVeQHr32odgRs8rszeQ9eEIT0kKipMDkBI66jq1HClcvepmG2X3S90mUdI6UXuFIrcM2CWwMuKuRBfn8BXojcyc0bNEfPfjdAXtb_3_sTSofAxZQlq2dJKgcrJG68HYrZb82moE27widPiGBV4Iw");'></div>
+</div>
+</header>
+<main class="flex flex-1 overflow-hidden">
+<aside class="w-80 border-r border-slate-200 dark:border-[#282e39] bg-white dark:bg-background-dark flex flex-col shrink-0">
+<div class="p-4 border-b border-slate-200 dark:border-[#282e39]">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-base font-bold">Project Navigator</h1>
+<p class="text-slate-500 dark:text-[#9ca6ba] text-[10px] uppercase tracking-wider font-semibold">Active Module</p>
+</div>
+<div class="mt-4 space-y-2">
+<div class="flex justify-between items-end text-xs">
+<span class="text-slate-700 dark:text-slate-300 font-medium">Progress</span>
+<span class="text-slate-500">3/10 Completed</span>
+</div>
+<div class="h-1.5 w-full bg-slate-100 dark:bg-[#3b4354] rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 30%;"></div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<div class="px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Steps</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg bg-primary/10 border border-primary/20">
+<span class="material-symbols-outlined text-primary">play_circle</span>
+<div class="flex flex-col min-w-0">
+<p class="text-primary text-sm font-bold truncate">Auth Service Validation</p>
+<span class="text-[10px] text-primary font-bold uppercase">Current Task</span>
+</div>
+</div>
+<div class="mt-8 px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">AI Tutor Context</div>
+<div class="mx-2 p-3 bg-slate-50 dark:bg-[#1a2130] rounded-xl border border-slate-200 dark:border-[#282e39]">
+<div class="flex items-start gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">chat_bubble</span>
+<p class="text-[11px] leading-relaxed italic text-slate-600 dark:text-slate-400">"I noticed you're looking at the Zod schema. Remember that the `organizational_unit` should be a non-empty string."</p>
+</div>
+<button class="w-full text-[11px] font-bold text-primary flex items-center justify-center gap-1 mt-2 py-1.5 rounded-lg border border-primary/20 hover:bg-primary/5">
+                    Continue Conversation
+                </button>
+</div>
+</div>
+</aside>
+<section class="flex-1 overflow-hidden flex flex-col bg-slate-50 dark:bg-background-dark/50">
+<div class="flex-1 overflow-y-auto">
+<div class="max-w-6xl mx-auto p-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="bg-primary/20 text-primary text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-tighter">Module 2.4</span>
+<span class="text-slate-500 dark:text-slate-400 text-sm">• Active Task</span>
+</div>
+<h2 class="text-slate-900 dark:text-white tracking-tight text-3xl font-bold leading-tight">Add a validation rule to Auth service</h2>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center rounded-lg h-11 px-6 bg-primary text-white gap-2 text-sm font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined">check_circle</span>
+                            Finish Task
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<div class="lg:col-span-5 space-y-6">
+<div class="bg-white dark:bg-[#1a2130] border border-slate-200 dark:border-[#282e39] rounded-xl p-6 shadow-sm">
+<div class="flex items-center gap-2 mb-4 text-primary">
+<span class="material-symbols-outlined">fact_check</span>
+<h3 class="text-lg font-bold">Interactive Checklist</h3>
+</div>
+<div class="space-y-3">
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-primary/30 bg-primary/5 cursor-pointer relative overflow-hidden">
+<input checked="" class="mt-1 size-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-[#282e39] dark:border-slate-700" type="checkbox"/>
+<div class="flex flex-col success-confetti">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Locate the validation directory</span>
+<span class="text-xs text-slate-500">Find where Zod schemas are stored.</span>
+</div>
+<span class="absolute right-2 top-2 material-symbols-outlined text-green-500 text-sm">stars</span>
+</label>
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-slate-100 dark:border-[#282e39] bg-white dark:bg-background-dark/30 cursor-pointer hover:border-primary/50 transition-all">
+<input class="mt-1 size-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-[#282e39] dark:border-slate-700" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Define organizational_unit</span>
+<span class="text-xs text-slate-500">Update the registration schema.</span>
+</div>
+</label>
+<label class="group flex items-start gap-4 p-4 rounded-lg border border-slate-100 dark:border-[#282e39] bg-white dark:bg-background-dark/30 cursor-pointer hover:border-primary/50 transition-all">
+<input class="mt-1 size-5 rounded border-slate-300 text-primary focus:ring-primary dark:bg-[#282e39] dark:border-slate-700" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-900 dark:text-white">Run local tests</span>
+<span class="text-xs text-slate-500">Verify the change doesn't break login.</span>
+</div>
+</label>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1a2130] border border-slate-200 dark:border-[#282e39] rounded-xl overflow-hidden shadow-sm">
+<div class="px-5 py-3 border-b border-slate-200 dark:border-[#282e39] bg-slate-50/50 dark:bg-[#1a2130] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-400 text-sm">folder_open</span>
+<h3 class="text-sm font-bold text-slate-900 dark:text-white">File Navigator</h3>
+</div>
+</div>
+<div class="p-1">
+<button class="w-full flex items-center gap-3 p-2 rounded-lg bg-primary/10 border border-primary/30 transition-all group">
+<span class="material-symbols-outlined text-amber-400 text-lg">schema</span>
+<div class="flex flex-col items-start min-w-0">
+<span class="text-xs font-mono text-slate-900 dark:text-slate-200 truncate">src/validators/user.schema.ts</span>
+<span class="text-[9px] text-primary font-bold uppercase">Editing Now</span>
+</div>
+<span class="material-symbols-outlined text-primary ml-auto text-sm">edit</span>
+</button>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#282e39]/50 transition-all group">
+<span class="material-symbols-outlined text-blue-400 text-lg">description</span>
+<div class="flex flex-col items-start min-w-0">
+<span class="text-xs font-mono text-slate-900 dark:text-slate-200 truncate">src/services/auth.service.ts</span>
+<span class="text-[9px] text-slate-400">Context File</span>
+</div>
+</button>
+<button class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#282e39]/50 transition-all group">
+<span class="material-symbols-outlined text-purple-400 text-lg">rule</span>
+<div class="flex flex-col items-start min-w-0">
+<span class="text-xs font-mono text-slate-900 dark:text-slate-200 truncate">tests/auth/validation.test.ts</span>
+<span class="text-[9px] text-slate-400">Reference File</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7 flex flex-col min-h-[500px]">
+<div class="flex-1 bg-editor-bg rounded-xl border border-slate-700/50 flex flex-col overflow-hidden shadow-2xl">
+<div class="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-slate-700/50">
+<div class="flex items-center gap-2">
+<div class="flex gap-1.5 mr-2">
+<div class="size-2.5 rounded-full bg-red-500/50"></div>
+<div class="size-2.5 rounded-full bg-amber-500/50"></div>
+<div class="size-2.5 rounded-full bg-green-500/50"></div>
+</div>
+<span class="text-[11px] font-mono text-slate-400">user.schema.ts — Editing</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[10px] text-slate-500 font-mono">TypeScript</span>
+<span class="material-symbols-outlined text-slate-500 text-sm">settings</span>
+</div>
+</div>
+<div class="flex-1 flex overflow-hidden">
+<div class="w-10 bg-[#0d1117] border-r border-slate-800 flex flex-col items-center pt-4 text-[10px] font-mono text-slate-600 select-none">
+<span>1</span><span>2</span><span>3</span><span class="text-primary font-bold">4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span>
+</div>
+<div class="flex-1 overflow-auto p-4 font-mono text-sm leading-relaxed text-slate-300 relative">
+<div class="opacity-50">import { z } from "zod";</div>
+<div class="opacity-50 mt-2">export const UserRegistrationSchema = z.object({</div>
+<div class="pl-4 opacity-50">email: z.string().email(),</div>
+<div class="code-line-active -mx-4 px-4 py-1 my-1 relative group">
+<span class="text-amber-400">organizational_unit:</span> <span class="text-blue-400">z.string().min(1)</span>,
+<div class="absolute left-[320px] top-0 w-64 translate-y-[-50%] p-3 bg-primary text-white rounded-lg shadow-xl z-10 text-[11px] font-sans leading-snug">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-sm">auto_awesome</span>
+<span class="font-bold">AI Insight</span>
+</div>
+                                            Use <code class="bg-white/20 px-1 rounded">.min(1)</code> instead of just <code class="bg-white/20 px-1 rounded">.nonempty()</code> for better future-proofing in Zod v3+.
+                                            <div class="mt-2 flex justify-end">
+<button class="text-[10px] bg-white/20 hover:bg-white/30 px-2 py-0.5 rounded">Dismiss</button>
+</div>
+</div>
+</div>
+<div class="pl-4 opacity-50">password: z.string().min(8),</div>
+<div class="opacity-50">});</div>
+<div class="absolute bottom-4 right-4 bg-white/5 border border-white/10 rounded-lg p-2 flex items-center gap-2">
+<div class="size-2 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-[10px] text-slate-400 font-sans">AI is monitoring changes...</span>
+</div>
+</div>
+</div>
+<div class="p-3 bg-[#161b22] border-t border-slate-700/50 flex justify-between items-center">
+<div class="flex gap-4">
+<button class="text-[11px] font-bold text-slate-400 hover:text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">history</span>
+                                        Changes (2)
+                                    </button>
+<button class="text-[11px] font-bold text-slate-400 hover:text-white flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">terminal</span>
+                                        Run Tests
+                                    </button>
+</div>
+<button class="px-4 py-1.5 bg-primary rounded text-[11px] font-bold text-white hover:bg-primary/80 transition-colors">
+                                    Commit Snippet
+                                </button>
+</div>
+</div>
+<div class="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-sm">info</span>
+<h4 class="text-xs font-bold uppercase tracking-wider">Why this matters</h4>
+</div>
+<p class="text-[12px] text-slate-600 dark:text-slate-400 leading-normal">
+                                Our authentication layer acts as the source of truth for <b>RBAC (Role-Based Access Control)</b>. Every team's logging depends on this field.
+                            </p>
+</div>
+</div>
+</div>
+<div class="mt-12 pt-6 border-t border-slate-200 dark:border-[#282e39] flex justify-between items-center text-sm text-slate-500">
+<button class="flex items-center gap-2 hover:text-slate-900 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Previous Module
+                    </button>
+<div class="flex items-center gap-6">
+<span class="text-xs italic">Estimated time remaining: 12 min</span>
+<button class="flex items-center gap-2 text-slate-400 cursor-not-allowed">
+                            Next Task
+                            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+
+</body></html>

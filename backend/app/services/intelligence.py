@@ -31,11 +31,13 @@ class CodeIntelligenceService:
             
             # Create a node for the module/file
             module_id = rel_path
+            loc = len(content.splitlines())
             nodes.append(CodeNode(
                 id=module_id,
                 type=NodeType.MODULE,
                 name=os.path.basename(rel_path),
-                path=rel_path
+                path=rel_path,
+                metadata={"loc": loc}
             ))
 
             for node in ast.walk(tree):
