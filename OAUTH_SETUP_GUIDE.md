@@ -19,10 +19,12 @@ Complete guide for setting up Google and GitHub OAuth authentication for the AI 
 3. Fill in:
    - **Application name**: `AI Onboarding Engineer`
    - **Homepage URL**: `http://localhost:5173`
-   - **Authorization callback URL**: 
+   - **Authorization callback URL**:
+
      ```
      https://studio-9620568047-2d6e3.firebaseapp.com/__/auth/handler
      ```
+
 4. Click **Register application**
 5. Copy the **Client ID**
 6. Click **Generate a new client secret** → Copy it
@@ -41,7 +43,8 @@ cd c:\AHS 2026\frontend\ai-onboarding-engineer
 npm run dev
 ```
 
-Visit http://localhost:5173/login and test:
+Visit <http://localhost:5173/login> and test:
+
 - ✅ Google login
 - ✅ GitHub login
 - ✅ Email/Password
@@ -51,17 +54,20 @@ Visit http://localhost:5173/login and test:
 ## 🎨 What Was Implemented
 
 ### Authentication Methods
+
 1. **Google OAuth** - One-click sign-in with Google
 2. **GitHub OAuth** - One-click sign-in with GitHub
 3. **Email/Password** - Traditional signup
 
 ### Updated Components
+
 - `src/context/AuthContext.tsx` - OAuth providers implementation
 - `src/pages/Login.tsx` - Google & GitHub buttons
 - `src/pages/Register.tsx` - Google & GitHub buttons
 - `src/components/layout/Navbar.tsx` - Dynamic auth state (shows user email when logged in)
 
 ### UI Features
+
 - Side-by-side Google & GitHub buttons
 - Official brand colors for OAuth providers
 - Responsive mobile layout
@@ -73,12 +79,14 @@ Visit http://localhost:5173/login and test:
 ## 🔧 Production Deployment
 
 ### Update GitHub OAuth App for Production
+
 1. Create new OAuth App (or update existing)
 2. Update URLs:
    - **Homepage URL**: `https://yourdomain.com`
    - **Callback URL**: Keep Firebase URL or use custom domain
 
 ### Add Production Domain to Firebase
+
 1. Firebase Console → Authentication → Settings → Authorized domains
 2. Add your production domain
 
@@ -89,23 +97,29 @@ Visit http://localhost:5173/login and test:
 ### Google OAuth Issues
 
 **"Access blocked: This app's request is invalid"**
+
 - Ensure support email is set in Firebase Google provider
 
 **"redirect_uri_mismatch"**
+
 - Check authorized domains in Firebase settings
 
 ### GitHub OAuth Issues
 
 **"redirect_uri MUST match"**
+
 - Verify callback URL in GitHub matches:
+
   ```
   https://studio-9620568047-2d6e3.firebaseapp.com/__/auth/handler
   ```
 
 **Popup blocked**
+
 - Allow popups for localhost in browser
 
 **"unauthorized domain"**
+
 - Add `localhost` to Firebase authorized domains
 
 ---
@@ -121,6 +135,7 @@ Visit http://localhost:5173/login and test:
 ## ✅ Verification Checklist
 
 After setup:
+
 - [ ] Google OAuth enabled in Firebase
 - [ ] GitHub OAuth App created
 - [ ] Client ID/Secret added to Firebase
