@@ -120,17 +120,12 @@ class TaskGeneratorAgent:
             # Check if it's a module
             if getattr(node, "type", "") == "module":
                 risk_score = node.metadata.get("risk_score", "low")
-                difficulty_map = {
-                    "low": 2,
-                    "medium": 3,
-                    "high": 4,
-                    "critical": 5
-                }
+                difficulty = self._calculate_difficulty_from_risk(risk_score)
                 
                 modules.append({
                     "path": node.path,
                     "name": node.name,
-                    "difficulty": difficulty_map.get(risk_score, 3),
+                    "difficulty": difficulty,
                     "context": f"Risk Level: {risk_score}. {node.metadata.get('metrics', '')}"
                 })
         
@@ -139,6 +134,12 @@ class TaskGeneratorAgent:
             modules = [{"path": "README.md", "difficulty": 1}]
             
         return await self.generate_task_sequence(modules)
+
+    def _calculate_difficulty_from_risk(self, risk_score: str) -> int:
+        """Derive difficulty from risk score dynamically."""
+        # This allows for future expansion where risk definition changes
+        base_map = {"low": 2, "medium": 3, "high": 4, "critical": 5}
+        return base_map.get(risk_score.lower(), 3)
     
     async def generate_task(
         self,
@@ -467,7 +468,7 @@ class TaskGeneratorAgent:
             success_criteria=result.get("success_criteria", ["Task completed"]),
             hints=hints,
             follow_up_concepts=result.get("follow_up_concepts", []),
-            xp_reward=result.get("difficulty", 2) * 25
+            xp_reward=result.get("xp_reward", result.get("difficulty", 2) * 25)
         )
     
     def _parse_task_type(self, type_str: str) -> TaskType:

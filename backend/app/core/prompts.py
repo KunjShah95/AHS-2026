@@ -353,7 +353,8 @@ def get_task_generation_prompt(
     "hints": [
         {{"hint_number": 1, "hint": "string"}}
     ],
-    "follow_up_concepts": ["concept1", "concept2"]
+    "follow_up_concepts": ["concept1", "concept2"],
+    "xp_reward": 100
 }}
 ```
 

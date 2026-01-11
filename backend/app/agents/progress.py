@@ -144,7 +144,8 @@ class ProgressCoachAgent:
         difficulty: int,
         hints_used: int = 0,
         self_rating: int = 3,
-        concepts_learned: Optional[List[str]] = None
+        concepts_learned: Optional[List[str]] = None,
+        task_xp_reward: int = 0  # Added to support dynamic rewards
     ) -> Dict[str, Any]:
         """
         Record a task completion and update progress.
@@ -171,11 +172,21 @@ class ProgressCoachAgent:
         progress.completed_tasks.append(completion)
         progress.time_spent_hours += time_spent_minutes / 60.0
         
-        # Calculate XP earned
-        base_xp = difficulty * 20
+        # Calculate XP earned based on interaction quality
+        # If task_xp_reward is provided (from AI), use it as base. Otherwise fallback.
+        base_xp = task_xp_reward if task_xp_reward > 0 else (difficulty * 20)
+        
+        # Dynamic adjustments based on interaction
         hint_penalty = hints_used * 5
-        speed_bonus = max(0, (30 - time_spent_minutes)) // 5 * 5  # Bonus for fast completion
-        xp_earned = max(10, base_xp - hint_penalty + speed_bonus)
+        
+        # Complex speed bonus calculation
+        expected_time = difficulty * 15 # rough heuristic
+        time_factor = max(0.5, min(1.5, expected_time / max(1, time_spent_minutes)))
+        speed_bonus = 0
+        if time_factor > 1.2:
+            speed_bonus = base_xp * 0.2
+            
+        xp_earned = int(max(10, base_xp - hint_penalty + speed_bonus))
         progress.total_xp += xp_earned
         
         # Update concept mastery
