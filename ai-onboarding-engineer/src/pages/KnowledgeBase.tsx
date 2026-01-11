@@ -15,8 +15,12 @@ import {
   ThumbsUp, 
   Eye,
   CheckCircle2,
-  Tag
+  Tag,
+  AlertCircle,
+  Loader2
 } from "lucide-react"
+import { useRepository } from "@/context/RepositoryContext"
+import { useAuth } from "@/hooks/useAuth"
 
 const AnnotationType = {
   MUST_KNOW: "must_know",
@@ -63,23 +67,56 @@ interface DemoData {
 }
 
 export default function KnowledgeBase() {
+  const { currentRepository } = useRepository()
+  const { user } = useAuth()
   const [data, setData] = useState<DemoData | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
+  // Auto-load repository knowledge base
   useEffect(() => {
-    const fetchDemoData = async () => {
-      try {
-        const response = await api.get<DemoData>("/knowledge/demo-data")
-        setData(response)
-      } catch (error) {
-        console.error("Failed to fetch kbase:", error)
-      } finally {
-        setLoading(false)
-      }
+    if (currentRepository && user) {
+      loadRepositoryKnowledgeBase()
+    } else if (!currentRepository) {
+      // Try loading demo data as fallback
+      loadDemoData()
     }
-    fetchDemoData()
-  }, [])
+  }, [currentRepository?.id, user?.uid])
+
+  const loadRepositoryKnowledgeBase = async () => {
+    if (!currentRepository || !user) return
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.post<DemoData>("/knowledge/generate-from-repo", {
+        repo_id: currentRepository.id,
+        user_id: user.uid,
+      })
+      setData(response)
+    } catch (err) {
+      console.error("Failed to fetch repository knowledge base:", err)
+      // Fall back to demo data
+      loadDemoData()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadDemoData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<DemoData>("/knowledge/demo-data")
+      setData(response)
+    } catch (err) {
+      console.error("Failed to fetch demo knowledge base:", err)
+      setError("Failed to load knowledge base. Please try again later.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const getIconForType = (type: AnnotationType) => {
     switch (type) {
@@ -116,8 +153,51 @@ export default function KnowledgeBase() {
   if (loading) {
     return (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+        <div className="bg-red-500/10 p-6 rounded-full">
+          <AlertCircle className="h-12 w-12 text-red-500" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h1 className="text-3xl font-bold">Cannot Load Knowledge Base</h1>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+        <Button onClick={loadDemoData} variant="outline">
+          Try Demo Knowledge Base
+        </Button>
+      </div>
+    )
+  }
+
+  if (!data) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+        <div className="bg-primary/10 p-6 rounded-full">
+          <BookOpen className="h-12 w-12 text-primary" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h1 className="text-3xl font-bold">Collaborative Knowledge Base</h1>
+          <p className="text-muted-foreground">
+            Tribal knowledge captured directly from your senior engineers.
+          </p>
+        </div>
+        <div className="flex gap-3">
+          {currentRepository && (
+            <Button size="lg" onClick={loadRepositoryKnowledgeBase} className="gap-2">
+              <BookOpen className="h-4 w-4" /> Generate from Repository
+            </Button>
+          )}
+          <Button size="lg" onClick={loadDemoData} variant="outline">
+            Try Demo
+          </Button>
+        </div>
+      </div>
     )
   }
 

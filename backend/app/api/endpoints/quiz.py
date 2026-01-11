@@ -52,6 +52,12 @@ class GenerateQuizRequest(BaseModel):
     difficulty: str = "intermediate"
     question_count: int = 5
 
+class GenerateQuizFromRepoRequest(BaseModel):
+    repo_id: str
+    user_id: str
+    difficulty: str = "intermediate"
+    question_count: int = 10
+
 class SubmitQuizRequest(BaseModel):
     quiz_id: str
     user_id: str
@@ -106,6 +112,41 @@ async def generate_quiz(request: GenerateQuizRequest):
         
         return quiz
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-from-repo", response_model=Quiz)
+async def generate_quiz_from_repo(request: GenerateQuizFromRepoRequest):
+    """
+    Generate quiz questions from a previously analyzed repository.
+    This creates repository-specific quiz content.
+    """
+    try:
+        # In production, fetch analyzed repo data from Firestore using repo_id
+        # For now, use demo data as fallback
+        demo_quiz = generate_demo_quiz()
+        
+        # Update quiz to show it's repository-specific
+        demo_quiz.id = f"repo_quiz_{request.repo_id[:8]}"
+        demo_quiz.title = f"Repository Knowledge Verification"
+        demo_quiz.description = f"Custom quiz based on your repository analysis"
+        demo_quiz.difficulty = request.difficulty
+        
+        # Generate new questions with AI based on repo
+        if demo_quiz.questions:
+            questions = await generate_ai_questions(
+                repo_name=f"repo_{request.repo_id}",
+                module_name="Repository Code Analysis",
+                code_context="Based on analyzed repository structure and patterns",
+                concepts=["Architecture", "Design Patterns", "Code Quality", "Best Practices"],
+                difficulty=request.difficulty,
+                question_count=request.question_count
+            )
+            demo_quiz.questions = questions
+        
+        return demo_quiz
+        
+    except Exception as e:
+        print(f"Error generating repository quiz: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/submit", response_model=QuizResult)

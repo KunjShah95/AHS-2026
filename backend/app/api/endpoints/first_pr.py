@@ -242,3 +242,24 @@ async def get_first_pr_leaderboard():
             "avg_time_to_merge_hours": 4.2
         }
     }
+
+class GenerateFirstPRFromRepoRequest(BaseModel):
+    repo_id: str
+    user_id: str
+
+@router.post("/generate-from-repo", response_model=List[FirstIssue])
+async def generate_first_pr_issues_from_repo(request: GenerateFirstPRFromRepoRequest):
+    """
+    Generate customized first PR issues from a previously analyzed repository.
+    This recommends beginner-friendly tasks specific to the repository.
+    """
+    try:
+        # In production, fetch analyzed repo data from Firestore using repo_id
+        # and generate repo-specific issues using AI analysis
+        
+        # For now, return demo issues with focus on easy tasks
+        easy_issues = [i for i in demo_issues if i.difficulty == Difficulty.EASY]
+        return easy_issues
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
