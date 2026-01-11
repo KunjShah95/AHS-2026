@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { api } from "@/lib/api"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { CheckCircle2, XCircle, BrainCircuit, Trophy, Timer } from "lucide-react"
+import { CheckCircle2, XCircle, BrainCircuit, Trophy, Timer, AlertCircle } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useRepository } from "@/context/RepositoryContext"
 
 interface QuizQuestion {
   id: string
@@ -25,6 +27,8 @@ interface Quiz {
   time_limit_minutes: number
   passing_score: number
   difficulty: "beginner" | "intermediate" | "advanced"
+  repo_id?: string
+  repo_name?: string
 }
 
 interface QuizResult {
@@ -39,15 +43,50 @@ interface QuizResult {
   }>
 }
 
-import { useAuth } from "@/hooks/useAuth"
-
 export default function QuizPage() {
   const { user } = useAuth()
+  const { currentRepository } = useRepository()
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [result, setResult] = useState<QuizResult | null>(null)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Auto-load repository quiz if available
+  useEffect(() => {
+    if (currentRepository && !quiz) {
+      loadRepositoryQuiz()
+    }
+  }, [currentRepository?.id])
+
+  const loadRepositoryQuiz = async () => {
+    if (!currentRepository || !user) {
+      setError("No repository selected. Please analyze a repository first.")
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await api.post<Quiz>("/quiz/generate-from-repo", {
+        repo_id: currentRepository.id,
+        user_id: user.uid,
+        difficulty: "intermediate",
+      })
+      setQuiz(data)
+      // Reset state
+      setCurrentQuestionIndex(0)
+      setAnswers({})
+      setResult(null)
+    } catch (err) {
+      console.error("Failed to load repository quiz:", err)
+      // Fall back to demo quiz
+      loadDemoQuiz()
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const loadDemoQuiz = async () => {
     setLoading(true)
@@ -60,6 +99,7 @@ export default function QuizPage() {
       setResult(null)
     } catch (error) {
       console.error("Failed to load quiz:", error)
+      setError("Failed to load quiz. Please try again later.")
     } finally {
       setLoading(false)
     }
@@ -109,6 +149,23 @@ export default function QuizPage() {
     )
   }
 
+  if (error && !quiz) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+        <div className="bg-red-500/10 p-6 rounded-full">
+          <AlertCircle className="h-12 w-12 text-red-500" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h1 className="text-3xl font-bold">Cannot Load Quiz</h1>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+        <Button size="lg" onClick={loadDemoQuiz} variant="outline">
+          Try Demo Quiz
+        </Button>
+      </div>
+    )
+  }
+
   if (!quiz) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
@@ -121,9 +178,16 @@ export default function QuizPage() {
             Prove your mastery of the codebase. AI-generated quizzes adapt to your learning path.
           </p>
         </div>
-        <Button size="lg" onClick={loadDemoQuiz} className="gap-2">
-          Start Assessment <Trophy className="h-4 w-4" />
-        </Button>
+        <div className="flex gap-3">
+          {currentRepository && (
+            <Button size="lg" onClick={loadRepositoryQuiz} className="gap-2">
+              Generate Repository Quiz <Trophy className="h-4 w-4" />
+            </Button>
+          )}
+          <Button size="lg" onClick={loadDemoQuiz} variant="outline" className="gap-2">
+            Demo Assessment <Trophy className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     )
   }

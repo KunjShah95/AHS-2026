@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import { api } from "@/lib/api"
 import { useAuth } from "@/hooks/useAuth"
 import { saveRepoAnalysis } from "@/lib/db"
+import { useRepository } from "@/context/RepositoryContext"
 
 export default function RepoAnalysis() {
   const [repoUrl, setRepoUrl] = useState("")
@@ -15,6 +16,7 @@ export default function RepoAnalysis() {
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { selectRepository, refreshRepositories } = useRepository()
 
   const handleAnalyze = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,10 +40,28 @@ export default function RepoAnalysis() {
         });
 
         // Save analysis directly to Firestore
-        await saveRepoAnalysis(user.uid, repoUrl, response);
+        const analysisId = await saveRepoAnalysis(user.uid, repoUrl, response);
         
-        // Navigate to roadmap with data (or rely on fetching from DB in next page)
-        // For now, let's pass state
+        // Refresh repository list and select this repository
+        await refreshRepositories();
+        
+        // Also update context by selecting the new repository
+        const newAnalysis = {
+          id: analysisId,
+          userId: user.uid,
+          repoUrl,
+          repoName,
+          data: response,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          lastAccessedAt: new Date().toISOString(),
+          status: 'completed' as const,
+          isFavorite: false,
+        };
+        
+        await selectRepository(newAnalysis as any);
+        
+        // Navigate to roadmap
         navigate("/roadmap", { state: { analysisData: response, repoUrl: repoUrl } })
 
     } catch (err: unknown) {
