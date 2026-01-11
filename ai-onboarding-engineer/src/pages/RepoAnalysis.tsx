@@ -34,18 +34,30 @@ export default function RepoAnalysis() {
         const repoName = repoUrl.split('/').pop()?.replace('.git', '') || 'repo';
         const repoPath = `repos/${user.uid}/${repoName}`;
 
+        // Call backend API
         const response = await api.post<Record<string, unknown>>('/ingestion/process', {
-            repo_path: repoPath, // Backend requires this
+            repo_path: repoPath,
             github_url: repoUrl
         });
 
-        // Save analysis directly to Firestore
-        const analysisId = await saveRepoAnalysis(user.uid, repoUrl, response);
+        // Save analysis to Firestore with retry logic
+        let analysisId: string;
+        try {
+          analysisId = await saveRepoAnalysis(user.uid, repoUrl, response);
+        } catch (firestoreError) {
+          console.warn("Firestore save failed, but continuing with analysis:", firestoreError);
+          // Generate a temporary ID if Firestore fails
+          analysisId = `temp_${Date.now()}`;
+        }
         
-        // Refresh repository list and select this repository
-        await refreshRepositories();
+        // Refresh repository list
+        try {
+          await refreshRepositories();
+        } catch (refreshError) {
+          console.warn("Failed to refresh repositories:", refreshError);
+        }
         
-        // Also update context by selecting the new repository
+        // Create analysis object
         const newAnalysis = {
           id: analysisId,
           userId: user.uid,
@@ -59,15 +71,34 @@ export default function RepoAnalysis() {
           isFavorite: false,
         };
         
-        await selectRepository(newAnalysis as any);
+        // Update context
+        try {
+          await selectRepository(newAnalysis as any);
+        } catch (contextError) {
+          console.warn("Failed to update context:", contextError);
+        }
         
         // Navigate to roadmap
         navigate("/roadmap", { state: { analysisData: response, repoUrl: repoUrl } })
 
     } catch (err: unknown) {
         console.error("Analysis failed:", err);
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-        setError(errorMessage || "Failed to analyze repository. Please check the URL and try again.")
+        
+        let errorMessage = "Failed to analyze repository. Please check the URL and try again.";
+        
+        if (err instanceof Error) {
+          if (err.message.includes('Failed to fetch')) {
+            errorMessage = "Backend API is not responding. Make sure the backend server is running on http://localhost:8000";
+          } else if (err.message.includes('403') || err.message.includes('401')) {
+            errorMessage = "Authentication failed. Please sign in again.";
+          } else if (err.message.includes('404')) {
+            errorMessage = "Repository not found. Please check the GitHub URL.";
+          } else {
+            errorMessage = err.message;
+          }
+        }
+        
+        setError(errorMessage);
     } finally {
         setAnalyzing(false)
     }

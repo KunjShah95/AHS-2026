@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { SavedAnalysis } from '@/lib/db';
 import { getAllUserAnalyses, updateLastAccessed } from '@/lib/db';
 import { useAuth } from '@/hooks/useAuth';
