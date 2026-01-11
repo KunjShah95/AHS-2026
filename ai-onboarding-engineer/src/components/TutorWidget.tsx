@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { MessageSquare, X, Send, Bot } from "lucide-react"
+import { X, Send, Brain } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 export function TutorWidget() {
@@ -40,7 +40,7 @@ export function TutorWidget() {
             <Card className="border-primary/20 shadow-2xl shadow-primary/10">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 bg-primary/5 rounded-t-xl">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
-                  <Bot className="h-4 w-4 text-primary" />
+                  <Brain className="h-4 w-4 text-primary" />
                   AI Onboarding Tutor
                 </CardTitle>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsOpen(false)}>
@@ -87,10 +87,10 @@ export function TutorWidget() {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         size="lg"
-        className="h-12 w-12 rounded-full shadow-lg shadow-primary/20 animate-bounce"
-        variant={isOpen ? "secondary" : "default"}
+        className="h-14 w-14 rounded-full border border-primary/20 bg-black/80 backdrop-blur-sm shadow-[0_0_30px_-5px_hsl(var(--primary)/_0.5)] hover:shadow-[0_0_30px_-5px_hsl(var(--primary)/_0.8)] hover:bg-black/90 p-0 transition-all duration-300"
       >
-        <MessageSquare className="h-6 w-6" />
+        <div className="absolute inset-0 rounded-full bg-primary/10 animate-pulse" />
+        <Brain className="h-7 w-7 text-primary relative z-10" />
       </Button>
     </div>
   )

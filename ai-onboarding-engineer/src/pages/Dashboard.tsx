@@ -1,17 +1,40 @@
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, Clock, Flame, LayoutDashboard, Trophy, Loader2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { 
+  CheckCircle2, 
+  Circle, 
+  Clock, 
+  Flame, 
+  Trophy, 
+  Loader2, 
+  Search,
+  Zap,
+  TrendingUp,
+  FolderGit2
+} from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
 import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import SavedRepos from "@/components/SavedRepos"
+import { getUserTokenStats, getAllUserAnalyses } from "@/lib/db"
+
+interface TokenStats {
+  totalTokensUsed: number
+  totalCost: number
+  analysisCount: number
+}
 
 export default function Dashboard() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(true)
-  // TODO: This will become useState when Firebase integration is complete
+  const [tokenStats, setTokenStats] = useState<TokenStats>({ totalTokensUsed: 0, totalCost: 0, analysisCount: 0 })
+  const [repoCount, setRepoCount] = useState(0)
+  
   const stats = {
-    readinessScore: 0,
-    modulesExplored: 0,
+    readinessScore: Math.min(100, repoCount * 15), // Gamification: more repos = higher readiness
+    modulesExplored: repoCount,
     totalModules: 0,
     tasksCompleted: 0,
     timeSpent: 0,
@@ -19,17 +42,23 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    // TODO: Fetch user's dashboard data from Firebase
-    // For now, show empty state
     const fetchDashboardData = async () => {
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        return
+      }
       
       try {
-        // const data = await getUserDashboardData(user.uid)
-        // setStats(data)
-        setLoading(false)
+        // Fetch token stats and repo count in parallel
+        const [stats, analyses] = await Promise.all([
+          getUserTokenStats(user.uid),
+          getAllUserAnalyses(user.uid)
+        ])
+        setTokenStats(stats)
+        setRepoCount(analyses.length)
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
+      } finally {
         setLoading(false)
       }
     }
@@ -66,7 +95,11 @@ export default function Dashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back, {user?.displayName || user?.email || "Developer"}! Start analyzing a repository to begin your learning journey.
+            Welcome back, {user?.displayName || user?.email || "Developer"}! 
+            {repoCount === 0 
+              ? " Start analyzing a repository to begin your learning journey."
+              : ` You've analyzed ${repoCount} ${repoCount === 1 ? 'repository' : 'repositories'}.`
+            }
           </p>
         </div>
         <div className="flex gap-2">
@@ -85,16 +118,25 @@ export default function Dashboard() {
 
       <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <motion.div variants={item}>
-            <Card>
+            <Card className="relative overflow-hidden">
+                {/* Gradient accent */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary via-primary to-purple-500" />
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Readiness Score</CardTitle>
                     <Trophy className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.readinessScore}%</div>
-                    <p className="text-xs text-muted-foreground">Track your progress by exploring modules</p>
+                    <p className="text-xs text-muted-foreground">
+                      {repoCount > 0 ? "Based on your analyzed repos" : "Track your progress by exploring modules"}
+                    </p>
                     <div className="mt-4 h-2 w-full bg-secondary rounded-full overflow-hidden">
-                        <div className="h-full bg-primary transition-all" style={{ width: `${stats.readinessScore}%` }} />
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${stats.readinessScore}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          className="h-full bg-linear-to-r from-primary to-purple-500" 
+                        />
                     </div>
                 </CardContent>
             </Card>
@@ -103,12 +145,17 @@ export default function Dashboard() {
         <motion.div variants={item}>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Modules Explored</CardTitle>
-                    <LayoutDashboard className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">Repositories Analyzed</CardTitle>
+                    <FolderGit2 className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.modulesExplored}/{stats.totalModules || "—"}</div>
-                    <p className="text-xs text-muted-foreground">Start analyzing a repo to explore modules</p>
+                    <div className="text-2xl font-bold">{repoCount}</div>
+                    <p className="text-xs text-muted-foreground">
+                      {repoCount > 0 
+                        ? `${tokenStats.analysisCount} total analyses` 
+                        : "Start analyzing a repo to explore modules"
+                      }
+                    </p>
                 </CardContent>
             </Card>
         </motion.div>
@@ -116,31 +163,84 @@ export default function Dashboard() {
         <motion.div variants={item}>
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Tasks Completed</CardTitle>
-                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">AI Tokens Used</CardTitle>
+                    <Zap className="h-4 w-4 text-amber-400" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{stats.tasksCompleted}</div>
-                    <p className="text-xs text-muted-foreground">Complete tasks to build expertise</p>
+                    <div className="text-2xl font-bold">
+                      {tokenStats.totalTokensUsed > 0 
+                        ? `${(tokenStats.totalTokensUsed / 1000).toFixed(1)}K`
+                        : "0"
+                      }
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {tokenStats.totalCost > 0 
+                        ? `~$${tokenStats.totalCost.toFixed(4)} estimated cost`
+                        : "Token usage will appear here"
+                      }
+                    </p>
                 </CardContent>
             </Card>
         </motion.div>
 
         <motion.div variants={item}>
-            <Card>
+          <Link to="/analysis">
+            <Card className="cursor-pointer hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 h-full">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Get Started</CardTitle>
-                    <Circle className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium">
+                      {repoCount > 0 ? "Analyze More" : "Get Started"}
+                    </CardTitle>
+                    <Search className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-base font-medium">Analyze Your First Repo</div>
-                    <p className="text-xs text-muted-foreground mt-1">Start your onboarding journey</p>
-                    <div className="mt-2">
-                        <Badge variant="outline" className="text-[10px] h-5">Ready to Start</Badge>
+                    <div className="text-base font-medium">
+                      {repoCount > 0 ? "Add Another Repo" : "Analyze Your First Repo"}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {repoCount > 0 ? "Continue building your knowledge" : "Start your onboarding journey"}
+                    </p>
+                    <div className="mt-3">
+                        <Button size="sm" className="gap-2">
+                            <TrendingUp className="h-3 w-3" />
+                            {repoCount > 0 ? "New Analysis" : "Analyze Repo"}
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
+          </Link>
         </motion.div>
+      </motion.div>
+
+      {/* Saved Repositories Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Card className="border-white/10 bg-card/50">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <FolderGit2 className="h-5 w-5 text-primary" />
+                Your Repositories
+              </CardTitle>
+              <CardDescription>
+                All your analyzed codebases in one place
+              </CardDescription>
+            </div>
+            {repoCount > 0 && (
+              <Link to="/analysis">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Search className="h-3 w-3" />
+                  Analyze New
+                </Button>
+              </Link>
+            )}
+          </CardHeader>
+          <CardContent>
+            <SavedRepos />
+          </CardContent>
+        </Card>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

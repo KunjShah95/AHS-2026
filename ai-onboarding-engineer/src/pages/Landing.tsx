@@ -166,12 +166,21 @@ export default function Landing() {
       </section>
 
       {/* --- SOCIAL PROOF STRIP --- */}
-      <div className="w-full border-y border-white/5 bg-black/20 backdrop-blur-sm py-8">
-        <div className="max-w-7xl mx-auto px-6 flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-          {/* Placeholder Logos - Font based for now */}
-          {['ACME Corp', 'Stripe', 'Vercel', 'Linear', 'Raycast'].map(brand => (
-            <span key={brand} className="text-xl font-display font-semibold tracking-wider">{brand}</span>
-          ))}
+      <div className="w-full border-y border-white/5 bg-black/20 backdrop-blur-sm py-8 overflow-hidden">
+        <div className="flex relative">
+           <motion.div 
+             className="flex gap-16 items-center whitespace-nowrap min-w-full"
+             animate={{ x: ["0%", "-50%"] }}
+             transition={{ duration: 30, ease: "linear", repeat: Infinity }}
+           >
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="flex gap-16 items-center opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                  {['ACME Corp', 'Stripe', 'Vercel', 'Linear', 'Raycast', 'OpenAI', 'Anthropic', 'Supabase'].map(brand => (
+                    <span key={brand} className="text-xl font-display font-semibold tracking-wider">{brand}</span>
+                  ))}
+                </div>
+              ))}
+           </motion.div>
         </div>
       </div>
 
@@ -241,6 +250,9 @@ export default function Landing() {
            </div>
         </div>
       </section>
+
+      {/* --- PRICING SECTION --- */}
+
 
       {/* --- CTA --- */}
       <section className="py-32 relative overflow-hidden">

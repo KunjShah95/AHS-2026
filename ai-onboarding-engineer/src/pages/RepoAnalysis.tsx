@@ -42,7 +42,7 @@ export default function RepoAnalysis() {
         
         // Navigate to roadmap with data (or rely on fetching from DB in next page)
         // For now, let's pass state
-        navigate("/roadmap", { state: { analysisData: response } })
+        navigate("/roadmap", { state: { analysisData: response, repoUrl: repoUrl } })
 
     } catch (err: unknown) {
         console.error("Analysis failed:", err);
