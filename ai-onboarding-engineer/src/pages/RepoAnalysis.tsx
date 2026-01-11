@@ -34,7 +34,6 @@ export default function RepoAnalysis() {
         const repoName = repoUrl.split('/').pop()?.replace('.git', '') || 'repo';
         const repoPath = `repos/${user.uid}/${repoName}`;
 
-<<<<<<< HEAD
         // Call backend API
         const response = await api.post<Record<string, unknown>>('/ingestion/process', {
             repo_path: repoPath,
@@ -59,21 +58,7 @@ export default function RepoAnalysis() {
         }
         
         // Create analysis object
-=======
-        const response = await api.post<Record<string, unknown>>('/ingestion/process', {
-            repo_path: repoPath, // Backend requires this
-            github_url: repoUrl
-        });
-
-        // Save analysis directly to Firestore
-        const analysisId = await saveRepoAnalysis(user.uid, repoUrl, response);
-        
-        // Refresh repository list and select this repository
-        await refreshRepositories();
-        
-        // Also update context by selecting the new repository
->>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
-        const newAnalysis = {
+        const newAnalysis: Parameters<typeof selectRepository>[0] = {
           id: analysisId,
           userId: user.uid,
           repoUrl,
@@ -86,23 +71,18 @@ export default function RepoAnalysis() {
           isFavorite: false,
         };
         
-<<<<<<< HEAD
         // Update context
         try {
-          await selectRepository(newAnalysis as any);
+          selectRepository(newAnalysis);
         } catch (contextError) {
           console.warn("Failed to update context:", contextError);
         }
-=======
-        await selectRepository(newAnalysis as any);
->>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
         
         // Navigate to roadmap
         navigate("/roadmap", { state: { analysisData: response, repoUrl: repoUrl } })
 
     } catch (err: unknown) {
         console.error("Analysis failed:", err);
-<<<<<<< HEAD
         
         let errorMessage = "Failed to analyze repository. Please check the URL and try again.";
         
@@ -119,10 +99,6 @@ export default function RepoAnalysis() {
         }
         
         setError(errorMessage);
-=======
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-        setError(errorMessage || "Failed to analyze repository. Please check the URL and try again.")
->>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
     } finally {
         setAnalyzing(false)
     }
