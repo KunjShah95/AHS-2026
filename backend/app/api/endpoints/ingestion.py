@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from app.agents.repository_ingestion import RepositoryIngestionAgent
 from app.agents.code_intelligence import CodeIntelligenceAgent
 from app.agents.learning_graph import LearningGraphContextAgent
-from app.agents.task_generation import TaskGenerationAgent
+from app.agents.task_generation import TaskGeneratorAgent
 
 router = APIRouter()
 
@@ -34,8 +34,8 @@ async def process_repository(request: IngestRequest):
         learning_path = learning_agent.generate_roadmap(code_graph)
         
         # Agent 4: Tasks
-        task_agent = TaskGenerationAgent()
-        tasks = task_agent.generate_tasks(code_graph)
+        task_agent = TaskGeneratorAgent()
+        tasks = await task_agent.generate_tasks(code_graph)
         
         return {
             "status": "success",

@@ -2,9 +2,34 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { AlertCircle, ArrowRight, CheckCircle2, Layers, Loader2, Network } from "lucide-react"
+import { AlertCircle, ArrowRight, CheckCircle2, Layers, Loader2, Network, FileCode, Box, Database, Server } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
+import { useLocation } from "react-router-dom"
+import { getUserLatestRoadmap } from "@/lib/db"
 import type { LucideIcon } from "lucide-react"
+
+// Types matching the backend response
+interface BackendCodeNode {
+  id: string
+  type: string
+  name: string
+  path: string
+  metadata: {
+    risk_score?: string
+    [key: string]: unknown
+  }
+}
+
+interface BackendGraphEdge {
+  source: string
+  target: string
+  type: string
+}
+
+interface BackendCodeGraph {
+  nodes: BackendCodeNode[]
+  edges: BackendGraphEdge[]
+}
 
 interface Module {
   id: string
@@ -14,19 +39,22 @@ interface Module {
   y: number
   details: string
   risk: string
+  path: string
+  type: string
 }
 
 interface Connection {
   from: string
   to: string
+  type: string
 }
 
 export default function Architecture() {
   const { user } = useAuth()
+  const location = useLocation()
   const [loading, setLoading] = useState(true)
-  // TODO: These will become useState when Firebase integration is complete
-  const modules: Module[] = []
-  const connections: Connection[] = []
+  const [modules, setModules] = useState<Module[]>([])
+  const [connections, setConnections] = useState<Connection[]>([])
   const [selectedModule, setSelectedModule] = useState<Module | null>(null)
 
   useEffect(() => {
@@ -37,20 +65,74 @@ export default function Architecture() {
       }
 
       try {
-        // TODO: Fetch architecture data from Firebase for the user's current repository
-        // const architecture = await getArchitectureForUser(user.uid)
-        // setModules(architecture.modules)
-        // setConnections(architecture.connections)
-        // setSelectedModule(architecture.modules[0])
-        setLoading(false)
+        let codeGraph: BackendCodeGraph | null = null;
+
+        // 1. Try to get data from navigation state
+        if (location.state?.analysisData?.data?.code_graph) {
+          codeGraph = location.state.analysisData.data.code_graph
+        } 
+        // 2. Fallback: Fetch latest analysis from DB
+        else {
+           const latestAnalysis = await getUserLatestRoadmap(user.uid)
+           if (latestAnalysis?.data?.code_graph) {
+              codeGraph = latestAnalysis.data.code_graph as BackendCodeGraph
+           }
+        }
+
+        if (codeGraph) {
+          processGraph(codeGraph)
+        }
       } catch (error) {
         console.error("Error loading architecture:", error)
+      } finally {
         setLoading(false)
       }
     }
 
     loadArchitecture()
-  }, [user])
+  }, [user, location.state])
+
+  const processGraph = (graph: BackendCodeGraph) => {
+    // Simple Circular Layout
+    const centerX = 400
+    const centerY = 350
+    const radius = 250
+    const nodeCount = graph.nodes.length
+    
+    const processedModules: Module[] = graph.nodes.map((node, index) => {
+      const angle = (index / nodeCount) * 2 * Math.PI
+      
+      // Determine Icon
+      let Icon = FileCode
+      if (node.name.includes("api") || node.name.includes("server")) Icon = Server
+      if (node.name.includes("db") || node.name.includes("store")) Icon = Database
+      if (node.type === "class") Icon = Box
+
+      return {
+        id: node.id,
+        label: node.name,
+        icon: Icon,
+        x: centerX + radius * Math.cos(angle),
+        y: centerY + radius * Math.sin(angle),
+        details: `Path: ${node.path}`, // In a real app, this would be the AI summary
+        risk: node.metadata.risk_score || "unknown",
+        path: node.path,
+        type: node.type
+      }
+    })
+
+    const processedConnections: Connection[] = graph.edges.map(edge => ({
+      from: edge.source,
+      to: edge.target,
+      type: edge.type
+    }))
+
+    setModules(processedModules)
+    setConnections(processedConnections)
+    if (processedModules.length > 0) {
+      setSelectedModule(processedModules[0])
+    }
+  }
 
   if (loading) {
     return (
@@ -78,19 +160,22 @@ export default function Architecture() {
       <div className="flex-1 rounded-3xl border border-white/10 bg-card/30 backdrop-blur-sm relative overflow-hidden group">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff05_1px,transparent_1px)] bg-size-[16px_16px]" />
         
-        <div className="relative w-full h-full min-h-[500px] flex items-center justify-center">
-            <svg className="absolute inset-0 pointer-events-none w-full h-full">
+        <div className="relative w-full h-full min-h-[500px] flex items-center justify-center overflow-auto">
+            <svg className="absolute inset-0 pointer-events-none w-full h-full min-w-[800px] min-h-[800px]">
               {connections.map((conn, idx) => {
-                const from = modules.find(m => m.id === conn.from)!
-                const to = modules.find(m => m.id === conn.to)!
+                const from = modules.find(m => m.id === conn.from)
+                const to = modules.find(m => m.id === conn.to)
+                
+                if (!from || !to) return null
+
                 return (
                   <motion.line 
                     key={idx}
                     x1={from.x} y1={from.y}
                     x2={to.x} y2={to.y}
                     stroke="currentColor"
-                    strokeWidth="2"
-                    className="text-border"
+                    strokeWidth="1.5"
+                    className="text-white/20"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 0.3 }}
                     transition={{ duration: 1, delay: 0.5 }}
@@ -104,7 +189,7 @@ export default function Architecture() {
                 <motion.button
                   key={mod.id}
                   onClick={() => setSelectedModule(mod)}
-                  className={`absolute p-4 rounded-xl border backdrop-blur-md transition-all duration-300 w-40 flex flex-col items-center gap-2 group/node
+                  className={`absolute p-4 rounded-xl border backdrop-blur-md transition-all duration-300 w-40 flex flex-col items-center gap-2 group/node z-10
                     ${selectedModule?.id === mod.id 
                       ? "bg-primary text-primary-foreground border-primary shadow-[0_0_30px_-5px_hsl(var(--primary))]" 
                       : "bg-card border-border hover:border-primary/50"
@@ -116,7 +201,7 @@ export default function Architecture() {
                   whileHover={{ scale: 1.05 }}
                 >
                   <mod.icon className="w-8 h-8" />
-                  <span className="font-semibold text-sm">{mod.label}</span>
+                  <span className="font-semibold text-sm truncate w-full text-center" title={mod.label}>{mod.label}</span>
                   
                   {mod.risk === "safe" && <span className="absolute -top-2 -right-2 w-3 h-3 bg-green-500 rounded-full box-content border-2 border-background" />}
                   {mod.risk === "critical" && <span className="absolute -top-2 -right-2 w-3 h-3 bg-red-500 rounded-full box-content border-2 border-background" />}
@@ -126,7 +211,7 @@ export default function Architecture() {
         </div>
 
         <div className="absolute bottom-4 left-4 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded backdrop-blur border border-white/5">
-          Graphical View • 80% Zoom
+          Visualized from Codebase Analysis
         </div>
       </div>
 
@@ -149,49 +234,52 @@ export default function Architecture() {
                    </div>
                    <Badge variant={
                       selectedModule.risk === 'critical' ? 'destructive' : 
-                      selectedModule.risk === 'moderate' ? 'default' : 
-                      'secondary'
-                   }>
-                      {selectedModule.risk === 'safe' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                      selectedModule.risk === 'moderate' || selectedModule.risk === 'high' ? 'destructive' : 
+                      'outline'
+                   } className={selectedModule.risk === 'safe' || selectedModule.risk === 'low' ? 'text-green-500 border-green-500/50' : ''}>
+                      {selectedModule.risk === 'safe' || selectedModule.risk === 'low' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
                       {selectedModule.risk.toUpperCase()}
                    </Badge>
                 </div>
-                <CardTitle className="mt-4 text-2xl">{selectedModule.label}</CardTitle>
-                <CardDescription>Module ID: {selectedModule.id}</CardDescription>
+                <CardTitle className="mt-4 text-2xl truncate" title={selectedModule.label}>{selectedModule.label}</CardTitle>
+                <CardDescription className="line-clamp-2" title={selectedModule.id}>{selectedModule.id}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="text-sm font-medium mb-1 text-muted-foreground">Responsibility</h4>
-                  <p className="text-sm leading-relaxed">{selectedModule.details}</p>
+                  <h4 className="text-sm font-medium mb-1 text-muted-foreground">About</h4>
+                  <p className="text-sm leading-relaxed font-mono bg-muted/50 p-2 rounded break-all">
+                    {selectedModule.path}
+                  </p>
                 </div>
                 
                 <div>
-                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Dependencies</h4>
+                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Outgoing Dependencies</h4>
                   <div className="flex flex-wrap gap-2">
-                     {connections.filter(c => c.from === selectedModule.id).map(c => (
-                       <Badge key={c.to} variant="outline" className="pl-1">
+                     {connections.filter(c => c.from === selectedModule.id).map((c, i) => (
+                       <Badge key={i} variant="outline" className="pl-1">
                           <ArrowRight className="w-3 h-3 mr-1 opacity-50" />
-                          {modules.find(m => m.id === c.to)?.label}
+                          {modules.find(m => m.id === c.to)?.label || c.to}
                        </Badge>
                      ))}
                      {connections.filter(c => c.from === selectedModule.id).length === 0 && (
-                       <span className="text-xs text-muted-foreground italic">None</span>
+                       <span className="text-xs text-muted-foreground italic">No outgoing dependencies</span>
                      )}
                   </div>
                 </div>
 
-                 <div>
-                  <h4 className="text-sm font-medium mb-2 text-muted-foreground">Key Files</h4>
-                  <div className="space-y-1">
-                     <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
-                        <Layers className="w-3 h-3" />
-                        src/{selectedModule.id}/index.ts
-                     </div>
-                     <div className="flex items-center gap-2 text-xs font-mono bg-secondary/50 p-2 rounded border border-white/5 cursor-pointer hover:bg-secondary transition-colors">
-                        <Layers className="w-3 h-3" />
-                        src/{selectedModule.id}/types.ts
-                     </div>
-                  </div>
+                <div>
+                   <h4 className="text-sm font-medium mb-2 text-muted-foreground">Incoming References</h4>
+                   <div className="flex flex-wrap gap-2">
+                     {connections.filter(c => c.to === selectedModule.id).map((c, i) => (
+                       <Badge key={i} variant="secondary" className="pl-1">
+                          <Layers className="w-3 h-3 mr-1 opacity-50" />
+                          {modules.find(m => m.id === c.from)?.label || c.from}
+                       </Badge>
+                     ))}
+                     {connections.filter(c => c.to === selectedModule.id).length === 0 && (
+                        <span className="text-xs text-muted-foreground italic">No incoming references</span>
+                     )}
+                   </div>
                 </div>
               </CardContent>
             </Card>

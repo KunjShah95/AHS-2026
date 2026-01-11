@@ -12,10 +12,23 @@ class RepositoryIngestionAgent:
         self.vertex = get_vertex_client()
 
     def clone_repository(self, repo_url: str, target_dir: str) -> str:
-        """Clones a repository to a target directory."""
+        """Clones a repository to a target directory using PAT if available."""
         if os.path.exists(target_dir):
             return target_dir
-        git.Repo.clone_from(repo_url, target_dir)
+            
+        # Inject PAT for authentication if it's a GitHub URL
+        github_pat = os.getenv('GITHUB_PAT')
+        if github_pat and 'github.com' in repo_url:
+            # Handle standard https://github.com/user/repo format
+            if repo_url.startswith('https://github.com/'):
+                auth_url = repo_url.replace('https://github.com/', f'https://{github_pat}@github.com/')
+            else:
+                 # Fallback/General replacement
+                 auth_url = repo_url.replace('github.com', f'{github_pat}@github.com')
+        else:
+            auth_url = repo_url
+
+        git.Repo.clone_from(auth_url, target_dir)
         return target_dir
 
     def parse_file_tree(self, root_path: str) -> List[Dict]:
