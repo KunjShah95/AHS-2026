@@ -1,7 +1,12 @@
-import { useRepository } from '@/context/RepositoryContext';
+import { useContext } from 'react';
+import { RepositoryContext } from '@/context/repositoryContextDef';
 
-export const useRepositoryContext = () => {
-  return useRepository();
+export const useRepository = () => {
+  const context = useContext(RepositoryContext);
+  if (context === undefined) {
+    throw new Error('useRepository must be used within RepositoryProvider');
+  }
+  return context;
 };
 
 // Helper hook to get current repository data

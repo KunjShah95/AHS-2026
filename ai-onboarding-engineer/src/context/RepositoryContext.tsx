@@ -1,19 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { SavedAnalysis } from '@/lib/db';
 import { getAllUserAnalyses, updateLastAccessed } from '@/lib/db';
 import { useAuth } from '@/hooks/useAuth';
-
-interface RepositoryContextType {
-  currentRepository: SavedAnalysis | null;
-  recentRepositories: SavedAnalysis[];
-  selectRepository: (repo: SavedAnalysis) => void;
-  loading: boolean;
-  error: string | null;
-  refreshRepositories: () => Promise<void>;
-  clearCurrentRepository: () => void;
-}
-
-const RepositoryContext = createContext<RepositoryContextType | undefined>(undefined);
+import { RepositoryContext } from './repositoryContextDef';
 
 export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
@@ -50,7 +39,7 @@ export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     loadRepositories();
-  }, [user]);
+  }, [currentRepository, user]);
 
   const selectRepository = async (repo: SavedAnalysis) => {
     try {
@@ -98,13 +87,3 @@ export const RepositoryProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     </RepositoryContext.Provider>
   );
 };
-
-export const useRepository = () => {
-  const context = useContext(RepositoryContext);
-  if (context === undefined) {
-    throw new Error('useRepository must be used within RepositoryProvider');
-  }
-  return context;
-};
-
-

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { api } from "@/lib/api"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { CheckCircle2, XCircle, BrainCircuit, Trophy, Timer, AlertCircle } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
-import { useRepository } from "@/context/RepositoryContext"
+import { useRepository } from "@/hooks/useRepository"
 
 interface QuizQuestion {
   id: string
@@ -53,14 +53,23 @@ export default function QuizPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Auto-load repository quiz if available
-  useEffect(() => {
-    if (currentRepository && !quiz) {
-      loadRepositoryQuiz()
+  const loadDemoQuiz = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await api.get<Quiz>("/quiz/demo-quiz")
+      setQuiz(data)
+      setCurrentQuestionIndex(0)
+      setAnswers({})
+      setResult(null)
+    } catch (error) {
+      console.error("Failed to load quiz:", error)
+      setError("Failed to load quiz. Please try again later.")
+    } finally {
+      setLoading(false)
     }
-  }, [currentRepository?.id])
+  }, [setLoading, setQuiz, setCurrentQuestionIndex, setAnswers, setResult, setError])
 
-  const loadRepositoryQuiz = async () => {
+  const loadRepositoryQuiz = useCallback(async () => {
     if (!currentRepository || !user) {
       setError("No repository selected. Please analyze a repository first.")
       return
@@ -86,24 +95,14 @@ export default function QuizPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentRepository, user, loadDemoQuiz, setLoading, setError, setQuiz, setCurrentQuestionIndex, setAnswers, setResult])
 
-  const loadDemoQuiz = async () => {
-    setLoading(true)
-    try {
-      const data = await api.get<Quiz>("/quiz/demo-quiz")
-      setQuiz(data)
-      // Reset state
-      setCurrentQuestionIndex(0)
-      setAnswers({})
-      setResult(null)
-    } catch (error) {
-      console.error("Failed to load quiz:", error)
-      setError("Failed to load quiz. Please try again later.")
-    } finally {
-      setLoading(false)
+  // Auto-load repository quiz if available
+  useEffect(() => {
+    if (currentRepository && !quiz) {
+      loadRepositoryQuiz()
     }
-  }
+  }, [currentRepository, quiz, loadRepositoryQuiz])
 
   const handleAnswer = (value: string) => {
     if (!quiz) return

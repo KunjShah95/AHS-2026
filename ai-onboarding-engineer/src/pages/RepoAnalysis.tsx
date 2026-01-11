@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom"
 import { api } from "@/lib/api"
 import { useAuth } from "@/hooks/useAuth"
 import { saveRepoAnalysis, type SavedAnalysis } from "@/lib/db"
-import { useRepository } from "@/context/RepositoryContext"
+import { useRepository } from "@/hooks/useRepository"
 
 export default function RepoAnalysis() {
   const [repoUrl, setRepoUrl] = useState("")

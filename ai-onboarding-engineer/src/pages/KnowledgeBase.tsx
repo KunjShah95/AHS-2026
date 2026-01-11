@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { api } from "@/lib/api"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -19,7 +19,7 @@ import {
   AlertCircle,
   Loader2
 } from "lucide-react"
-import { useRepository } from "@/context/RepositoryContext"
+import { useRepository } from "@/hooks/useRepository"
 import { useAuth } from "@/hooks/useAuth"
 
 const AnnotationType = {
@@ -74,17 +74,21 @@ export default function KnowledgeBase() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Auto-load repository knowledge base
-  useEffect(() => {
-    if (currentRepository && user) {
-      loadRepositoryKnowledgeBase()
-    } else if (!currentRepository) {
-      // Try loading demo data as fallback
-      loadDemoData()
+  const loadDemoData = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<DemoData>("/knowledge/demo-data")
+      setData(response)
+    } catch (err) {
+      console.error("Failed to fetch demo knowledge base:", err)
+      setError("Failed to load knowledge base. Please try again later.")
+    } finally {
+      setLoading(false)
     }
-  }, [currentRepository?.id, user?.uid])
+  }, [])
 
-  const loadRepositoryKnowledgeBase = async () => {
+  const loadRepositoryKnowledgeBase = useCallback(async () => {
     if (!currentRepository || !user) return
 
     try {
@@ -102,21 +106,17 @@ export default function KnowledgeBase() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentRepository, user, loadDemoData])
 
-  const loadDemoData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await api.get<DemoData>("/knowledge/demo-data")
-      setData(response)
-    } catch (err) {
-      console.error("Failed to fetch demo knowledge base:", err)
-      setError("Failed to load knowledge base. Please try again later.")
-    } finally {
-      setLoading(false)
+  // Auto-load repository knowledge base
+  useEffect(() => {
+    if (currentRepository && user) {
+      loadRepositoryKnowledgeBase()
+    } else if (!currentRepository) {
+      // Try loading demo data as fallback
+      loadDemoData()
     }
-  }
+  }, [currentRepository, user, loadRepositoryKnowledgeBase, loadDemoData])
 
   const getIconForType = (type: AnnotationType) => {
     switch (type) {

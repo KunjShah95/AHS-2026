@@ -23,6 +23,7 @@ import Quiz from "./pages/Quiz"
 import KnowledgeBase from "./pages/KnowledgeBase"
 import Playbooks from "./pages/Playbooks"
 import FirstPR from "./pages/FirstPR"
+import { AuthProvider } from "./context/AuthContext"
 
 function App() {
   return (
@@ -58,7 +59,9 @@ function App() {
           </Route>
         </Routes>
       </Router>
-      )
+
+    </AuthProvider>
+  )
 }
 
-      export default App
+export default App

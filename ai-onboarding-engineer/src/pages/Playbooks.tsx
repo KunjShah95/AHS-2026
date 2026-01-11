@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { api } from "@/lib/api"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -13,7 +13,7 @@ import {
   AlertCircle,
   Loader2
 } from "lucide-react"
-import { useRepository } from "@/context/RepositoryContext"
+import { useRepository } from "@/hooks/useRepository"
 import { useAuth } from "@/hooks/useAuth"
 
 interface PlaybookPhase {
@@ -44,15 +44,21 @@ export default function Playbooks() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (currentRepository && user) {
-      loadRepositoryPlaybooks()
-    } else {
-      loadDefaultPlaybooks()
+  const loadDefaultPlaybooks = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<OnboardingPlaybook[]>("/playbooks/list")
+      setPlaybooks(response)
+    } catch (error) {
+      console.error("Failed to fetch playbooks:", error)
+      setError("Failed to load playbooks. Please try again later.")
+    } finally {
+      setLoading(false)
     }
-  }, [currentRepository?.id, user?.uid])
+  }, [])
 
-  const loadRepositoryPlaybooks = async () => {
+  const loadRepositoryPlaybooks = useCallback(async () => {
     if (!currentRepository || !user) return
 
     try {
@@ -69,21 +75,15 @@ export default function Playbooks() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentRepository, user, loadDefaultPlaybooks])
 
-  const loadDefaultPlaybooks = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await api.get<OnboardingPlaybook[]>("/playbooks/list")
-      setPlaybooks(response)
-    } catch (error) {
-      console.error("Failed to fetch playbooks:", error)
-      setError("Failed to load playbooks. Please try again later.")
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    if (currentRepository && user) {
+      loadRepositoryPlaybooks()
+    } else {
+      loadDefaultPlaybooks()
     }
-  }
+  }, [currentRepository, user, loadRepositoryPlaybooks, loadDefaultPlaybooks])
 
   if (loading) {
      return (

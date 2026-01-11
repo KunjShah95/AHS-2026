@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { api } from "@/lib/api"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -14,7 +14,7 @@ import {
   Loader2
 } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
-import { useRepository } from "@/context/RepositoryContext"
+import { useRepository } from "@/hooks/useRepository"
 
 interface FirstIssue {
   id: string
@@ -46,15 +46,21 @@ export default function FirstPR() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (currentRepository && user) {
-      loadRepositoryFirstPRIssues()
-    } else {
-      loadDefaultIssues()
+  const loadDefaultIssues = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<FirstIssue[]>("/first-pr/issues")
+      setIssues(response)
+    } catch (error) {
+      console.error("Failed to fetch issues:", error)
+      setError("Failed to load issues. Please try again later.")
+    } finally {
+      setLoading(false)
     }
-  }, [currentRepository?.id, user?.uid])
+  }, [])
 
-  const loadRepositoryFirstPRIssues = async () => {
+  const loadRepositoryFirstPRIssues = useCallback(async () => {
     if (!currentRepository || !user) return
 
     try {
@@ -71,21 +77,15 @@ export default function FirstPR() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentRepository, user, loadDefaultIssues])
 
-  const loadDefaultIssues = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await api.get<FirstIssue[]>("/first-pr/issues")
-      setIssues(response)
-    } catch (error) {
-      console.error("Failed to fetch issues:", error)
-      setError("Failed to load issues. Please try again later.")
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    if (currentRepository && user) {
+      loadRepositoryFirstPRIssues()
+    } else {
+      loadDefaultIssues()
     }
-  }
+  }, [currentRepository, user, loadRepositoryFirstPRIssues, loadDefaultIssues])
 
   const startIssue = async (issue: FirstIssue) => {
     if (!user) return
