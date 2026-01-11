@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { createContext, useContext, useEffect, useState } from 'react';
+=======
+import React, { createContext, useEffect, useState } from 'react';
+>>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
 import type { SavedAnalysis } from '@/lib/db';
 import { getAllUserAnalyses, updateLastAccessed } from '@/lib/db';
 import { useAuth } from '@/hooks/useAuth';

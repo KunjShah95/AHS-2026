@@ -128,6 +128,7 @@ export const saveRepoAnalysis = async (
         estimatedCost: 0,
       }
     });
+<<<<<<< HEAD
     console.log("Analysis saved successfully with ID:", docRef.id);
     return docRef.id;
   } catch (error) {
@@ -137,6 +138,11 @@ export const saveRepoAnalysis = async (
         throw new Error('Firebase storage is not available. Analysis data will be stored locally.');
       }
     }
+=======
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving repo analysis:", error);
+>>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
     throw error;
   }
 };

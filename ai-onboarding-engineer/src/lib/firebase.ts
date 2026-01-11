@@ -1,7 +1,11 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+<<<<<<< HEAD
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+=======
+import { getFirestore } from 'firebase/firestore';
+>>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
 import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
@@ -21,6 +25,7 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const analytics = getAnalytics(app);
 
+<<<<<<< HEAD
 // Enable offline persistence for Firestore
 enableIndexedDbPersistence(db)
   .catch((err) => {
@@ -35,4 +40,6 @@ enableIndexedDbPersistence(db)
     }
   });
 
+=======
+>>>>>>> 4992b9c1bdac2c96b0c97ec12d3258b5963b8315
 export default app;
