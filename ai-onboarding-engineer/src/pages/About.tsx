@@ -4,9 +4,6 @@ DIRECTION: Editorial / Human
 SIGNATURE: Mission Statement
 */
 
-import kunjImg from '../assets/images/kunj.jpeg';
-import varadImg from '../assets/images/Varad.jpeg';
-
 export default function About() {
   return (
     <div className="min-h-screen bg-background py-24 px-6">
@@ -26,7 +23,7 @@ export default function About() {
            </p>
         </div>
 
-        {/* The Team placeholder */}
+        {/* The Team */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 border-t border-white/5 pt-24">
            <div>
               <h2 className="text-2xl font-bold mb-4">Built by Engineers.</h2>
@@ -40,30 +37,20 @@ export default function About() {
                 href="https://www.linkedin.com/in/kunjshah05/" 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="group relative aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden"
+                className="group relative aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center"
               >
-                 <img 
-                   src={kunjImg} 
-                   alt="Kunj Shah" 
-                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                 />
-                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/0 to-transparent p-4 flex flex-col justify-end">
+                 <div className="p-4 flex flex-col items-center justify-center text-center">
                     <span className="font-mono text-sm font-bold text-white">Kunj Shah</span>
                     <span className="text-xs text-white/70">Founder</span>
                  </div>
               </a>
-               <a 
-                 href="https://www.linkedin.com/in/varad-vekariya/" 
-                 target="_blank" 
-                 rel="noopener noreferrer" 
-                 className="group relative aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden"
-               >
-                 <img 
-                   src={varadImg} 
-                   alt="Varad Vekariya" 
-                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                 />
-                 <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/0 to-transparent p-4 flex flex-col justify-end">
+              <a 
+                href="https://www.linkedin.com/in/varad-vekariya/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="group relative aspect-square bg-white/5 rounded-xl border border-white/10 overflow-hidden flex items-center justify-center"
+              >
+                 <div className="p-4 flex flex-col items-center justify-center text-center">
                     <span className="font-mono text-sm font-bold text-white">Varad Vekariya</span>
                     <span className="text-xs text-white/70">Founding Engineer</span>
                  </div>
