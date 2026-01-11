@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from app.agents.progress import ProgressAgent
+from app.agents.progress import ProgressCoachAgent
 
 router = APIRouter()
-agent = ProgressAgent()
+agent = ProgressCoachAgent()
 
 @router.get("/{user_id}")
 async def get_progress(user_id: str):
