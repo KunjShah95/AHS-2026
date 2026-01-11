@@ -32,6 +32,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 ## ✨ Key Features
 
 ### 1. **Team Onboarding Dashboard**
+
 - Track onboarding metrics in real-time
 - Monitor days to first commit, first PR, productivity
 - Identify bottlenecks (which modules cause 60%+ failure rate?)
@@ -39,6 +40,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 - ROI calculator showing cost savings
 
 ### 2. **Knowledge Verification Quizzes**
+
 - AI-generated quizzes from learning modules
 - Adaptive difficulty (gets harder if developer succeeds)
 - Spaced repetition (1 day, 3 days, 1 week, 1 month)
@@ -46,6 +48,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 - Compliance audit trail for regulatory requirements
 
 ### 3. **First PR Acceleration Mode**
+
 - Finds beginner-friendly GitHub issues aligned with learned modules
 - Generates step-by-step PR guides
 - Shows similar PRs as code examples
@@ -53,6 +56,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 - Celebrates progress → keeps motivation high
 
 ### 4. **Collaborative Playbooks**
+
 - Senior developers create "How to..." guides
 - Version-controlled best practices
 - Track effectiveness (success rate, time saved)
@@ -60,6 +64,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 - Team members contribute improvements
 
 ### 5. **Progress Coach with Gamification**
+
 - Daily guidance: tasks, progress checks, celebrations
 - XP/badge system for learning milestones
 - Streak tracking for consistent learning
@@ -67,6 +72,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 - Personalized growth suggestions
 
 ### 6. **Advanced Analytics Engine**
+
 - Architecture visualization (dependency graphs, data flows)
 - Risk zone highlighting (complexity, test coverage)
 - Knowledge gap detection
@@ -115,6 +121,7 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Node.js** 18+ & **npm** 9+
 - **Python** 3.11+
 - **Git**
@@ -123,7 +130,8 @@ CodeFlow is an **enterprise-grade AI-driven platform** that cuts developer onboa
 
 ### Local Development (5 minutes)
 
-#### Windows:
+#### Windows
+
 ```bash
 # Quick setup
 ./setup-local.bat
@@ -138,7 +146,8 @@ cd ai-onboarding-engineer
 npm run dev
 ```
 
-#### macOS/Linux:
+#### macOS/Linux
+
 ```bash
 # Quick setup
 bash setup-local.sh
@@ -154,15 +163,17 @@ npm run dev
 ```
 
 **Then open:**
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API Docs: http://localhost:8000/docs
+
+- Frontend: <http://localhost:5173>
+- Backend API: <http://localhost:8000>
+- API Docs: <http://localhost:8000/docs>
 
 ---
 
 ## 📦 Installation
 
 ### Backend Setup
+
 ```bash
 cd backend
 
@@ -182,6 +193,7 @@ cp .env.example .env
 ```
 
 ### Frontend Setup
+
 ```bash
 cd ai-onboarding-engineer
 
@@ -202,6 +214,7 @@ cp .env.example .env.local
 ## 🧪 Testing
 
 ### Run Integration Tests
+
 ```bash
 # Test all backend endpoints
 python backend/test_integration.py
@@ -210,6 +223,7 @@ python backend/test_integration.py
 ```
 
 ### Manual Testing
+
 ```bash
 # Visit Swagger UI
 http://localhost:8000/docs
@@ -227,12 +241,14 @@ GET  /first-pr/issues
 ## 📊 Available Endpoints
 
 ### Team Analytics
+
 ```
 GET    /team-analytics/demo-data         Get team metrics
 POST   /team-analytics/dashboard         Full analytics dashboard
 ```
 
 ### Quiz System
+
 ```
 POST   /quiz/generate                    Generate new quiz
 POST   /quiz/submit                      Submit quiz answers
@@ -240,6 +256,7 @@ GET    /quiz/spaced-repetition           Get scheduled reviews
 ```
 
 ### Knowledge Base
+
 ```
 GET    /knowledge/demo-data              Get knowledge base
 GET    /knowledge/modules                List all modules
@@ -247,6 +264,7 @@ POST   /knowledge/save                   Save progress
 ```
 
 ### Playbooks
+
 ```
 GET    /playbooks/list                   List all playbooks
 POST   /playbooks/create                 Create new playbook
@@ -254,6 +272,7 @@ GET    /playbooks/{id}                   Get playbook details
 ```
 
 ### First PR Acceleration
+
 ```
 GET    /first-pr/issues                  Find good first issues
 POST   /first-pr/guide                   Generate PR guide
@@ -277,7 +296,7 @@ GET    /first-pr/progress                Track progress
 5. Deploy!
 ```
 
-**Result**: https://ai-onboarding-backend.onrender.com
+**Result**: <https://ai-onboarding-backend.onrender.com>
 
 ### Deploy Frontend to Vercel
 
@@ -290,9 +309,10 @@ GET    /first-pr/progress                Track progress
 5. Deploy!
 ```
 
-**Result**: https://your-project.vercel.app
+**Result**: <https://your-project.vercel.app>
 
 ### Complete Deployment Guide
+
 See [DEPLOYMENT_INTEGRATION_GUIDE.md](DEPLOYMENT_INTEGRATION_GUIDE.md) for detailed instructions.
 
 ---
@@ -338,6 +358,7 @@ AHS-2026/
 ## 🎯 Tech Stack
 
 ### Frontend
+
 - **React 19** - UI framework
 - **Vite** - Build tool (⚡ fast)
 - **TypeScript** - Type safety
@@ -347,6 +368,7 @@ AHS-2026/
 - **Framer Motion** - Animations
 
 ### Backend
+
 - **FastAPI** - Web framework
 - **Python 3.11+** - Language
 - **Firebase Admin SDK** - Database & Auth
@@ -355,6 +377,7 @@ AHS-2026/
 - **Uvicorn** - ASGI server
 
 ### Infrastructure
+
 - **Render** - Backend hosting (Python-friendly)
 - **Vercel** - Frontend hosting & CDN
 - **Firebase** - Database, auth, storage
@@ -374,6 +397,7 @@ AHS-2026/
 | Knowledge Retention | 45% | 78% | **↑ 73%** |
 
 **At Scale (20 juniors/year)**:
+
 - Annual savings: **$750K**
 - CodeFlow cost: **$50K/year**
 - ROI: **15:1** 🚀
@@ -432,6 +456,7 @@ We welcome contributions! Here's how:
 5. **Open** a Pull Request
 
 ### Development Guidelines
+
 - Write clean, readable code
 - Add tests for new features
 - Update documentation
@@ -443,6 +468,7 @@ We welcome contributions! Here's how:
 ## 🐛 Troubleshooting
 
 ### Backend won't start
+
 ```bash
 # Check Python version
 python --version  # Should be 3.11+
@@ -455,6 +481,7 @@ uvicorn app.main:app --reload --log-level debug
 ```
 
 ### Frontend build fails
+
 ```bash
 # Clear cache
 rm -rf node_modules package-lock.json
@@ -468,6 +495,7 @@ cat .env.local
 ```
 
 ### API calls failing
+
 ```bash
 # Check backend is running
 curl http://localhost:8000/
@@ -480,6 +508,7 @@ curl http://localhost:8000/docs
 ```
 
 ### Firebase connection errors
+
 - Verify service account JSON is valid
 - Check `GOOGLE_CLOUD_PROJECT` matches Firebase project
 - Ensure Firebase credentials have proper permissions
@@ -501,7 +530,7 @@ curl http://localhost:8000/docs
 
 - **Issues**: [GitHub Issues](https://github.com/KunjShah95/AHS-2026/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/KunjShah95/AHS-2026/discussions)
-- **Email**: your-email@example.com
+- **Email**: <your-email@example.com>
 - **Documentation**: See [docs folder](./docs/)
 
 ---
@@ -509,6 +538,7 @@ curl http://localhost:8000/docs
 ## 📈 Roadmap
 
 ### Phase 1: Core Features (Done ✅)
+
 - [x] Team Analytics Dashboard
 - [x] Quiz Generation & Spaced Repetition
 - [x] Knowledge Base
@@ -516,6 +546,7 @@ curl http://localhost:8000/docs
 - [x] First PR Acceleration
 
 ### Phase 2: Enhancement (In Progress 🚀)
+
 - [ ] Real-time Collaboration
 - [ ] Mobile App
 - [ ] Advanced Analytics
@@ -523,6 +554,7 @@ curl http://localhost:8000/docs
 - [ ] Industry-Specific Playbooks
 
 ### Phase 3: Scale (Planned 📅)
+
 - [ ] Multi-team Support
 - [ ] Enterprise SSO
 - [ ] Advanced Reporting
@@ -542,6 +574,7 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 Built with ❤️ by the CodeFlow team.
 
 Special thanks to:
+
 - Firebase for backend infrastructure
 - Google Cloud for AI capabilities
 - React & Vite communities

@@ -137,3 +137,32 @@ async def get_demo_knowledge_base():
             "verified_count": len([a for a in annotations_db.values() if a.is_verified])
         }
     }
+
+class GenerateKnowledgeFromRepoRequest(BaseModel):
+    repo_id: str
+    user_id: str
+
+@router.post("/generate-from-repo")
+async def generate_knowledge_from_repo(request: GenerateKnowledgeFromRepoRequest):
+    """
+    Generate knowledge base entries from a previously analyzed repository.
+    This extracts important patterns, gotchas, and best practices.
+    """
+    try:
+        # In production, fetch analyzed repo data from Firestore using repo_id
+        # For now, return demo data with repository-specific metadata
+        
+        demo_annotations = list(annotations_db.values())
+        demo_entries = list(knowledge_db.values())
+        
+        return {
+            "annotations": demo_annotations,
+            "knowledge_entries": demo_entries,
+            "stats": {
+                "total_annotations": len(demo_annotations),
+                "must_know_count": len([a for a in demo_annotations if a.annotation_type == AnnotationType.MUST_KNOW]),
+                "verified_count": len([a for a in demo_annotations if a.is_verified])
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
