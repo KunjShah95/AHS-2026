@@ -180,3 +180,29 @@ async def record_usage(playbook_id: str, completion_days: float):
     pb.times_used += 1
     pb.avg_completion_days = ((pb.avg_completion_days * (pb.times_used - 1)) + completion_days) / pb.times_used
     return {"times_used": pb.times_used, "avg_completion_days": pb.avg_completion_days}
+
+class GeneratePlaybooksFromRepoRequest(BaseModel):
+    repo_id: str
+    user_id: str
+
+@router.post("/generate-from-repo", response_model=List[OnboardingPlaybook])
+async def generate_playbooks_from_repo(request: GeneratePlaybooksFromRepoRequest):
+    """
+    Generate customized onboarding playbooks from a previously analyzed repository.
+    This creates role-specific learning paths based on the repository structure.
+    """
+    try:
+        # In production, fetch analyzed repo data from Firestore using repo_id
+        # For now, return demo playbooks with repository context
+        
+        # Filter playbooks for this repo or return templates
+        repo_playbooks = [p for p in playbooks_db.values() if p.repo_id == "demo-repo"]
+        
+        if not repo_playbooks:
+            # Return templates if no repo-specific playbooks exist
+            repo_playbooks = [p for p in playbooks_db.values() if p.is_template][:2]
+        
+        return repo_playbooks
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

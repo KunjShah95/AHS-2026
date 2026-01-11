@@ -9,8 +9,12 @@ import {
   Clock, 
   Zap, 
   CheckCircle, 
-  ArrowRight
+  ArrowRight,
+  AlertCircle,
+  Loader2
 } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { useRepository } from "@/context/RepositoryContext"
 
 interface FirstIssue {
   id: string
@@ -22,6 +26,7 @@ interface FirstIssue {
   skills_required: string[]
   points: number
   guidance_steps: string[]
+  repo_id?: string
 }
 
 interface Progress {
@@ -32,28 +37,55 @@ interface Progress {
   selected_issue_id: string
 }
 
-import { useAuth } from "@/hooks/useAuth"
-
 export default function FirstPR() {
   const { user } = useAuth()
+  const { currentRepository } = useRepository()
   const [issues, setIssues] = useState<FirstIssue[]>([])
   const [activeIssue, setActiveIssue] = useState<FirstIssue | null>(null)
   const [progress, setProgress] = useState<Progress | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchIssues = async () => {
-      try {
-        const response = await api.get<FirstIssue[]>("/first-pr/issues")
-        setIssues(response)
-      } catch (error) {
-        console.error("Failed to fetch issues:", error)
-      } finally {
-        setLoading(false)
-      }
+    if (currentRepository && user) {
+      loadRepositoryFirstPRIssues()
+    } else {
+      loadDefaultIssues()
     }
-    fetchIssues()
-  }, [])
+  }, [currentRepository?.id, user?.uid])
+
+  const loadRepositoryFirstPRIssues = async () => {
+    if (!currentRepository || !user) return
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.post<FirstIssue[]>("/first-pr/generate-from-repo", {
+        repo_id: currentRepository.id,
+        user_id: user.uid,
+      })
+      setIssues(response)
+    } catch (err) {
+      console.error("Failed to fetch repository first PR issues:", err)
+      loadDefaultIssues()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadDefaultIssues = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<FirstIssue[]>("/first-pr/issues")
+      setIssues(response)
+    } catch (error) {
+      console.error("Failed to fetch issues:", error)
+      setError("Failed to load issues. Please try again later.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const startIssue = async (issue: FirstIssue) => {
     if (!user) return
@@ -88,8 +120,25 @@ export default function FirstPR() {
   if (loading) {
     return (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
+    )
+  }
+
+  if (error && issues.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+        <div className="bg-red-500/10 p-6 rounded-full">
+          <AlertCircle className="h-12 w-12 text-red-500" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h1 className="text-3xl font-bold">Cannot Load Issues</h1>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+        <Button onClick={loadDefaultIssues} variant="outline">
+          Try Again
+        </Button>
+      </div>
     )
   }
 

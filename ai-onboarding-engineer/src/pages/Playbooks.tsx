@@ -9,10 +9,12 @@ import {
   Clock, 
   Users, 
   Star, 
-  ArrowRight,
-  GitBranch,
-  Copy
+  Copy,
+  AlertCircle,
+  Loader2
 } from "lucide-react"
+import { useRepository } from "@/context/RepositoryContext"
+import { useAuth } from "@/hooks/useAuth"
 
 interface PlaybookPhase {
   phase_number: number
@@ -32,31 +34,79 @@ interface OnboardingPlaybook {
   times_used: number
   tags: string[]
   is_template: boolean
+  repo_id?: string
 }
 
 export default function Playbooks() {
+  const { currentRepository } = useRepository()
+  const { user } = useAuth()
   const [playbooks, setPlaybooks] = useState<OnboardingPlaybook[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchPlaybooks = async () => {
-      try {
-        const response = await api.get<OnboardingPlaybook[]>("/playbooks/list")
-        setPlaybooks(response)
-      } catch (error) {
-        console.error("Failed to fetch playbooks:", error)
-      } finally {
-        setLoading(false)
-      }
+    if (currentRepository && user) {
+      loadRepositoryPlaybooks()
+    } else {
+      loadDefaultPlaybooks()
     }
-    fetchPlaybooks()
-  }, [])
+  }, [currentRepository?.id, user?.uid])
+
+  const loadRepositoryPlaybooks = async () => {
+    if (!currentRepository || !user) return
+
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.post<OnboardingPlaybook[]>("/playbooks/generate-from-repo", {
+        repo_id: currentRepository.id,
+        user_id: user.uid,
+      })
+      setPlaybooks(response)
+    } catch (err) {
+      console.error("Failed to fetch repository playbooks:", err)
+      loadDefaultPlaybooks()
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadDefaultPlaybooks = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const response = await api.get<OnboardingPlaybook[]>("/playbooks/list")
+      setPlaybooks(response)
+    } catch (error) {
+      console.error("Failed to fetch playbooks:", error)
+      setError("Failed to load playbooks. Please try again later.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
      return (
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-6">
+        <div className="bg-red-500/10 p-6 rounded-full">
+          <AlertCircle className="h-12 w-12 text-red-500" />
+        </div>
+        <div className="space-y-2 max-w-md">
+          <h1 className="text-3xl font-bold">Cannot Load Playbooks</h1>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+        <Button onClick={loadDefaultPlaybooks} variant="outline">
+          Try Again
+        </Button>
+      </div>
     )
   }
 
