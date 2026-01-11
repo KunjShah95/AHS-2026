@@ -5,7 +5,7 @@ SIGNATURE: Mission Statement
 */
 
 import kunjImg from '../assets/images/kunj.jpeg';
-import varadImg from '../assets/images/varad.jpeg';
+import varadImg from '../assets/images/Varad.jpeg';
 
 export default function About() {
   return (
