@@ -12,7 +12,7 @@ if not api_key:
 
 genai.configure(api_key=api_key)
 try:
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-2.0-flash')
     # Use a very short prompt
     resp = model.generate_content("Hi")
     print("SUCCESS")

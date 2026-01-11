@@ -46,7 +46,7 @@ class VertexAIClient:
         if self.api_key and GENAI_AVAILABLE:
             try:
                 genai.configure(api_key=self.api_key)
-                self.gemini_model = genai.GenerativeModel('gemini-pro')
+                self.gemini_model = genai.GenerativeModel('gemini-2.0-flash')
                 self.client_type = "genai"
                 logger.info("Initialized Google Generative AI (Gemini) Client.")
             except Exception as e:
