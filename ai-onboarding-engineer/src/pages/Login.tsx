@@ -6,12 +6,9 @@ ESCAPE: Standard auth forms are boring. This one feels like entering a command c
 LOCKED: Deep Engineering
 */
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useState } from "react"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/lib/firebase"
-import { useNavigate, Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -38,33 +35,10 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const { signInWithGoogle } = useAuth()
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      navigate("/dashboard")
-    } catch (err: unknown) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("An unknown error occurred")
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-
 
   const handleGoogleLogin = async () => {
     setLoading(true)
@@ -92,57 +66,18 @@ export default function Login() {
             Welcome back
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Enter your credentials to access the Context Engine.
+            Sign in with your Google account to access the Context Engine.
           </p>
         </div>
 
         <div className="space-y-4">
-           <Button variant="outline" className="w-full h-11 border-white/10 hover:bg-white/5" onClick={handleGoogleLogin} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} Google
-           </Button>
+           {error && <p className="text-red-500 text-sm text-center bg-red-500/10 p-3 rounded">{error}</p>}
            
-           <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleLogin} className="space-y-4">
-               <div className="space-y-2">
-                  <Input 
-                    type="email" 
-                    placeholder="name@company.com" 
-                    className="h-11 bg-black/20 border-white/10 focus-visible:ring-primary/50" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-               </div>
-               <div className="space-y-2">
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    className="h-11 bg-black/20 border-white/10 focus-visible:ring-primary/50" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-               </div>
-               
-               {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-               <Button type="submit" className="w-full h-11 text-base bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Sign In"}
-               </Button>
-            </form>
+           <Button className="w-full h-11 border-white/10 hover:bg-white/5" variant="outline" onClick={handleGoogleLogin} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} 
+              Continue with Google
+           </Button>
         </div>
-        
-        <p className="px-8 text-center text-sm text-muted-foreground">
-           Don't have an account? <Link to="/register" className="underline underline-offset-4 hover:text-primary cursor-pointer">Register</Link>
-        </p>
       </div>
     </div>
   )

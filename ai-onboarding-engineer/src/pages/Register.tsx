@@ -6,12 +6,9 @@ ESCAPE: Standard auth forms are boring. This one feels like entering a command c
 LOCKED: Deep Engineering
 */
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/lib/firebase"
 import { useAuth } from "@/hooks/useAuth"
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -38,33 +35,10 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
 }
 
 export default function Register() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const navigate = useNavigate()
   const { signInWithGoogle } = useAuth()
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      navigate("/dashboard")
-    } catch (err: unknown) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("An unknown error occurred")
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-
 
   const handleGoogleRegister = async () => {
     setLoading(true)
@@ -97,47 +71,12 @@ export default function Register() {
         </div>
 
         <div className="space-y-4">
-           <Button variant="outline" className="w-full h-11 border-white/10 hover:bg-white/5" onClick={handleGoogleRegister} disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} Google
-           </Button>
+           {error && <p className="text-red-500 text-sm text-center bg-red-500/10 p-3 rounded">{error}</p>}
            
-           <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-white/10" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or sign up with email</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleRegister} className="space-y-4">
-               <div className="space-y-2">
-                  <Input 
-                    type="email" 
-                    placeholder="name@company.com" 
-                    className="h-11 bg-black/20 border-white/10 focus-visible:ring-primary/50" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-               </div>
-               <div className="space-y-2">
-                  <Input 
-                    type="password" 
-                    placeholder="Create a password" 
-                    className="h-11 bg-black/20 border-white/10 focus-visible:ring-primary/50" 
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-               </div>
-               
-               {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-
-               <Button type="submit" className="w-full h-11 text-base bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Create account"}
-               </Button>
-            </form>
+           <Button className="w-full h-11 border-white/10 hover:bg-white/5" variant="outline" onClick={handleGoogleRegister} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} 
+              Continue with Google
+           </Button>
         </div>
         
         <p className="px-8 text-center text-sm text-muted-foreground">
