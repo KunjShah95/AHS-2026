@@ -7,7 +7,7 @@ LOCKED: Deep Engineering
 */
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Github, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { createUserWithEmailAndPassword } from "firebase/auth"
@@ -43,7 +43,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const navigate = useNavigate()
-  const { signInWithGoogle, signInWithGithub } = useAuth()
+  const { signInWithGoogle } = useAuth()
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,23 +64,7 @@ export default function Register() {
     }
   }
 
-  const handleGithubRegister = async () => {
-    setLoading(true)
-    setError("")
-    try {
-      await signInWithGithub()
-      navigate("/dashboard")
-    } catch (err: unknown) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("An unknown error occurred")
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
+
 
   const handleGoogleRegister = async () => {
     setLoading(true)
@@ -113,14 +97,9 @@ export default function Register() {
         </div>
 
         <div className="space-y-4">
-           <div className="grid grid-cols-2 gap-4">
-             <Button variant="outline" className="w-full h-11 border-white/10 hover:bg-white/5" onClick={handleGithubRegister} disabled={loading}>
-               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Github className="mr-2 h-4 w-4" />} GitHub
-             </Button>
-             <Button variant="outline" className="w-full h-11 border-white/10 hover:bg-white/5" onClick={handleGoogleRegister} disabled={loading}>
-               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} Google
-             </Button>
-           </div>
+           <Button variant="outline" className="w-full h-11 border-white/10 hover:bg-white/5" onClick={handleGoogleRegister} disabled={loading}>
+              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon className="mr-2 h-4 w-4" />} Google
+           </Button>
            
            <div className="relative">
               <div className="absolute inset-0 flex items-center">
