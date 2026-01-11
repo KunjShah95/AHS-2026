@@ -15,15 +15,15 @@ export function TutorWidget() {
   const handleSend = () => {
     if (!input.trim()) return
     setMessages([...messages, { role: "user", content: input }])
-    
+
     // Mock response
     setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: "bot", 
+      setMessages(prev => [...prev, {
+        role: "bot",
         content: "That's a great question about the codebase. Based on the analysis, you can find the logic for that in `src/lib/utils.ts`."
       }])
     }, 1000)
-    
+
     setInput("")
   }
 
@@ -51,16 +51,14 @@ export function TutorWidget() {
                 {messages.map((msg, i) => (
                   <div
                     key={i}
-                    className={`flex ${
-                      msg.role === "user" ? "justify-end" : "justify-start"
-                    }`}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"
+                      }`}
                   >
                     <div
-                      className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                        msg.role === "user"
+                      className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${msg.role === "user"
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground"
-                      }`}
+                        }`}
                     >
                       {msg.content}
                     </div>
@@ -69,9 +67,9 @@ export function TutorWidget() {
               </CardContent>
               <CardFooter className="p-2 pt-0">
                 <div className="flex w-full items-center space-x-2">
-                  <Input 
-                    placeholder="Ask about the repo..." 
-                    value={input} 
+                  <Input
+                    placeholder="Ask about the repo..."
+                    value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     className="flex-1"
@@ -85,7 +83,7 @@ export function TutorWidget() {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <Button
         onClick={() => setIsOpen(!isOpen)}
         size="lg"

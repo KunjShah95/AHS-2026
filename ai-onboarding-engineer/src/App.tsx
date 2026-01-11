@@ -26,38 +26,39 @@ import FirstPR from "./pages/FirstPR"
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Landing />} />
-          <Route path="analysis" element={<RepoAnalysis />} />
-          <Route path="roadmap" element={<Roadmap />} />
-          <Route path="architecture" element={<Architecture />} />
-          <Route path="tasks" element={<Tasks />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Landing />} />
+            <Route path="analysis" element={<RepoAnalysis />} />
+            <Route path="roadmap" element={<Roadmap />} />
+            <Route path="architecture" element={<Architecture />} />
+            <Route path="tasks" element={<Tasks />} />
 
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="pricing" element={<Pricing />} />
-          <Route path="features" element={<Features />} />
-          <Route path="about" element={<About />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="privacy" element={<Privacy />} />
-          <Route path="terms" element={<Terms />} />
-          <Route path="security" element={<Security />} />
-          <Route path="token-economy" element={<TokenEconomy />} />
-          <Route path="team-analytics" element={<TeamAnalytics />} />
-          <Route path="quiz" element={<Quiz />} />
-          <Route path="knowledge" element={<KnowledgeBase />} />
-          <Route path="playbooks" element={<Playbooks />} />
-          <Route path="first-pr" element={<FirstPR />} />
-          
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
-      </Routes>
-    </Router>
-  )
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="pricing" element={<Pricing />} />
+            <Route path="features" element={<Features />} />
+            <Route path="about" element={<About />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="privacy" element={<Privacy />} />
+            <Route path="terms" element={<Terms />} />
+            <Route path="security" element={<Security />} />
+            <Route path="token-economy" element={<TokenEconomy />} />
+            <Route path="team-analytics" element={<TeamAnalytics />} />
+            <Route path="quiz" element={<Quiz />} />
+            <Route path="knowledge" element={<KnowledgeBase />} />
+            <Route path="playbooks" element={<Playbooks />} />
+            <Route path="first-pr" element={<FirstPR />} />
+
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
+        </Routes>
+      </Router>
+      )
 }
 
-export default App
+      export default App
