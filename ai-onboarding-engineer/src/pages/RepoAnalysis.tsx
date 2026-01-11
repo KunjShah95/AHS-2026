@@ -7,7 +7,7 @@ import { Loader2, Search } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { api } from "@/lib/api"
 import { useAuth } from "@/hooks/useAuth"
-import { saveRepoAnalysis } from "@/lib/db"
+import { saveRepoAnalysis, type SavedAnalysis } from "@/lib/db"
 import { useRepository } from "@/context/RepositoryContext"
 
 export default function RepoAnalysis() {
@@ -58,7 +58,7 @@ export default function RepoAnalysis() {
         }
         
         // Create analysis object
-        const newAnalysis: Parameters<typeof selectRepository>[0] = {
+        const newAnalysis: SavedAnalysis = {
           id: analysisId,
           userId: user.uid,
           repoUrl,
@@ -67,7 +67,7 @@ export default function RepoAnalysis() {
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           lastAccessedAt: new Date().toISOString(),
-          status: 'completed' as const,
+          status: 'completed',
           isFavorite: false,
         };
         
