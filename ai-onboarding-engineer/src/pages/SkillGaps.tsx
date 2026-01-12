@@ -48,7 +48,7 @@ export default function SkillGaps() {
       const repoId = localStorage.getItem('currentRepoId') || 'demo-repo';
       const profileData = await getDeveloperSkillProfile(user.uid, repoId);
       setProfile(profileData);
-      if (profileData.gaps.length > 0) setSelectedGap(profileData.gaps[0]);
+      if (profileData && profileData.gaps.length > 0) setSelectedGap(profileData.gaps[0]);
     } catch (error) {
       console.error('Error loading skill profile:', error);
     } finally {

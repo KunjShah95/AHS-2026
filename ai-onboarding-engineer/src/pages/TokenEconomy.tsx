@@ -3,7 +3,6 @@ import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { 
-  Zap, 
   AlertTriangle,
   CheckCircle,
   Loader2,
@@ -177,7 +176,7 @@ export default function TokenEconomy() {
            {[
              { label: "Context Consumption", val: formatNumber(tokenStats.totalTokensUsed), sub: "Units", icon: Waves, color: "text-indigo-400", meta: `${usagePercentage.toFixed(1)}% Saturation`, progress: usagePercentage },
              { label: "Financial Telemetry", val: `$${tokenStats.totalCost.toFixed(3)}`, sub: "Total Cost", icon: Coins, color: "text-emerald-400", meta: "Flash Tier Active" },
-             { label: "Efficiency Yield", val: `+${calculatePotentialSavings().toFixed(0)}%`, sub: "Yield", icon: Sparkles, color: "text-purple-400", meta: `${formatNumber(Math.floor(tokenStats.totalTokensUsed * 0.35))} Units Saved` }
+             { label: "Efficiency Yield", val: `+${calculatePotentialSavings.toFixed(0)}%`, sub: "Yield", icon: Sparkles, color: "text-purple-400", meta: `${formatNumber(Math.floor(tokenStats.totalTokensUsed * 0.35))} Units Saved` }
            ].map((stat, i) => (
              <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                <Card className="h-full bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden group hover:border-indigo-500/30 transition-all shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)]">

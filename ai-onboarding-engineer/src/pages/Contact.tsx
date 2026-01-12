@@ -8,7 +8,6 @@ import {
   MessageSquare, 
   Globe, 
   Send,
-  Zap,
   ShieldCheck,
   Binary
 } from "lucide-react"

@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardFooter } from "@/co
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { 
-  Users, 
   Star, 
   Copy,
   Loader2,
@@ -13,8 +12,6 @@ import {
   ChevronRight,
   Sparkles,
   Target,
-  Clock,
-  Zap,
   Binary
 } from "lucide-react"
 import { useRepository } from "@/hooks/useRepository"

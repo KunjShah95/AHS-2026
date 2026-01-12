@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, Fingerprint, ArrowRight, ShieldCheck, Binary, Sparkles } from "lucide-react"
+import { Loader2, ArrowRight, ShieldCheck, Binary, Sparkles } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"

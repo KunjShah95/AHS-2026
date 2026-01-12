@@ -41,7 +41,7 @@ export default function TechDebtHeatmap() {
       const repoId = localStorage.getItem('currentRepoId') || 'demo-repo';
       const heatmapData = await getTechDebtHeatmap(repoId);
       setHeatmap(heatmapData);
-      if (heatmapData.files.length > 0) setSelectedFile(heatmapData.files[0]);
+      if (heatmapData && heatmapData.files.length > 0) setSelectedFile(heatmapData.files[0]);
     } catch (error) {
       console.error('Error loading heatmap:', error);
     } finally {

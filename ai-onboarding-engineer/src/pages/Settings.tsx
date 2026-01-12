@@ -11,9 +11,7 @@ import {
   Binary, 
   Settings as SettingsIcon,
   Fingerprint,
-  Zap,
-  Globe,
-  ShieldCheck
+  Globe
 } from "lucide-react"
 
 export default function Settings() {

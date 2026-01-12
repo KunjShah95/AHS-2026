@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { ShieldCheck, FileCheck, Activity, Lock, ArrowRight, ClipboardCheck, Binary, Cpu, Fingerprint, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 import { getKnowledgeCoverage } from '@/lib/advanced-features-db';
 import type { KnowledgeCoverage } from '@/lib/types/advanced-features';
 
