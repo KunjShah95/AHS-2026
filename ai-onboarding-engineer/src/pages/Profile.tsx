@@ -1,35 +1,23 @@
-/*
-REDESIGNED PROFILE PAGE
-A premium RPG-style character sheet for engineers
-Features: Glassmorphic design, gradient accents, skill progression, achievements
-*/
-
 import { useState, useEffect, useCallback } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   Github, 
   MapPin, 
   Link as LinkIcon, 
-  Shield, 
-  Clock, 
-  Code2, 
-  Award, 
   LogOut, 
   CheckCircle2, 
   XCircle, 
   Loader2, 
   ExternalLink, 
   Save,
-  Star,
-  Target,
-  Zap,
-  TrendingUp,
+  Code2,
   Users,
-  GitBranch
+  GitBranch,
+  Star
 } from "lucide-react"
 
 interface GitHubUser {
@@ -46,46 +34,39 @@ interface GitHubUser {
   created_at: string
 }
 
-interface SkillProgress {
-  name: string
-  level: number
-  maxLevel: number
-  xp: number
-  maxXp: number
-  color: string
-}
-
-interface Achievement {
-  id: string
-  title: string
-  description: string
-  icon: typeof Award
-  unlocked: boolean
-  date?: string
-}
-
 export default function Profile() {
   const { user, logout } = useAuth()
   
-  // GitHub state - properly initialized to avoid cascading renders
-  const [githubUsername, setGithubUsername] = useState("")
-  const [savedGithubUsername, setSavedGithubUsername] = useState("")
+  const [githubUsername, setGithubUsername] = useState(() => {
+    if (typeof window !== "undefined" && user?.uid) {
+      return localStorage.getItem(`github_username_${user.uid}`) || ""
+    }
+    return ""
+  })
+
+  const [savedGithubUsername, setSavedGithubUsername] = useState(() => {
+    if (typeof window !== "undefined" && user?.uid) {
+      return localStorage.getItem(`github_username_${user.uid}`) || ""
+    }
+    return ""
+  })
+
+  useEffect(() => {
+    if (user?.uid) {
+       // Using setTimeout to prevent synchronous setState warning
+       const timer = setTimeout(() => {
+         const saved = localStorage.getItem(`github_username_${user.uid}`) || ""
+         setGithubUsername(saved)
+         setSavedGithubUsername(saved)
+       }, 0)
+       return () => clearTimeout(timer)
+    }
+  }, [user?.uid])
+
   const [githubData, setGithubData] = useState<GitHubUser | null>(null)
   const [verificationStatus, setVerificationStatus] = useState<"idle" | "loading" | "verified" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
 
-  // Load saved GitHub username on mount
-  useEffect(() => {
-    if (user?.uid) {
-      const saved = localStorage.getItem(`github_username_${user.uid}`)
-      if (saved) {
-        setGithubUsername(saved)
-        setSavedGithubUsername(saved)
-      }
-    }
-  }, [user?.uid])
-
-  // Verify GitHub username function
   const verifyGitHubUsername = useCallback(async (username: string) => {
     if (!username.trim()) {
       setVerificationStatus("idle")
@@ -123,14 +104,16 @@ export default function Profile() {
     }
   }, [])
 
-  // Auto-verify saved username on mount
   useEffect(() => {
     if (savedGithubUsername) {
-      verifyGitHubUsername(savedGithubUsername)
+      // Small delay to prevent synchronous setState warning in some environments
+      const timer = setTimeout(() => {
+        verifyGitHubUsername(savedGithubUsername)
+      }, 0)
+      return () => clearTimeout(timer)
     }
-  }, []) // Only run once on mount
+  }, [savedGithubUsername, verifyGitHubUsername])
 
-  // Save GitHub username
   const handleSaveGitHub = () => {
     if (verificationStatus === "verified" && user?.uid) {
       localStorage.setItem(`github_username_${user.uid}`, githubUsername.trim())
@@ -138,271 +121,113 @@ export default function Profile() {
     }
   }
 
-  // Mock skills data - replace with real data from backend
-  const skills: SkillProgress[] = [
-    { name: "React Mastery", level: 7, maxLevel: 10, xp: 4200, maxXp: 5000, color: "from-blue-500 to-cyan-500" },
-    { name: "Code Review", level: 5, maxLevel: 10, xp: 2800, maxXp: 3500, color: "from-purple-500 to-pink-500" },
-    { name: "Architecture", level: 6, maxLevel: 10, xp: 3100, maxXp: 4000, color: "from-orange-500 to-red-500" },
-    { name: "Testing", level: 4, maxLevel: 10, xp: 1500, maxXp: 2500, color: "from-green-500 to-emerald-500" },
-  ]
-
-  // Mock achievements - replace with real data
-  const achievements: Achievement[] = [
-    { id: "1", title: "First Steps", description: "Completed first onboarding", icon: Target, unlocked: true, date: "2024-12-15" },
-    { id: "2", title: "Code Explorer", description: "Analyzed 10 repositories", icon: Code2, unlocked: true, date: "2024-12-20" },
-    { id: "3", title: "Speed Demon", description: "Completed analysis in under 5 min", icon: Zap, unlocked: true, date: "2025-01-05" },
-    { id: "4", title: "Team Player", description: "Invited 5 team members", icon: Users, unlocked: false },
-    { id: "5", title: "Branch Master", description: "Analyzed 50 different branches", icon: GitBranch, unlocked: false },
-    { id: "6", title: "Legendary", description: "Reach level 10 in all skills", icon: Star, unlocked: false },
-  ]
-
-  // Main stats
   const stats = [
-    { label: "Repos Analyzed", value: githubData?.public_repos || "12", icon: Code2, color: "text-blue-400" },
-    { label: "GitHub Followers", value: githubData?.followers || "0", icon: Users, color: "text-purple-400" },
-    { label: "Hours Saved", value: "142", icon: Clock, color: "text-green-400" },
-    { label: "Current Level", value: "L7", icon: Award, color: "text-orange-400" },
+    { 
+      label: "Repositories", 
+      value: githubData?.public_repos?.toString() || "0", 
+      icon: Code2,
+      color: "from-indigo-500 to-purple-500"
+    },
+    { 
+      label: "Followers", 
+      value: githubData?.followers?.toString() || "0", 
+      icon: Users,
+      color: "from-purple-500 to-pink-500"
+    },
+    { 
+      label: "Following", 
+      value: githubData?.following?.toString() || "0", 
+      icon: GitBranch,
+      color: "from-pink-500 to-rose-500"
+    },
+    { 
+      label: "Since", 
+      value: githubData?.created_at 
+        ? new Date(githubData.created_at).getFullYear().toString() 
+        : "N/A", 
+      icon: Star,
+      color: "from-amber-500 to-orange-500"
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black py-12 px-4 md:px-8 relative overflow-hidden">
-      {/* Animated background gradient orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-pink-500/20 rounded-full blur-3xl animate-pulse delay-2000" />
-      </div>
+    <div className="min-h-screen bg-black text-white py-12 px-6">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black pointer-events-none" />
+      
+      <div className="relative z-10 max-w-7xl mx-auto space-y-12 pb-32">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-gray-900">
+           <div className="space-y-4">
+              <div className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-2 font-mono text-[10px] text-indigo-300 uppercase tracking-[0.2em]">
+                 /archive/identity-matrix
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none italic">
+                Identity <span className="not-italic text-gray-500">Node</span>
+              </h1>
+              <p className="text-lg text-gray-500 font-medium italic">
+                Sequential access for node: <span className="text-gray-300 not-italic">{user?.email || "developer@codeflow.sh"}</span>
+              </p>
+           </div>
+           
+           <Button 
+             variant="outline" 
+             className="h-14 px-8 border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/50 rounded-2xl font-black uppercase tracking-widest text-[10px]" 
+             onClick={logout}
+           >
+             <LogOut className="mr-2 h-4 w-4" />
+             Terminate Session
+           </Button>
+        </header>
 
-      <div className="max-w-7xl mx-auto space-y-8 relative z-10">
-        
-        {/* Header Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between"
-        >
-          <div className="flex items-center gap-6">
-            {/* Avatar with level ring */}
-            <div className="relative">
-              <motion.div 
-                className="relative"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                {/* Level ring */}
-                <svg className="absolute inset-0 -m-2" width="112" height="112">
-                  <circle
-                    cx="56"
-                    cy="56"
-                    r="52"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.1)"
-                    strokeWidth="4"
-                  />
-                  <circle
-                    cx="56"
-                    cy="56"
-                    r="52"
-                    fill="none"
-                    stroke="url(#gradient)"
-                    strokeWidth="4"
-                    strokeDasharray={`${(85 / 100) * 326.73} 326.73`}
-                    strokeLinecap="round"
-                    transform="rotate(-90 56 56)"
-                    className="transition-all duration-500"
-                  />
-                  <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#3b82f6" />
-                      <stop offset="100%" stopColor="#8b5cf6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-                
-                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-[3px]">
-                  <div className="h-full w-full rounded-full bg-gray-900 overflow-hidden flex items-center justify-center">
-                    {githubData?.avatar_url ? (
-                      <img src={githubData.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-3xl font-bold bg-gradient-to-br from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                        {user?.email?.charAt(0).toUpperCase() || "U"}
-                      </span>
-                    )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-8 space-y-8">
+            <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden shadow-2xl">
+              <CardContent className="p-10 space-y-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                       <Github className="h-6 w-6 text-indigo-400" />
+                    </div>
+                    <div>
+                       <h2 className="text-xl font-black text-white uppercase tracking-tight italic">GitHub Synthesis</h2>
+                       <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-1">Institutional Artifact Binding</p>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Status badge */}
-                <div className={`absolute -bottom-1 -right-1 h-8 w-8 rounded-full border-4 border-gray-900 flex items-center justify-center ${
-                  verificationStatus === "verified" ? "bg-gradient-to-br from-green-400 to-emerald-500" : "bg-gray-700"
-                }`}>
                   {verificationStatus === "verified" && (
-                    <CheckCircle2 className="h-4 w-4 text-white" />
+                    <span className="text-[10px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full font-black uppercase tracking-widest">
+                      Verified Sync
+                    </span>
                   )}
                 </div>
-              </motion.div>
-              
-              {/* XP Progress */}
-              <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                <div className="text-xs font-mono text-gray-400">85% to L8</div>
-              </div>
-            </div>
-            
-            <div className="mt-2">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
-                {githubData?.name || user?.displayName || "Engineer"}
-              </h1>
-              <p className="text-gray-400 font-mono text-sm mt-1">{user?.email}</p>
-              <div className="flex items-center gap-4 mt-3 text-sm">
-                {savedGithubUsername && verificationStatus === "verified" ? (
-                  <a 
-                    href={`https://github.com/${savedGithubUsername}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-blue-400 hover:text-blue-300 transition-colors"
-                  >
-                    <Github className="h-4 w-4" />
-                    <span>@{savedGithubUsername}</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                ) : (
-                  <span className="flex items-center gap-1.5 text-yellow-500">
-                    <Github className="h-4 w-4" />
-                    <span>Not linked</span>
-                  </span>
-                )}
-                {githubData?.location && (
-                  <span className="flex items-center gap-1.5 text-gray-400">
-                    <MapPin className="h-4 w-4" />
-                    {githubData.location}
-                  </span>
-                )}
-                {githubData?.blog && (
-                  <a 
-                    href={githubData.blog.startsWith('http') ? githubData.blog : `https://${githubData.blog}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
-                  >
-                    <LinkIcon className="h-4 w-4" />
-                    {githubData.blog.replace(/^https?:\/\//, '')}
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Button 
-            variant="outline" 
-            className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-300 gap-2 backdrop-blur-sm" 
-            onClick={logout}
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </Button>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.1 }}
-            >
-              <Card className="bg-gray-900/40 border border-white/10 backdrop-blur-xl hover:border-white/20 transition-all duration-300 group">
-                <CardContent className="p-6 flex flex-col items-center justify-center text-center space-y-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color.replace('text-', 'from-')} to-transparent opacity-20 group-hover:opacity-30 transition-opacity`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="relative flex-1 group">
+                    <Input
+                      placeholder="Enter GitHub ID"
+                      value={githubUsername}
+                      onChange={(e) => setGithubUsername(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && verifyGitHubUsername(githubUsername)}
+                      className="bg-black/40 border-gray-800 focus:border-indigo-500/40 text-white h-16 rounded-2xl px-6 italic font-medium group-hover:border-gray-700 transition-all"
+                    />
+                    <AnimatePresence mode="wait">
+                      {verificationStatus === "loading" && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Loader2 className="h-5 w-5 animate-spin text-indigo-400" />
+                        </div>
+                      )}
+                      {verificationStatus === "verified" && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                        </div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <div className="text-3xl font-bold font-mono bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider font-semibold">
-                    {stat.label}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - GitHub Integration & Skills */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* GitHub Integration */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="bg-gray-900/40 border border-white/10 backdrop-blur-xl overflow-hidden">
-                <CardHeader className="border-b border-white/5 bg-gradient-to-r from-gray-900/80 to-transparent">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                      <Github className="h-5 w-5 text-purple-400" />
-                    </div>
-                    <span>GitHub Integration</span>
-                    {verificationStatus === "verified" && (
-                      <span className="text-xs bg-green-500/20 text-green-400 px-3 py-1 rounded-full border border-green-500/30 font-semibold">
-                        ✓ Verified
-                      </span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <p className="text-sm text-gray-400">
-                    Link your GitHub account to unlock advanced analytics, contribution tracking, and personalized insights.
-                  </p>
                   
-                  <div className="flex gap-3">
-                    <div className="relative flex-1">
-                      <Input
-                        placeholder="Enter your GitHub username"
-                        value={githubUsername}
-                        onChange={(e) => setGithubUsername(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && verifyGitHubUsername(githubUsername)}
-                        className="bg-black/40 border-white/10 focus:border-purple-500/50 pr-10 transition-all"
-                      />
-                      <AnimatePresence mode="wait">
-                        {verificationStatus === "loading" && (
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2"
-                          >
-                            <Loader2 className="h-4 w-4 animate-spin text-purple-400" />
-                          </motion.div>
-                        )}
-                        {verificationStatus === "verified" && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0 }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2"
-                          >
-                            <CheckCircle2 className="h-4 w-4 text-green-400" />
-                          </motion.div>
-                        )}
-                        {verificationStatus === "error" && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0 }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2"
-                          >
-                            <XCircle className="h-4 w-4 text-red-400" />
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                    
+                  <div className="flex gap-4">
                     <Button 
                       variant="outline" 
                       onClick={() => verifyGitHubUsername(githubUsername)}
                       disabled={verificationStatus === "loading" || !githubUsername.trim()}
-                      className="border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10"
+                      className="h-16 px-8 border-gray-800 hover:border-indigo-500/40 hover:bg-white/2 rounded-2xl font-black uppercase tracking-widest text-[10px]"
                     >
                       Verify
                     </Button>
@@ -410,252 +235,196 @@ export default function Profile() {
                     <Button 
                       onClick={handleSaveGitHub}
                       disabled={verificationStatus !== "verified" || githubUsername === savedGithubUsername}
-                      className="gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0"
+                      className="h-16 px-8 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-2xl"
                     >
-                      <Save className="h-4 w-4" />
-                      Save
+                      <Save className="mr-2 h-4 w-4" />
+                      Commit
                     </Button>
                   </div>
+                </div>
 
-                  {verificationStatus === "error" && errorMessage && (
+                {verificationStatus === "error" && errorMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex items-center gap-4 text-sm text-red-400 bg-red-500/5 border border-red-500/10 rounded-2xl p-6 italic"
+                  >
+                    <XCircle className="h-5 w-5 shrink-0" />
+                    {errorMessage}
+                  </motion.div>
+                )}
+
+                <AnimatePresence mode="wait">
+                  {verificationStatus === "verified" && githubData && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      key="github-data"
+                      initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="flex items-center gap-2 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3"
+                      className="p-8 rounded-4xl bg-black/40 border border-gray-800 relative overflow-hidden group shadow-inner"
                     >
-                      <XCircle className="h-4 w-4" />
-                      {errorMessage}
-                    </motion.div>
-                  )}
-
-                  {/* GitHub User Preview */}
-                  <AnimatePresence>
-                    {verificationStatus === "verified" && githubData && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-4 p-5 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20">
-                          <div className="flex items-center gap-4">
-                            <img 
-                              src={githubData.avatar_url} 
-                              alt={githubData.login}
-                              className="h-16 w-16 rounded-full border-2 border-green-500/30 ring-4 ring-green-500/10"
-                            />
-                            <div className="flex-1">
-                              <div className="font-semibold text-lg text-white">
-                                {githubData.name || githubData.login}
-                              </div>
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/05 rounded-full blur-[80px] pointer-events-none" />
+                      <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8">
+                        <img 
+                          src={githubData.avatar_url} 
+                          alt={githubData.login}
+                          className="h-32 w-32 rounded-3xl border-2 border-indigo-500/20 shadow-2xl grayscale hover:grayscale-0 transition-all duration-500"
+                        />
+                        <div className="flex-1 text-center md:text-left space-y-4">
+                          <div>
+                            <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">
+                              {githubData.name || githubData.login}
+                            </h3>
+                            <a 
+                              href={githubData.html_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-indigo-400 hover:text-indigo-300 flex items-center justify-center md:justify-start gap-2 transition-colors font-black uppercase tracking-widest text-[10px] mt-2"
+                            >
+                              @{githubData.login}
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </div>
+                          {githubData.bio && (
+                            <p className="text-gray-400 italic text-lg leading-relaxed max-w-2xl font-medium">
+                              "{githubData.bio}"
+                            </p>
+                          )}
+                          <div className="flex flex-wrap items-center justify-center md:justify-start gap-8 pt-4">
+                            {githubData.location && (
+                              <span className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-600">
+                                <MapPin className="h-3 w-3 text-indigo-400" />
+                                {githubData.location}
+                              </span>
+                            )}
+                            {githubData.blog && (
                               <a 
-                                href={githubData.html_url}
+                                href={githubData.blog.startsWith('http') ? githubData.blog : `https://${githubData.blog}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-sm text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors"
+                                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-indigo-400 transition-colors"
                               >
-                                @{githubData.login}
-                                <ExternalLink className="h-3 w-3" />
+                                <LinkIcon className="h-3 w-3 text-indigo-400" />
+                                Resource Grid
                               </a>
-                              {githubData.bio && (
-                                <p className="text-xs text-gray-400 mt-2 line-clamp-2">{githubData.bio}</p>
-                              )}
-                            </div>
-                            <div className="flex gap-6 text-center">
-                              <div>
-                                <div className="text-xl font-bold font-mono text-white">{githubData.public_repos}</div>
-                                <div className="text-xs text-gray-400">Repos</div>
-                              </div>
-                              <div>
-                                <div className="text-xl font-bold font-mono text-white">{githubData.followers}</div>
-                                <div className="text-xs text-gray-400">Followers</div>
-                              </div>
-                              <div>
-                                <div className="text-xl font-bold font-mono text-white">{githubData.following}</div>
-                                <div className="text-xs text-gray-400">Following</div>
-                              </div>
-                            </div>
+                            )}
                           </div>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Skills Progress */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card className="bg-gray-900/40 border border-white/10 backdrop-blur-xl">
-                <CardHeader className="border-b border-white/5 bg-gradient-to-r from-gray-900/80 to-transparent">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20">
-                      <TrendingUp className="h-5 w-5 text-blue-400" />
-                    </div>
-                    <span>Skill Progression</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-6">
-                  {skills.map((skill, i) => (
-                    <motion.div
-                      key={skill.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.4 + i * 0.1 }}
-                      className="space-y-2"
-                    >
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-semibold text-white">{skill.name}</span>
-                        <span className="text-xs font-mono text-gray-400">
-                          Level {skill.level}/{skill.maxLevel}
-                        </span>
-                      </div>
-                      <div className="relative h-3 bg-black/40 rounded-full overflow-hidden border border-white/5">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(skill.xp / skill.maxXp) * 100}%` }}
-                          transition={{ duration: 1, delay: 0.5 + i * 0.1 }}
-                          className={`h-full bg-gradient-to-r ${skill.color} rounded-full relative`}
-                        >
-                          <div className="absolute inset-0 bg-white/20 animate-pulse" />
-                        </motion.div>
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-500 font-mono">
-                        <span>{skill.xp} XP</span>
-                        <span>{skill.maxXp} XP</span>
                       </div>
                     </motion.div>
-                  ))}
-                </CardContent>
-              </Card>
-            </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {stats.map((stat, idx) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                >
+                  <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden hover:border-indigo-500/30 transition-all shadow-xl group">
+                    <CardContent className="p-8 text-center space-y-4">
+                      <div className="h-10 w-10 rounded-xl bg-black border border-gray-800 flex items-center justify-center mx-auto group-hover:scale-110 transition-transform shadow-inner">
+                         <stat.icon className="h-5 w-5 text-indigo-400" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-3xl font-black text-white italic tracking-tighter tabular-nums leading-none">
+                          {stat.value}
+                        </div>
+                        <div className="text-[9px] font-black uppercase text-gray-700 tracking-widest italic">
+                          {stat.label}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Right Column - Achievements & Activity */}
-          <div className="space-y-6">
-            {/* Achievements */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className="bg-gray-900/40 border border-white/10 backdrop-blur-xl">
-                <CardHeader className="border-b border-white/5 bg-gradient-to-r from-gray-900/80 to-transparent">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-500/20 to-orange-500/20">
-                      <Award className="h-5 w-5 text-yellow-400" />
+          <div className="lg:col-span-4 space-y-8">
+            <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden shadow-2xl">
+              <div className="p-8 border-b border-gray-800 text-center">
+                <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600">Node Telemetry</h2>
+              </div>
+              <CardContent className="p-10 space-y-10">
+                <div className="flex flex-col items-center gap-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-indigo-500 blur-2xl opacity-20" />
+                    <div className="h-24 w-24 rounded-3xl border-2 border-indigo-500/20 bg-indigo-500/5 flex items-center justify-center overflow-hidden relative z-10">
+                      {githubData?.avatar_url ? (
+                        <img 
+                          src={githubData.avatar_url} 
+                          alt="Avatar" 
+                          className="h-full w-full object-cover grayscale" 
+                        />
+                      ) : (
+                        <span className="text-4xl font-black text-indigo-400 italic">
+                          {user?.email?.charAt(0).toUpperCase() || "U"}
+                        </span>
+                      )}
                     </div>
-                    <span>Achievements</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
-                  {achievements.map((achievement, i) => (
-                    <motion.div
-                      key={achievement.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.5 + i * 0.05 }}
-                      className={`p-4 rounded-xl border transition-all duration-300 ${
-                        achievement.unlocked
-                          ? "bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border-yellow-500/30 hover:border-yellow-500/50"
-                          : "bg-black/20 border-white/5 hover:border-white/10 opacity-60"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className={`p-2 rounded-lg ${
-                          achievement.unlocked 
-                            ? "bg-gradient-to-br from-yellow-500/20 to-orange-500/20" 
-                            : "bg-gray-800/40"
-                        }`}>
-                          <achievement.icon className={`h-5 w-5 ${
-                            achievement.unlocked ? "text-yellow-400" : "text-gray-600"
-                          }`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-white flex items-center gap-2">
-                            {achievement.title}
-                            {achievement.unlocked && <CheckCircle2 className="h-3 w-3 text-green-400" />}
-                          </div>
-                          <div className="text-xs text-gray-400 mt-1">
-                            {achievement.description}
-                          </div>
-                          {achievement.unlocked && achievement.date && (
-                            <div className="text-xs text-gray-500 mt-2 font-mono">
-                              Unlocked: {new Date(achievement.date).toLocaleDateString()}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </CardContent>
-              </Card>
-            </motion.div>
+                  </div>
+                  <div className="text-center space-y-2">
+                    <div className="text-2xl font-black text-white italic tracking-tighter uppercase leading-none">
+                      {githubData?.name || user?.displayName || "Developer"}
+                    </div>
+                    <div className="text-[10px] font-black text-gray-700 uppercase tracking-widest font-mono">
+                      {user?.email}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="pt-10 border-t border-gray-800 space-y-6">
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Network Status</span>
+                     <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest">ACTIVE</span>
+                     </div>
+                   </div>
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Node Plan</span>
+                     <span className="text-[10px] text-white font-black uppercase tracking-widest">PRO TIER</span>
+                   </div>
+                   <div className="flex items-center justify-between">
+                     <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Instance ID</span>
+                     <code className="text-[8px] bg-black/40 border border-gray-800 px-3 py-1 rounded-lg text-gray-500 font-mono tracking-tighter">
+                       {user?.uid?.substring(0, 16)}
+                     </code>
+                   </div>
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Plan Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <Card className="bg-gradient-to-br from-purple-900/40 to-pink-900/20 border border-purple-500/20 backdrop-blur-xl overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-50" />
-                <CardHeader className="relative border-b border-purple-500/20">
-                  <CardTitle className="text-lg flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30">
-                      <Shield className="h-5 w-5 text-purple-300" />
-                    </div>
-                    <span>Pro Plan</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4 relative">
-                  <div className="text-sm text-gray-300">
-                    Your plan renews on <span className="text-white font-semibold">Feb 12, 2026</span>
+            <div className="p-8 rounded-4xl bg-linear-to-br from-indigo-600 to-indigo-900 shadow-[0_40px_100px_-20px_rgba(79,70,229,0.3)] relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-[60px] pointer-events-none" />
+               <div className="relative z-10 space-y-6">
+                  <div className="h-12 w-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+                    <Star className="h-6 w-6 text-white" />
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs text-gray-400">
-                      <span>Monthly Usage</span>
-                      <span className="font-mono">85%</span>
-                    </div>
-                    <div className="h-3 w-full bg-black/40 rounded-full overflow-hidden border border-white/10">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: "85%" }}
-                        transition={{ duration: 1, delay: 0.6 }}
-                        className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
-                      />
-                    </div>
+                    <div className="text-[10px] font-black text-white/60 uppercase tracking-[0.3em]">Operational Readiness</div>
+                    <h4 className="text-2xl font-black text-white italic tracking-tighter leading-none">94.2% SYNC</h4>
                   </div>
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 border-0 text-sm font-semibold">
-                    Manage Billing
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
+                  <p className="text-[11px] text-white/50 font-medium italic leading-relaxed">
+                    Identity matrix verified across institutional clusters. Ready for discovery scan.
+                  </p>
+               </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.2);
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      `}</style>
+      <footer className="footer-fixed flex items-center justify-between text-[10px] text-gray-700 font-black uppercase tracking-[0.3em] pt-12 border-t border-gray-900 px-12 pb-12 w-full absolute bottom-0 left-0 bg-black/80 backdrop-blur-xl">
+         <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
+            Identity Guard Active
+         </div>
+         <div>Institutional Resolution: 2026</div>
+      </footer>
     </div>
   )
 }

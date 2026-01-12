@@ -307,3 +307,98 @@ export const getAllUserAnalyses = async (userId: string): Promise<SavedAnalysis[
     throw error;
   }
 };
+
+// ============================================
+// USER PROFILE FUNCTIONS
+// ============================================
+
+export interface UserProfile {
+  userId: string;
+  githubUsername?: string;
+  displayName?: string;
+  email?: string;
+  avatarUrl?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Save user profile data to Firestore
+ */
+export const saveUserProfile = async (
+  userId: string, 
+  profileData: Partial<Omit<UserProfile, 'userId' | 'createdAt' | 'updatedAt'>>
+): Promise<void> => {
+  try {
+    const userProfileRef = doc(db, 'userProfiles', userId);
+    const now = new Date().toISOString();
+    
+    // Check if profile exists
+    const docSnap = await getDoc(userProfileRef);
+    
+    if (docSnap.exists()) {
+      // Update existing profile
+      await updateDoc(userProfileRef, {
+        ...profileData,
+        updatedAt: now
+      });
+    } else {
+      // Create new profile
+      await setDoc(userProfileRef, {
+        userId,
+        ...profileData,
+        createdAt: now,
+        updatedAt: now
+      });
+    }
+    
+    console.log('User profile saved successfully');
+  } catch (error) {
+    console.error('Error saving user profile:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user profile data from Firestore
+ */
+export const getUserProfile = async (userId: string): Promise<UserProfile | null> => {
+  try {
+    const userProfileRef = doc(db, 'userProfiles', userId);
+    const docSnap = await getDoc(userProfileRef);
+    
+    if (docSnap.exists()) {
+      return docSnap.data() as UserProfile;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    throw error;
+  }
+};
+
+/**
+ * Save GitHub username specifically (convenience function)
+ */
+export const saveGitHubUsername = async (
+  userId: string, 
+  githubUsername: string
+): Promise<void> => {
+  return saveUserProfile(userId, { githubUsername });
+};
+
+/**
+ * Get GitHub username specifically (convenience function)
+ */
+export const getGitHubUsername = async (userId: string): Promise<string | null> => {
+  try {
+    const profile = await getUserProfile(userId);
+    return profile?.githubUsername || null;
+  } catch (error) {
+    console.error('Error getting GitHub username:', error);
+    return null;
+  }
+};

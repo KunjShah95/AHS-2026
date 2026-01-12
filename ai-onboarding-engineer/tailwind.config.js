@@ -7,9 +7,8 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Instrument Sans"', 'sans-serif'],
-                display: ['"DM Sans"', 'sans-serif'],
-                mono: ['"JetBrains Mono"', 'monospace'],
+                sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                mono: ['"JetBrains Mono"', '"Fira Code"', '"Courier New"', 'monospace'],
             },
             colors: {
                 background: "hsl(var(--background))",
@@ -47,8 +46,9 @@ export default {
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
-                "shine": "shine 4s ease-in-out infinite",
-                "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
+                "scanline": "scanline 2.5s ease-in-out",
+                "blink": "blink 1.2s step-end infinite",
+                "terminal-glow": "terminal-glow 2s ease-in-out infinite",
             },
             keyframes: {
                 "accordion-down": {
@@ -59,13 +59,21 @@ export default {
                     from: { height: "var(--radix-accordion-content-height)" },
                     to: { height: "0" },
                 },
-                shine: {
-                    from: { backgroundPosition: "0 0" },
-                    to: { backgroundPosition: "-200% 0" },
+                scanline: {
+                    "0%": { transform: "translateY(-100%)", opacity: "0.3" },
+                    "50%": { opacity: "0.5" },
+                    "100%": { transform: "translateY(100vh)", opacity: "0.3" },
                 },
-                "border-beam": {
-                    "100%": {
-                        "offset-distance": "100%",
+                blink: {
+                    "0%, 50%": { opacity: "1" },
+                    "51%, 100%": { opacity: "0" },
+                },
+                "terminal-glow": {
+                    "0%, 100%": {
+                        boxShadow: "0 0 5px rgba(0, 255, 65, 0.5), 0 0 10px rgba(0, 255, 65, 0.3)"
+                    },
+                    "50%": {
+                        boxShadow: "0 0 10px rgba(0, 255, 65, 0.8), 0 0 20px rgba(0, 255, 65, 0.5)"
                     },
                 },
             },

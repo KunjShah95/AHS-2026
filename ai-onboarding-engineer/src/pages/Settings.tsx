@@ -1,122 +1,179 @@
-/*
-BILLION: Technical settings panel that feels like configuring a spacecraft.
-DIRECTION: Functional / Dense / Clean
-SIGNATURE: Toggle-heavy panel
-*/
-
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github, Bell, Shield, Key } from "lucide-react"
+import { 
+  Github, 
+  Bell, 
+  ShieldAlert, 
+  Key, 
+  Cpu, 
+  Binary, 
+  Settings as SettingsIcon,
+  Fingerprint,
+  Zap,
+  Globe,
+  ShieldCheck
+} from "lucide-react"
 
 export default function Settings() {
   return (
-    <div className="min-h-screen bg-background py-12 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Settings</h1>
-          <p className="text-muted-foreground mt-2">Manage your account preferences and integrations.</p>
+    <div className="min-h-screen bg-black text-white py-12 px-6 overflow-x-hidden">
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/10 via-black to-black pointer-events-none" />
+      
+      <div className="relative z-10 max-w-4xl mx-auto space-y-12 pb-32">
+        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-gray-900 px-2">
+           <div className="space-y-4">
+              <div className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-2 font-mono text-[10px] text-indigo-300 uppercase tracking-[0.3em] italic">
+                 /archive/system-parameters
+              </div>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none italic">
+                Configuration <span className="not-italic text-gray-500">Core</span>
+              </h1>
+              <p className="text-lg text-gray-500 font-medium italic">
+                Adjust institutional parameters and neural handshake protocols.
+              </p>
+           </div>
+           
+           <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shadow-inner">
+              <SettingsIcon className="h-6 w-6 text-indigo-400" />
+           </div>
+        </header>
+
+        <div className="space-y-8 px-2">
+           {/* Source Control */}
+           <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden shadow-2xl relative group hover:border-indigo-500/20 transition-all">
+              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-indigo-500/40 to-transparent" />
+              <CardHeader className="p-10 pb-0">
+                 <CardTitle className="flex items-center gap-4 text-xl font-black uppercase italic tracking-tighter text-white">
+                    <Github className="h-6 w-6 text-indigo-400" /> Source Control
+                 </CardTitle>
+                 <CardDescription className="text-gray-500 font-medium italic pt-2">Sync protocols for institutional repositories.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-10 space-y-6">
+                 <div className="flex flex-col md:flex-row items-center justify-between p-6 rounded-3xl bg-black/40 border border-gray-800 gap-6">
+                    <div className="flex items-center gap-6">
+                       <div className="h-12 w-12 rounded-2xl bg-white flex items-center justify-center text-black shadow-2xl">
+                          <Github className="h-6 w-6" />
+                       </div>
+                       <div className="space-y-1">
+                          <div className="text-[10px] font-black uppercase tracking-widest text-white italic">GitHub Gateway</div>
+                          <div className="text-[10px] font-black uppercase text-emerald-500 italic tracking-widest flex items-center gap-2">
+                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                             Connected: @user
+                          </div>
+                       </div>
+                    </div>
+                    <Button variant="outline" className="h-10 px-6 border-rose-500/20 text-rose-500 hover:bg-rose-500/10 text-[9px] font-black uppercase tracking-widest italic rounded-xl active:scale-95 transition-all">Disconnect</Button>
+                 </div>
+
+                 <div className="flex flex-col md:flex-row items-center justify-between p-6 rounded-3xl bg-black/40 border border-gray-800 opacity-40 gap-6 grayscale">
+                    <div className="flex items-center gap-6">
+                       <div className="h-12 w-12 rounded-2xl bg-orange-600 flex items-center justify-center text-white shadow-2xl">
+                          <Globe className="h-6 w-6" />
+                       </div>
+                       <div className="space-y-1">
+                          <div className="text-[10px] font-black uppercase tracking-widest text-white italic">GitLab Integration</div>
+                          <div className="text-[10px] font-black uppercase text-gray-600 italic tracking-widest">Not Synchronized</div>
+                       </div>
+                    </div>
+                    <Button variant="outline" className="h-10 px-6 border-gray-800 text-gray-500 hover:bg-white/5 text-[9px] font-black uppercase tracking-widest italic rounded-xl">Initialize</Button>
+                 </div>
+              </CardContent>
+           </Card>
+
+           {/* API Access */}
+           <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden shadow-2xl relative group hover:border-indigo-500/20 transition-all">
+              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-purple-500/40 to-transparent" />
+              <CardHeader className="p-10 pb-0">
+                 <CardTitle className="flex items-center gap-4 text-xl font-black uppercase italic tracking-tighter text-white">
+                    <Key className="h-6 w-6 text-purple-400" /> API Access
+                 </CardTitle>
+                 <CardDescription className="text-gray-500 font-medium italic pt-2">Neural keys for terminal and CI/CD handshake.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-10 space-y-6">
+                 <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 relative">
+                       <div className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                          <Cpu className="h-2 w-2 text-purple-400" />
+                       </div>
+                       <Input value="sk_live_512395812905812905812" readOnly className="h-14 pl-12 bg-black/40 border-gray-800 text-gray-500 font-mono text-[10px] rounded-xl shadow-inner focus-visible:ring-0 focus-visible:border-gray-800" />
+                    </div>
+                    <div className="flex gap-4">
+                       <Button className="h-14 px-8 bg-white text-black font-black uppercase tracking-widest text-[9px] rounded-xl hover:bg-gray-200 shadow-2xl italic active:scale-95 transition-all">Copy Key</Button>
+                       <Button variant="destructive" className="h-14 px-8 bg-rose-600/10 border border-rose-500/20 text-rose-500 font-black uppercase tracking-widest text-[9px] rounded-xl hover:bg-rose-500/20 italic active:scale-95 transition-all">Revoke</Button>
+                    </div>
+                 </div>
+                 <p className="text-[9px] text-gray-700 font-black uppercase tracking-[0.2em] italic px-1 flex items-center gap-2">
+                    <ShieldAlert className="h-3 w-3 text-amber-500" />
+                    Key exposure grants full architectural visibility to external agents.
+                 </p>
+              </CardContent>
+           </Card>
+
+           {/* Notifications */}
+           <Card className="bg-gray-900/40 border border-gray-800 rounded-4xl overflow-hidden shadow-2xl relative group hover:border-indigo-500/20 transition-all">
+              <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-emerald-500/40 to-transparent" />
+              <CardHeader className="p-10 pb-0">
+                 <CardTitle className="flex items-center gap-4 text-xl font-black uppercase italic tracking-tighter text-white">
+                    <Bell className="h-6 w-6 text-emerald-400" /> Communication
+                 </CardTitle>
+                 <CardDescription className="text-gray-500 font-medium italic pt-2">Telemetry streaming and status alerts.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-10 divide-y divide-gray-800/50">
+                 {[
+                    { label: "Analysis synchronization", active: true },
+                    { label: "Institutional velocity summary", active: true },
+                    { label: "Neural protocol updates", active: false },
+                    { label: "Critical vulnerability alerts", active: true }
+                 ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between py-6 first:pt-0 last:pb-0 group/item">
+                       <span className="text-[10px] font-black uppercase tracking-widest text-gray-500 group-hover/item:text-white transition-colors italic">{item.label}</span>
+                       <div className={`h-6 w-12 rounded-full p-1 cursor-pointer transition-all duration-500 ${item.active ? 'bg-indigo-600 shadow-[0_0_15px_rgba(79,70,229,0.4)]' : 'bg-gray-900 border border-gray-800 grayscale'}`}>
+                          <motion.div 
+                            className="h-full w-4 bg-white rounded-full shadow-2xl"
+                            animate={{ x: item.active ? 20 : 0 }}
+                          />
+                       </div>
+                    </div>
+                 ))}
+              </CardContent>
+           </Card>
+
+           {/* Danger Zone */}
+           <Card className="bg-rose-500/05 border border-rose-500/20 rounded-4xl overflow-hidden shadow-2xl group hover:bg-rose-500/10 transition-all">
+              <CardHeader className="p-10 pb-0">
+                 <CardTitle className="flex items-center gap-4 text-xl font-black uppercase italic tracking-tighter text-rose-500">
+                    <ShieldAlert className="h-6 w-6" /> Institutional Purge
+                 </CardTitle>
+              </CardHeader>
+              <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                 <div className="space-y-2 text-center md:text-left">
+                    <div className="text-lg font-black text-rose-200 italic uppercase tracking-tighter">Liquidate Account Data</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-rose-500/60 italic">This action initiates total neural entropy. Data cannot be recovered.</div>
+                 </div>
+                 <Button variant="destructive" className="h-14 px-10 bg-rose-600 text-white font-black uppercase tracking-widest text-[9px] rounded-xl hover:bg-rose-500 shadow-2xl italic active:scale-95 transition-all">Initiate Purge</Button>
+              </CardContent>
+           </Card>
         </div>
 
-        {/* Git Integrations */}
-        <Card className="border-white/10 bg-card/40 backdrop-blur-sm">
-           <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                 <Github className="h-5 w-5" /> Source Control
-              </CardTitle>
-              <CardDescription>Manage your connections to GitHub, GitLab, or Bitbucket.</CardDescription>
-           </CardHeader>
-           <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg border border-white/5 bg-black/20">
-                 <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-black">
-                       <Github className="h-6 w-6" />
-                    </div>
-                    <div>
-                       <div className="font-medium">GitHub</div>
-                       <div className="text-xs text-green-500">Connected as @user</div>
-                    </div>
-                 </div>
-                 <Button variant="outline" size="sm" className="border-red-500/20 text-red-500 hover:bg-red-500/10">Disconnect</Button>
+        <footer className="footer-fixed flex items-center justify-between text-[10px] text-gray-700 font-black uppercase tracking-[0.3em] pt-12 border-t border-gray-900 px-12 pb-12 w-full absolute bottom-0 left-0 bg-black/80 backdrop-blur-xl z-20">
+           <div className="flex items-center gap-3">
+              <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
+              Parameter Sync Active
+           </div>
+           <div className="flex items-center gap-10">
+              <div className="flex items-center gap-2">
+                 <Fingerprint className="h-3.5 w-3.5 text-gray-800" />
+                 <span className="opacity-60 text-[9px] uppercase font-black">Archive: User Credentials</span>
               </div>
-
-              <div className="flex items-center justify-between p-4 rounded-lg border border-white/5 bg-black/20 opacity-50">
-                 <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-orange-600 flex items-center justify-center text-white">
-                       <span className="font-bold">GitLab</span>
-                    </div>
-                    <div>
-                       <div className="font-medium">GitLab</div>
-                       <div className="text-xs text-muted-foreground">Not connected</div>
-                    </div>
-                 </div>
-                 <Button variant="outline" size="sm">Connect</Button>
+              <div className="flex items-center gap-2">
+                 <Binary className="h-3.5 w-3.5 text-gray-800" />
+                 <span className="opacity-60 font-black italic">Config v3.0.1</span>
               </div>
-           </CardContent>
-        </Card>
-
-        {/* API Keys */}
-        <Card className="border-white/10 bg-card/40 backdrop-blur-sm">
-           <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                 <Key className="h-5 w-5" /> API Access
-              </CardTitle>
-              <CardDescription>Manage API keys for CI/CD integration.</CardDescription>
-           </CardHeader>
-           <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                 <Input value="sk_live_512395812905812905812" readOnly className="bg-black/40 font-mono text-xs" />
-                 <Button variant="secondary">Copy</Button>
-                 <Button variant="destructive">Revoke</Button>
-              </div>
-              <p className="text-xs text-muted-foreground">Everyone with this key has admin access to your account.</p>
-           </CardContent>
-        </Card>
-
-        {/* Notifications */}
-        <Card className="border-white/10 bg-card/40 backdrop-blur-sm">
-           <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                 <Bell className="h-5 w-5" /> Notifications
-              </CardTitle>
-              <CardDescription>Choose what we email you about.</CardDescription>
-           </CardHeader>
-           <CardContent className="space-y-4">
-              {[
-                 "Analysis completed",
-                 "Weekly summary",
-                 "New features",
-                 "Security alerts"
-              ].map((item, i) => (
-                 <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                    <span className="text-sm">{item}</span>
-                    <div className="h-6 w-11 bg-primary rounded-full relative cursor-pointer">
-                       <div className="absolute right-1 top-1 h-4 w-4 bg-white rounded-full shadow-sm" />
-                    </div>
-                 </div>
-              ))}
-           </CardContent>
-        </Card>
-
-        {/* Danger Zone */}
-        <Card className="border-red-500/20 bg-red-500/5 backdrop-blur-sm">
-           <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-red-500">
-                 <Shield className="h-5 w-5" /> Danger Zone
-              </CardTitle>
-           </CardHeader>
-           <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                 <div>
-                    <div className="font-medium text-red-200">Delete Account</div>
-                    <div className="text-xs text-red-200/60">This action is irreversible. All data will be lost.</div>
-                 </div>
-                 <Button variant="destructive">Delete Account</Button>
-              </div>
-           </CardContent>
-        </Card>
-
+              <div>Institutional Snapshot: {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
+           </div>
+        </footer>
       </div>
     </div>
   )

@@ -23,6 +23,25 @@ import Quiz from "./pages/Quiz"
 import KnowledgeBase from "./pages/KnowledgeBase"
 import Playbooks from "./pages/Playbooks"
 import FirstPR from "./pages/FirstPR"
+
+
+// Advanced Features
+import FlowTracer from "./pages/FlowTracer"
+import TechDebtHeatmap from "./pages/TechDebtHeatmap"
+import WhereShouldILook from "./pages/WhereShouldILook"
+import LearningProgress from "./pages/LearningProgress"
+import CTODashboard from "./pages/CTODashboard"
+import CriticalPaths from "./pages/CriticalPaths"
+import SkillGaps from "./pages/SkillGaps"
+import OnboardingBenchmarks from "./pages/OnboardingBenchmarks"
+import ProbationPredictor from "./pages/ProbationPredictor"
+import ComplianceAudit from "./pages/ComplianceAudit"
+import DueDiligence from "./pages/DueDiligence"
+import LivingDocs from "./pages/LivingDocs"
+import TeamMemory from "./pages/TeamMemory"
+import DecisionExplanation from "./pages/DecisionExplanation"
+
+
 import { AuthProvider } from "./context/AuthContext"
 
 function App() {
@@ -53,6 +72,22 @@ function App() {
             <Route path="knowledge" element={<KnowledgeBase />} />
             <Route path="playbooks" element={<Playbooks />} />
             <Route path="first-pr" element={<FirstPR />} />
+
+            {/* Advanced Features */}
+            <Route path="flow-tracer" element={<FlowTracer />} />
+            <Route path="tech-debt" element={<TechDebtHeatmap />} />
+            <Route path="where-look" element={<WhereShouldILook />} />
+            <Route path="learning-progress" element={<LearningProgress />} />
+            <Route path="cto-dashboard" element={<CTODashboard />} />
+            <Route path="critical-paths" element={<CriticalPaths />} />
+            <Route path="skill-gaps" element={<SkillGaps />} />
+            <Route path="benchmarks" element={<OnboardingBenchmarks />} />
+            <Route path="probation" element={<ProbationPredictor />} />
+            <Route path="compliance" element={<ComplianceAudit />} />
+            <Route path="due-diligence" element={<DueDiligence />} />
+            <Route path="living-docs" element={<LivingDocs />} />
+            <Route path="team-memory" element={<TeamMemory />} />
+            <Route path="decision-explanation" element={<DecisionExplanation />} />
 
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
