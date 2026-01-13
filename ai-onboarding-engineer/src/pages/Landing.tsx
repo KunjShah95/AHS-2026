@@ -1,23 +1,56 @@
-import { useRef } from "react"
+import { useRef, useEffect, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { 
   ArrowRight, Zap, Shield, Code2, Target, 
   Sparkles, Network,
-  ChevronRight, BrainCircuit, Globe, Cpu, Layers,
-  Compass, Workflow, Gauge, Binary
+  ChevronRight, BrainCircuit, Cpu, Layers,
+  Compass, Gauge, Star
 } from "lucide-react"
+
+// Aurora Wave Background Component
+function AuroraBackground() {
+  return (
+    <div className="aurora-container">
+      <div className="aurora-wave aurora-wave-1" />
+      <div className="aurora-wave aurora-wave-2" />
+      <div className="aurora-wave aurora-wave-3" />
+      <div className="aurora-glow" />
+    </div>
+  )
+}
 
 export default function Landing() {
   const heroRef = useRef(null)
   const isHeroInView = useInView(heroRef, { once: true })
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100
+      })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   const stats = [
-    { value: "6 mo → 3 wk", label: "Onboarding Scale", icon: Target, color: "text-indigo-400" },
-    { value: "153K+", label: "Productivity Yield", icon: Sparkles, color: "text-purple-400" },
+    { value: "6 mo → 3 wk", label: "Onboarding Scale", icon: Target, color: "text-cyan-400" },
+    { value: "153K+", label: "Productivity Yield", icon: Sparkles, color: "text-teal-400" },
     { value: "12K+", label: "Neural Audits", icon: Code2, color: "text-emerald-400" },
-    { value: "99.99%", label: "Grid Stability", icon: Shield, color: "text-rose-400" }
+    { value: "99.99%", label: "Grid Stability", icon: Shield, color: "text-cyan-400" }
+  ]
+
+  const partners = [
+    { name: "AURIQ", icon: "◇" },
+    { name: "LOFTPQ", icon: "◈" },
+    { name: "NIMBLE", icon: "◆" },
+    { name: "ECHO", icon: "●" },
+    { name: "POLAR", icon: "◐" },
+    { name: "CIRCUIT", icon: "◎" }
   ]
 
   const features = [
@@ -26,14 +59,14 @@ export default function Landing() {
       description: "Industrial-grade AST parsing with multi-layer dependency mapping. Our engines resolve architectural intent where traditional tools see only files.",
       icon: Cpu,
       metrics: ["SOC-II Certified", "AST Mastery"],
-      color: "from-indigo-600/20"
+      color: "from-cyan-600/20"
     },
     {
       title: "Living Context Pathways",
       description: "Dynamic roadmaps that evolve with every commit. We transform unstructured institutional memory into high-bandwidth learning vectors.",
       icon: Compass,
       metrics: ["Zero maintenance", "Adaptive UI"],
-      color: "from-purple-600/20"
+      color: "from-teal-600/20"
     },
     {
       title: "Architectural Tracer",
@@ -47,7 +80,7 @@ export default function Landing() {
       description: "Enterprise-grade performance dashboards. Quantify cohort progression and reclaim senior capacity through autonomous intelligence.",
       icon: Gauge,
       metrics: ["Predictive ROI", "Cohort Audit"],
-      color: "from-rose-600/20"
+      color: "from-cyan-600/20"
     }
   ]
 
@@ -57,13 +90,30 @@ export default function Landing() {
     { id: "03", title: "Compress Time", desc: "Deployment of custom pathways to new hires, reclaiming institutional velocity.", icon: Zap }
   ]
 
+  const testimonials = [
+    { quote: "Traditional onboarding is just for recruiters, not engineers.", attribution: "Engineering Lead, Series B Startup" },
+    { quote: "We post once in a while and nothing happens. CodeFlow changed that.", attribution: "CTO, Fortune 500" }
+  ]
+
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none" />
-      <div className="fixed inset-0 opacity-10 pointer-events-none">
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[60px_60px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      {/* Aurora Wave Background */}
+      <AuroraBackground />
+      
+      {/* Mouse-following gradient */}
+      <div 
+        className="fixed inset-0 opacity-30 pointer-events-none transition-all duration-1000"
+        style={{
+          background: `radial-gradient(800px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(6, 182, 212, 0.15), transparent 40%)`
+        }}
+      />
+      
+      {/* Subtle grid overlay */}
+      <div className="fixed inset-0 opacity-[0.03] pointer-events-none">
+         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
 
+      {/* HERO SECTION */}
       <section ref={heroRef} className="relative min-h-screen flex items-center justify-center px-6 md:px-8 pt-32 pb-20">
         <div className="max-w-7xl w-full">
           <motion.div
@@ -72,74 +122,157 @@ export default function Landing() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="text-center relative z-20"
           >
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-12 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
-              <Sparkles className="h-4 w-4 text-indigo-400 animate-pulse" />
-              <span className="text-[10px] text-indigo-300 font-black uppercase tracking-[0.3em] italic">Institutional Intelligence v3.0.4</span>
+            {/* Star Rating Badge */}
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+              <div className="flex items-center gap-0.5">
+                {[1,2,3,4,5].map(i => (
+                  <Star key={i} className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                ))}
+              </div>
+              <div className="w-px h-4 bg-white/20" />
+              <span className="text-xs text-gray-300 font-medium">Our Freight Forwarders bring up to 100% to revenue</span>
             </div>
 
-            <h1 className="text-6xl md:text-8xl lg:text-9xl font-black mb-10 leading-[0.85] tracking-tighter">
-              <span className="bg-linear-to-r from-white via-white to-gray-500 bg-clip-text text-transparent uppercase">
-                Context is <br className="hidden lg:block"/> The Bottleneck.
+            {/* Main Headline with Mixed Styling */}
+            <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-medium mb-8 leading-[1.05] tracking-tight">
+              <span className="text-white">
+                Turn{" "}
+              </span>
+              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent font-semibold">
+                6-month ramps
+              </span>
+              <span className="text-white">
+                {" "}and{" "}
+              </span>
+              <span className="italic text-cyan-400 font-light">
+                context chaos
+              </span>
+              <span className="text-white">
+                {" "}into
               </span>
               <br />
-              <span className="bg-linear-to-r from-indigo-400 via-purple-400 to-rose-400 bg-clip-text text-transparent italic lowercase tracking-normal">
-                codeflow resolves it.
+              <span className="text-white">
+                steady{" "}
+              </span>
+              <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent font-semibold">
+                engineering velocity
               </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-gray-400 mb-16 max-w-3xl mx-auto leading-relaxed font-medium italic">
-              We compress 6 months of traditional engineering ramp-up into 3 clinical weeks. Autonomous architecture mapping. Personalized context pathways. Real-time mastery.
+            {/* Subheadline */}
+            <p className="text-lg md:text-xl text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed font-light">
+              We build you a production-grade onboarding engine in <span className="text-cyan-400 underline decoration-cyan-400/30 underline-offset-4">3 clinical weeks</span> that brings
+              <br className="hidden md:block" />
+              <span className="text-gray-300">10-40 qualified new hires</span> every month, with autonomous context delivery
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center items-center mb-24">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <Link to="/analysis">
-                <Button className="h-20 px-12 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-3xl hover:bg-gray-200 transition-all shadow-[0_40px_100px_-15px_rgba(255,255,255,0.2)] group flex items-center gap-4 italic">
-                  Initialize Scan
-                  <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <Button className="h-14 px-8 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm rounded-xl transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] group flex items-center gap-3">
+                  Book a 20-minute Pipeline Audit
+                  <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Link to="/register">
-                <Button className="h-20 px-12 bg-transparent border border-gray-800 text-white font-black uppercase tracking-widest text-[10px] rounded-3xl hover:bg-white/5 transition-all italic">
-                  Enterprise Access
+              <Link to="/pricing">
+                <Button variant="outline" className="h-14 px-8 bg-transparent border border-white/20 text-white font-medium text-sm rounded-xl hover:bg-white/5 hover:border-white/30 transition-all">
+                  See how the system works
                 </Button>
               </Link>
             </div>
 
-            <div className="flex flex-wrap gap-12 justify-center text-[10px] font-black uppercase tracking-[0.4em] text-gray-500 italic">
-              <div className="flex items-center gap-3 group cursor-default">
-                <Globe className="h-4 w-4 text-indigo-400 group-hover:scale-125 transition-transform" />
-                <span className="group-hover:text-gray-300 transition-colors">Distributed Sync</span>
-              </div>
-              <div className="flex items-center gap-3 group cursor-default">
-                <Shield className="h-4 w-4 text-purple-400 group-hover:scale-125 transition-transform" />
-                <span className="group-hover:text-gray-300 transition-colors">Industrial Security</span>
-              </div>
-              <div className="flex items-center gap-3 group cursor-default">
-                <Workflow className="h-4 w-4 text-rose-400 group-hover:scale-125 transition-transform" />
-                <span className="group-hover:text-gray-300 transition-colors">Native Toolchain</span>
-              </div>
+            {/* Trust Badge */}
+            <div className="text-xs text-gray-500 mb-12">
+              You're in good hands
+            </div>
+
+            {/* Partner Logos */}
+            <div className="flex flex-wrap gap-8 md:gap-12 justify-center items-center text-gray-500">
+              {partners.map((partner, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 + idx * 0.1 }}
+                  className="flex items-center gap-2 text-sm font-medium hover:text-gray-300 transition-colors cursor-default"
+                >
+                  <span className="text-cyan-500/60">{partner.icon}</span>
+                  <span>{partner.name}</span>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section className="relative py-20 px-6 border-y border-gray-900 bg-black/50">
+      {/* PROBLEM STATEMENT SECTION */}
+      <section className="relative py-32 px-6 border-y border-white/5">
+        <div className="max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="space-y-8"
+          >
+            <h2 className="text-4xl md:text-6xl font-medium tracking-tight">
+              If your pipeline depends on{" "}
+              <span className="italic text-cyan-400 font-light">referrals</span>
+              {" "}and{" "}
+              <span className="italic text-cyan-400 font-light">random outreach</span>
+              <span className="text-gray-400">,</span>
+              {" "}you
+              <br />
+              are{" "}
+              <span className="relative">
+                <span className="text-amber-400 underline decoration-amber-400/50 underline-offset-4 decoration-wavy">exposed</span>
+              </span>
+            </h2>
+            <p className="text-gray-500 text-lg font-medium">
+              Most engineering teams tell us:
+            </p>
+          </motion.div>
+
+          {/* Testimonial Cards */}
+          <div className="grid md:grid-cols-2 gap-6 mt-16 max-w-4xl mx-auto">
+            {testimonials.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="p-8 bg-white/[0.02] border border-white/5 rounded-2xl text-left hover:bg-white/[0.04] hover:border-white/10 transition-all group"
+              >
+                <p className="text-gray-300 text-lg font-light italic leading-relaxed mb-4">
+                  "{item.quote}"
+                </p>
+                <p className="text-gray-600 text-sm">
+                  — {item.attribution}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* STATS SECTION */}
+      <section className="relative py-20 px-6 bg-gradient-to-b from-transparent via-cyan-950/10 to-transparent">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {stats.map((stat, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 className="text-center group"
               >
-                <div className="text-4xl md:text-5xl font-black mb-2 text-white tabular-nums tracking-tighter italic">
+                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 text-white tabular-nums tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
                   {stat.value}
                 </div>
-                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center justify-center gap-2 italic">
-                   <stat.icon className={`h-3 w-3 ${stat.color}`} />
+                <div className="text-xs font-medium uppercase tracking-wider text-gray-500 flex items-center justify-center gap-2">
+                   <stat.icon className={`h-3.5 w-3.5 ${stat.color}`} />
                    {stat.label}
                 </div>
               </motion.div>
@@ -148,18 +281,22 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="relative py-40 px-6">
+      {/* FEATURES SECTION */}
+      <section className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-32 space-y-6">
-            <div className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-              <span className="text-[10px] text-indigo-400 font-black uppercase tracking-[0.3em] italic">Core Fabric</span>
+          <div className="text-center mb-20 space-y-6">
+            <div className="inline-block px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20">
+              <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Core Fabric</span>
             </div>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none italic">
-              Built for <br className="hidden md:block"/> Industrial Scale
+            <h2 className="text-4xl md:text-6xl font-medium tracking-tight">
+              Built for{" "}
+              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+                Industrial Scale
+              </span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {features.map((feature, idx) => (
               <motion.div
                 key={idx}
@@ -167,21 +304,21 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`group relative p-12 bg-linear-to-br ${feature.color} to-transparent border border-gray-800 rounded-4xl hover:border-indigo-500/40 transition-all overflow-hidden shadow-2xl`}
+                className={`group relative p-10 bg-gradient-to-br ${feature.color} to-transparent border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all overflow-hidden`}
               >
                 <div className="relative z-10">
-                   <div className="h-16 w-16 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform">
-                      <feature.icon className="h-8 w-8 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.5)]" />
+                   <div className="h-14 w-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-cyan-500/30 transition-all">
+                      <feature.icon className="h-7 w-7 text-cyan-400" />
                    </div>
-                   <h3 className="text-3xl font-black mb-6 text-white uppercase tracking-tighter leading-none group-hover:text-indigo-400 transition-colors italic">
+                   <h3 className="text-2xl font-semibold mb-4 text-white group-hover:text-cyan-300 transition-colors">
                      {feature.title}
                    </h3>
-                   <p className="text-gray-400 text-lg mb-10 leading-relaxed font-medium italic">
+                   <p className="text-gray-400 text-base mb-8 leading-relaxed font-light">
                      {feature.description}
                    </p>
-                   <div className="flex gap-4 pt-8 border-t border-gray-800/50">
+                   <div className="flex gap-3 pt-6 border-t border-white/5">
                      {feature.metrics.map((metric, mIdx) => (
-                       <div key={mIdx} className="text-[10px] font-black text-indigo-400 uppercase tracking-widest px-3 py-1 bg-indigo-500/5 border border-indigo-500/10 rounded-full italic">
+                       <div key={mIdx} className="text-xs font-medium text-cyan-400 uppercase tracking-wide px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
                          {metric}
                        </div>
                      ))}
@@ -193,110 +330,103 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="relative py-40 bg-zinc-950/50 border-y border-gray-900 overflow-hidden">
+      {/* HOW IT WORKS SECTION */}
+      <section className="relative py-32 bg-gradient-to-b from-cyan-950/20 via-black to-black border-y border-white/5 overflow-hidden">
          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                <div className="space-y-12">
-                  <div className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] italic">The Protocol</div>
-                  <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none italic">Context <br className="hidden md:block"/> Synthesis</h2>
+                  <div className="space-y-4">
+                    <div className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">The Protocol</div>
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight">
+                      Context{" "}
+                      <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+                        Synthesis
+                      </span>
+                    </h2>
+                  </div>
                   <div className="space-y-8">
                      {steps.map((step, i) => (
-                        <div key={i} className="flex gap-10 group">
-                           <div className="text-3xl font-black text-gray-800 group-hover:text-indigo-400 transition-colors uppercase italic tabular-nums">{step.id}</div>
+                        <motion.div 
+                          key={i} 
+                          className="flex gap-8 group"
+                          initial={{ opacity: 0, x: -20 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.15 }}
+                        >
+                           <div className="text-3xl font-semibold text-gray-700 group-hover:text-cyan-400 transition-colors tabular-nums">{step.id}</div>
                            <div className="space-y-2">
-                              <h4 className="text-xl font-bold uppercase tracking-tight text-white italic">{step.title}</h4>
-                              <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-sm italic">{step.desc}</p>
+                              <h4 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors">{step.title}</h4>
+                              <p className="text-gray-500 text-sm leading-relaxed max-w-sm font-light">{step.desc}</p>
                            </div>
-                        </div>
+                        </motion.div>
                      ))}
                   </div>
                </div>
-               <div className="relative aspect-square md:aspect-video rounded-5xl bg-indigo-600 overflow-hidden shadow-[0_0_100px_rgba(79,70,229,0.3)] border-4 border-indigo-500/20 group">
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000')] bg-cover bg-center grayscale mix-blend-overlay opacity-50 transition-transform duration-1000 group-hover:scale-105" />
+               <motion.div 
+                 className="relative aspect-[4/3] rounded-3xl bg-gradient-to-br from-cyan-600 to-teal-700 overflow-hidden shadow-[0_0_80px_rgba(6,182,212,0.2)] border border-cyan-500/20 group"
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 whileInView={{ opacity: 1, scale: 1 }}
+                 viewport={{ once: true }}
+               >
+                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000')] bg-cover bg-center grayscale mix-blend-overlay opacity-40 transition-transform duration-1000 group-hover:scale-105" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                     <div className="h-24 w-24 rounded-full bg-white flex items-center justify-center text-black shadow-2xl transform transition-transform group-hover:scale-110">
-                        <ArrowRight className="h-10 w-10 font-black" />
+                     <div className="h-20 w-20 rounded-full bg-white flex items-center justify-center text-black shadow-2xl transform transition-all group-hover:scale-110 group-hover:shadow-[0_0_60px_rgba(255,255,255,0.3)]">
+                        <ArrowRight className="h-8 w-8" />
                      </div>
                   </div>
-               </div>
+               </motion.div>
             </div>
          </div>
       </section>
 
-      <section className="relative py-48 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-12 pb-32">
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase leading-[0.85] italic">
-            <span className="bg-linear-to-r from-white via-white to-gray-500 bg-clip-text text-transparent">Stop Documenting.</span>
-            <br />
-            <span className="bg-linear-to-r from-indigo-400 to-rose-500 bg-clip-text text-transparent">Reclaim Flow.</span>
-          </h2>
+      {/* FINAL CTA SECTION */}
+      <section className="relative py-40 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-10 pb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl md:text-7xl font-medium tracking-tight leading-[1.1]">
+              <span className="text-white">Stop Documenting.</span>
+              <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
+                Reclaim Flow.
+              </span>
+            </h2>
 
-          <p className="text-2xl text-gray-500 font-medium max-w-2xl mx-auto italic">
-            Ready to optimize your institutional intelligence cycle? Join the engineering teams defining the future of autonomy.
-          </p>
+            <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mt-8">
+              Ready to optimize your institutional intelligence cycle? Join the engineering teams defining the future of autonomy.
+            </p>
 
-          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-            <Link to="/analysis">
-              <Button size="lg" className="h-24 px-16 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-4xl hover:bg-gray-200 transition-all shadow-[0_50px_100px_-20px_rgba(255,255,255,0.3)] group italic">
-                Launch Initial Scan
-                <ArrowRight className="ml-4 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </div>
+            <div className="flex flex-col sm:flex-row gap-5 justify-center pt-10">
+              <Link to="/analysis">
+                <Button className="h-16 px-12 bg-white text-black font-semibold text-sm rounded-2xl hover:bg-gray-100 transition-all shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:shadow-[0_0_80px_rgba(255,255,255,0.25)] group">
+                  Launch Initial Scan
+                  <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
 
-          <div className="pt-24 flex items-center justify-center gap-10">
-             <div className="flex -space-x-4">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="h-12 w-12 rounded-full border-2 border-black bg-gray-900 flex items-center justify-center text-[10px] font-black text-gray-400">
-                    A{i}
+            <div className="pt-16 flex items-center justify-center gap-8">
+               <div className="flex -space-x-3">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="h-10 w-10 rounded-full border-2 border-black bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-xs font-semibold text-gray-400">
+                      A{i}
+                    </div>
+                  ))}
+               </div>
+               <div className="text-left">
+                  <div className="flex items-center gap-0.5 pb-1">
+                     {[1,2,3,4,5].map(i => <Star key={i} className="h-3 w-3 text-cyan-400 fill-cyan-400" />)}
                   </div>
-                ))}
-             </div>
-             <div className="text-left">
-                <div className="flex items-center gap-1 pb-1">
-                   {[1,2,3,4,5].map(i => <Sparkles key={i} className="h-3 w-3 text-emerald-400 fill-emerald-400" />)}
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-gray-600 italic">Trusted by 12,000+ Grid Nodes</div>
-             </div>
-          </div>
+                  <div className="text-xs font-medium text-gray-600">Trusted by 12,000+ Grid Nodes</div>
+               </div>
+            </div>
+          </motion.div>
         </div>
       </section>
-      
-      <footer className="footer-fixed py-20 px-12 border-t border-gray-900 bg-black/80 backdrop-blur-xl w-full">
-         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="flex flex-col gap-4">
-               <span className="text-4xl font-black italic tracking-tighter flex items-center gap-3 uppercase">
-                  CodeFlow.
-                  <div className="h-2 w-2 rounded-full bg-indigo-500" />
-               </span>
-               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-700 italic">The Context Layer for Engineering</span>
-            </div>
-            <div className="flex gap-16">
-               <div className="flex flex-col gap-4 text-[10px] font-black uppercase tracking-widest text-gray-500 italic">
-                  <span className="text-white not-italic">Social</span>
-                  <a href="#" className="hover:text-white transition-colors">Twitter</a>
-                  <a href="#" className="hover:text-white transition-colors">GitHub</a>
-               </div>
-               <div className="flex flex-col gap-4 text-[10px] font-black uppercase tracking-widest text-gray-500 italic">
-                  <span className="text-white not-italic">Resources</span>
-                  <Link to="/about" className="hover:text-white transition-colors">About</Link>
-                  <Link to="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-               </div>
-               <div className="flex flex-col gap-4 text-[10px] font-black uppercase tracking-widest text-gray-500 italic">
-                  <span className="text-white not-italic">Legal</span>
-                  <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-                  <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-               </div>
-            </div>
-         </div>
-         <div className="max-w-7xl mx-auto mt-20 pt-10 border-t border-gray-900/50 flex items-center justify-between text-[10px] font-black text-gray-800 uppercase tracking-widest italic">
-            <div className="flex items-center gap-3">
-               <Binary className="h-3 w-3 text-gray-800" />
-               &copy; 2026 CodeFlow Labs Inc.
-            </div>
-            <span>Synthesized with &lt;3 in SF</span>
-         </div>
-      </footer>
     </div>
   )
 }
