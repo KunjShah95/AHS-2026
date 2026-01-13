@@ -59,7 +59,7 @@ export default function TeamAnalytics() {
     try {
       setLoading(true)
       const response = await api.get<AnalyticsData>("/team-analytics/demo-data")
-      setData(response)
+      setData(response.data)
     } catch (error) {
       console.error("Failed to fetch analytics:", error)
     } finally {

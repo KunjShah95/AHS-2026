@@ -48,7 +48,7 @@ export default function Playbooks() {
     try {
       setLoading(true)
       const response = await api.get<OnboardingPlaybook[]>("/playbooks/list")
-      setPlaybooks(response)
+      setPlaybooks(response.data)
     } catch (error) {
       console.error("Failed to fetch playbooks:", error)
     } finally {
@@ -65,7 +65,7 @@ export default function Playbooks() {
         repo_id: currentRepository.id,
         user_id: user.uid,
       })
-      setPlaybooks(response)
+      setPlaybooks(response.data)
     } catch (err) {
       console.error("Failed to fetch repository playbooks:", err)
       loadDefaultPlaybooks()

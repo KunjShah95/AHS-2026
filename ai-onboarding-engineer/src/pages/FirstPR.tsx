@@ -52,7 +52,7 @@ export default function FirstPR() {
     try {
       setLoading(true)
       const response = await api.get<FirstIssue[]>("/first-pr/issues")
-      setIssues(response)
+      setIssues(response.data)
     } catch (error) {
       console.error("Failed to fetch issues:", error)
     } finally {
@@ -69,7 +69,7 @@ export default function FirstPR() {
         repo_id: currentRepository.id,
         user_id: user.uid,
       })
-      setIssues(response)
+      setIssues(response.data)
     } catch (err) {
       console.error("Failed to fetch repository first PR issues:", err)
       loadDefaultIssues()
@@ -91,7 +91,7 @@ export default function FirstPR() {
     try {
       const response = await api.post<{ progress: Progress }>(`/first-pr/start/${issue.id}?user_id=${user.uid}`, {})
       setActiveIssue(issue)
-      setProgress(response.progress)
+      setProgress(response.data.progress)
     } catch (error) {
       console.error("Failed to start issue:", error)
     }
@@ -101,7 +101,7 @@ export default function FirstPR() {
     if (!activeIssue || !user) return
     try {
       const response = await api.post<{ progress: Progress }>(`/first-pr/progress/${activeIssue.id}/step/${stepNum}?user_id=${user.uid}`, {})
-      setProgress(response.progress)
+      setProgress(response.data.progress)
     } catch (error) {
        console.error("Failed to update progress:", error)
     }

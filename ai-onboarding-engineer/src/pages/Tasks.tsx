@@ -5,42 +5,75 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, FileCode, GitPullRequest, Play, Loader2, ListTodo, Terminal, Box, Clock, Binary } from "lucide-react"
 import { useAuth } from "@/hooks/useAuth"
-
-interface Task {
-  id: number
-  title: string
-  description: string
-  difficulty: string
-  estimatedTime: string
-  files: string[]
-  status: string
-  marketing: string
-}
+import { useCurrentRepositoryData } from "@/hooks/useRepository"
+import { geminiService } from "@/lib/services/gemini-service"
+import { getOnboardingTasks, saveOnboardingTasks } from "@/lib/advanced-features-db"
+import type { OnboardingTask } from "@/lib/types/advanced-features"
 
 export default function Tasks() {
   const { user } = useAuth()
+  const { analysisData, repoId } = useCurrentRepositoryData()
   const [loading, setLoading] = useState(true)
-  const [taskList, setTaskList] = useState<Task[]>([])
+  const [taskList, setTaskList] = useState<OnboardingTask[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadTasks = async () => {
-      if (!user) {
+      if (!user || !repoId) {
         setLoading(false)
         return
       }
 
       try {
-        setLoading(false)
+        setLoading(true)
+        // 1. Try to load from DB
+        const savedTasks = await getOnboardingTasks(repoId)
+        
+        if (savedTasks.length > 0) {
+          setTaskList(savedTasks)
+        } else if (analysisData) {
+          // 2. If not found, generate using Gemini
+          const generatedTasks = await geminiService.generateOnboardingTasks(
+            JSON.stringify(analysisData), 
+            "mid", 
+            "general", 
+            "medium"
+          )
+          
+          // Map to OnboardingTask
+          const newTasks: OnboardingTask[] = generatedTasks.map((t, i) => ({
+            id: `task_${Date.now()}_${i}`,
+            repoId,
+            title: t.title as string || `Task ${i + 1}`,
+            description: t.description as string || "No description provided",
+            difficulty: (t.difficulty as string) || "Medium",
+            estimatedTime: (t.estimatedTime as string) || "1h",
+            files: (Array.isArray(t.filesInvolved) ? t.filesInvolved : []) as string[],
+            status: 'pending',
+            marketing: "Contribution Yield",
+            objective: t.objective as string || "",
+            prerequisites: t.prerequisites as string || "",
+            steps: JSON.stringify(t.steps || []),
+            successCriteria: t.successCriteria as string || "",
+            generatedAt: new Date().toISOString()
+          }))
+
+          setTaskList(newTasks)
+          await saveOnboardingTasks(repoId, newTasks)
+        }
       } catch (error) {
         console.error("Error loading tasks:", error)
+        setError("Failed to load tasks sequence.")
+      } finally {
         setLoading(false)
       }
     }
 
     loadTasks()
-  }, [user])
+  }, [user, repoId, analysisData])
 
-  const toggleStatus = (id: number) => {
+  const toggleStatus = (id: string) => {
+    // In a real app we'd save this status change to DB
     setTaskList(taskList.map(t => {
       if (t.id === id) {
         const newStatus = t.status === "completed" ? "pending" : "completed"
@@ -84,10 +117,12 @@ export default function Tasks() {
               <div className="space-y-2">
                  <h3 className="text-xl font-bold uppercase tracking-tight text-white">Objective Pool Empty</h3>
                  <p className="text-sm text-gray-600 font-medium italic max-w-sm mx-auto leading-relaxed">
-                   Neural scan of the core repository cluster is required to synthesize safe-to-fail practice objectives.
+                   {error || "Neural scan of the core repository cluster is required to synthesize safe-to-fail practice objectives."}
                  </p>
               </div>
-              <Button size="lg" className="h-14 px-10 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-gray-200 shadow-2xl transition-all">Initialize System Scan</Button>
+              {!analysisData && (
+                <Button size="lg" className="h-14 px-10 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-2xl hover:bg-gray-200 shadow-2xl transition-all">Initialize System Scan</Button>
+              )}
            </div>
         </div>
       </div>

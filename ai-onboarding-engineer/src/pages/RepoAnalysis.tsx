@@ -56,7 +56,7 @@ export default function RepoAnalysis() {
 
         let analysisId: string;
         try {
-          analysisId = await saveRepoAnalysis(user.uid, repoUrl, response);
+          analysisId = await saveRepoAnalysis(user.uid, repoUrl, response.data);
         } catch (firestoreError) {
           console.warn("Firestore save failed, but continuing with analysis:", firestoreError);
           analysisId = `temp_${Date.now()}`;
@@ -73,7 +73,7 @@ export default function RepoAnalysis() {
           userId: user.uid,
           repoUrl,
           repoName,
-          data: response,
+          data: response.data,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           lastAccessedAt: new Date().toISOString(),
@@ -87,7 +87,7 @@ export default function RepoAnalysis() {
           console.warn("Failed to update context:", contextError);
         }
         
-        navigate("/roadmap", { state: { analysisData: response, repoUrl: repoUrl } })
+        navigate("/roadmap", { state: { analysisData: response.data, repoUrl: repoUrl } })
 
     } catch (err: unknown) {
         console.error("Analysis failed:", err);

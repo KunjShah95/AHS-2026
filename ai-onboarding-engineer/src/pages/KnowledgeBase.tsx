@@ -78,7 +78,7 @@ export default function KnowledgeBase() {
     try {
       setLoading(true)
       const response = await api.get<DemoData>("/knowledge/demo-data")
-      setData(response)
+      setData(response.data)
     } catch (err) {
       console.error("Failed to fetch demo knowledge base:", err)
     } finally {
@@ -95,7 +95,7 @@ export default function KnowledgeBase() {
         repo_id: currentRepository.id,
         user_id: user.uid,
       })
-      setData(response)
+      setData(response.data)
     } catch (err) {
       console.error("Failed to fetch repository knowledge base:", err)
       loadDemoData()

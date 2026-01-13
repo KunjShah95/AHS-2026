@@ -57,7 +57,7 @@ export default function QuizPage() {
     setLoading(true)
     try {
       const data = await api.get<Quiz>("/quiz/demo-quiz")
-      setQuiz(data)
+      setQuiz(data.data)
       setCurrentQuestionIndex(0)
       setAnswers({})
       setResult(null)
@@ -83,7 +83,7 @@ export default function QuizPage() {
         user_id: user.uid,
         difficulty: "intermediate",
       })
-      setQuiz(data)
+      setQuiz(data.data)
       setCurrentQuestionIndex(0)
       setAnswers({})
       setResult(null)
@@ -128,7 +128,7 @@ export default function QuizPage() {
         answers,
         time_taken_seconds: 300 
       })
-      setResult(response)
+      setResult(response.data)
     } catch (error) {
       console.error("Failed to submit quiz:", error)
     } finally {

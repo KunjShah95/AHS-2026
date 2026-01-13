@@ -36,7 +36,8 @@ import type {
   LivingDoc,
   TeamMemory,
   FAQ,
-  CommonMistake
+  CommonMistake,
+  OnboardingTask
 } from './types/advanced-features';
 
 // ============================================
@@ -677,6 +678,50 @@ export const addCommonMistake = async (
     });
   } catch (error) {
     console.error('Error adding common mistake:', error);
+    throw error;
+  }
+};
+
+// ============================================
+// #16: ONBOARDING TASKS
+// ============================================
+
+export const saveOnboardingTasks = async (
+  repoId: string,
+  tasks: OnboardingTask[]
+): Promise<void> => {
+  try {
+    // Better approach: Store in a subcollection or dedicated collection
+    const tasksRef = collection(db, 'onboardingTasks');
+    console.log(`Saving ${tasks.length} tasks for repo ${repoId}`);
+    
+    // Delete existing tasks for this repo to avoid duplicates/stale data (optional, but cleaner for this use case)
+    // const q = query(tasksRef, where('repoId', '==', repoId));
+    // const snapshot = await getDocs(q);
+    // snapshot.forEach(async (doc) => { await deleteDoc(doc.ref); });
+
+    for (const task of tasks) {
+      await addDoc(tasksRef, {
+        ...task,
+        generatedAt: new Date().toISOString()
+      });
+    }
+  } catch (error) {
+    console.error('Error saving onboarding tasks:', error);
+    throw error;
+  }
+};
+
+export const getOnboardingTasks = async (repoId: string): Promise<OnboardingTask[]> => {
+  try {
+    const q = query(
+      collection(db, 'onboardingTasks'),
+      where('repoId', '==', repoId)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as OnboardingTask));
+  } catch (error) {
+    console.error('Error getting onboarding tasks:', error);
     throw error;
   }
 };

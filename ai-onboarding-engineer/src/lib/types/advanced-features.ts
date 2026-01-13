@@ -377,3 +377,24 @@ export interface TeamMemory {
   };
   lastUpdated: string;
 }
+
+// ============================================
+// #16: ONBOARDING TASKS
+// ============================================
+
+export interface OnboardingTask {
+  id: string;
+  repoId: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  estimatedTime: string;
+  files: string[];
+  status: 'pending' | 'completed';
+  marketing: string;
+  objective: string;
+  prerequisites: string;
+  steps: string;
+  successCriteria: string;
+  generatedAt: string;
+}
