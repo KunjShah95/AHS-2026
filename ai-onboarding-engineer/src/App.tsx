@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { Analytics } from "@vercel/analytics/react"
 import Layout from "./components/layout/Layout"
 import Landing from "./pages/Landing"
 import RepoAnalysis from "./pages/RepoAnalysis"
@@ -94,7 +95,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
-
+      <Analytics />
     </AuthProvider>
   )
 }

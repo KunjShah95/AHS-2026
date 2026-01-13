@@ -110,7 +110,7 @@ export default function Landing() {
       
       {/* Subtle grid overlay */}
       <div className="fixed inset-0 opacity-[0.03] pointer-events-none">
-         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:60px_60px]" />
+         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[60px_60px]" />
       </div>
 
       {/* HERO SECTION */}
@@ -138,7 +138,7 @@ export default function Landing() {
               <span className="text-white">
                 Turn{" "}
               </span>
-              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent font-semibold">
+              <span className="bg-linear-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent font-semibold">
                 6-month ramps
               </span>
               <span className="text-white">
@@ -154,7 +154,7 @@ export default function Landing() {
               <span className="text-white">
                 steady{" "}
               </span>
-              <span className="bg-gradient-to-r from-teal-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent font-semibold">
+              <span className="bg-linear-to-r from-teal-300 via-cyan-300 to-emerald-300 bg-clip-text text-transparent font-semibold">
                 engineering velocity
               </span>
             </h1>
@@ -241,7 +241,7 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="p-8 bg-white/[0.02] border border-white/5 rounded-2xl text-left hover:bg-white/[0.04] hover:border-white/10 transition-all group"
+                className="p-8 bg-white/2 border border-white/5 rounded-2xl text-left hover:bg-white/4 hover:border-white/10 transition-all group"
               >
                 <p className="text-gray-300 text-lg font-light italic leading-relaxed mb-4">
                   "{item.quote}"
@@ -256,7 +256,7 @@ export default function Landing() {
       </section>
 
       {/* STATS SECTION */}
-      <section className="relative py-20 px-6 bg-gradient-to-b from-transparent via-cyan-950/10 to-transparent">
+      <section className="relative py-20 px-6 bg-linear-to-b from-transparent via-cyan-950/10 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
             {stats.map((stat, idx) => (
@@ -268,7 +268,7 @@ export default function Landing() {
                 transition={{ delay: idx * 0.1 }}
                 className="text-center group"
               >
-                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 text-white tabular-nums tracking-tight bg-gradient-to-b from-white to-gray-400 bg-clip-text text-transparent">
+                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 text-white tabular-nums tracking-tight bg-linear-to-b from-white to-gray-400 bg-clip-text">
                   {stat.value}
                 </div>
                 <div className="text-xs font-medium uppercase tracking-wider text-gray-500 flex items-center justify-center gap-2">
@@ -290,7 +290,7 @@ export default function Landing() {
             </div>
             <h2 className="text-4xl md:text-6xl font-medium tracking-tight">
               Built for{" "}
-              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
                 Industrial Scale
               </span>
             </h2>
@@ -304,7 +304,7 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`group relative p-10 bg-gradient-to-br ${feature.color} to-transparent border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all overflow-hidden`}
+                className={`group relative p-10 bg-linear-to-br ${feature.color} to-transparent border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all overflow-hidden`}
               >
                 <div className="relative z-10">
                    <div className="h-14 w-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-cyan-500/30 transition-all">
@@ -331,7 +331,7 @@ export default function Landing() {
       </section>
 
       {/* HOW IT WORKS SECTION */}
-      <section className="relative py-32 bg-gradient-to-b from-cyan-950/20 via-black to-black border-y border-white/5 overflow-hidden">
+      <section className="relative py-32 bg-linear-to-b from-cyan-950/20 via-black to-black border-y border-white/5 overflow-hidden">
          <div className="max-w-7xl mx-auto px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
                <div className="space-y-12">
@@ -339,7 +339,7 @@ export default function Landing() {
                     <div className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">The Protocol</div>
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight">
                       Context{" "}
-                      <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+                      <span className="bg-linear-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
                         Synthesis
                       </span>
                     </h2>
@@ -364,7 +364,7 @@ export default function Landing() {
                   </div>
                </div>
                <motion.div 
-                 className="relative aspect-[4/3] rounded-3xl bg-gradient-to-br from-cyan-600 to-teal-700 overflow-hidden shadow-[0_0_80px_rgba(6,182,212,0.2)] border border-cyan-500/20 group"
+                 className="relative aspect-4/3 rounded-3xl bg-linear-to-br from-cyan-600 to-teal-700 overflow-hidden shadow-[0_0_80px_rgba(6,182,212,0.2)] border border-cyan-500/20 group"
                  initial={{ opacity: 0, scale: 0.95 }}
                  whileInView={{ opacity: 1, scale: 1 }}
                  viewport={{ once: true }}
@@ -391,7 +391,7 @@ export default function Landing() {
             <h2 className="text-5xl md:text-7xl font-medium tracking-tight leading-[1.1]">
               <span className="text-white">Stop Documenting.</span>
               <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
                 Reclaim Flow.
               </span>
             </h2>
@@ -412,7 +412,7 @@ export default function Landing() {
             <div className="pt-16 flex items-center justify-center gap-8">
                <div className="flex -space-x-3">
                   {[1,2,3,4].map(i => (
-                    <div key={i} className="h-10 w-10 rounded-full border-2 border-black bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-xs font-semibold text-gray-400">
+                    <div key={i} className="h-10 w-10 rounded-full border-2 border-black bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center text-xs font-semibold text-gray-400">
                       A{i}
                     </div>
                   ))}
