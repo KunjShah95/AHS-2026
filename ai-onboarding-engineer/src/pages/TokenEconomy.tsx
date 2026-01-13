@@ -149,15 +149,16 @@ export default function TokenEconomy() {
       
       <div className="relative z-10 max-w-7xl mx-auto space-y-12 pb-32">
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-gray-900">
-           <div className="space-y-4">
+           <div className="space-y-3">
               <div className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-2 font-mono text-[10px] text-indigo-300 uppercase tracking-[0.2em]">
-                 /archive/economic-engine
+                 Token Analytics
               </div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none italic">
-                Token <span className="not-italic text-gray-500">Economy</span>
+              <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase leading-snug">
+                Token<br />
+                <span className="text-gray-500">Economy</span>
               </h1>
-              <p className="text-lg text-gray-500 font-medium italic">
-                Autonomous optimization of context allocation and LLM compute cycles.
+              <p className="text-base text-gray-500 max-w-md">
+                Track your AI token usage and optimize costs across all analyses.
               </p>
            </div>
            
