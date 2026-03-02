@@ -38,3 +38,8 @@ yarn-debug.log*
 # Cache
 .next/
 .cache/
+
+# Documentation
+*.md
+!Readme.md
+!README.md

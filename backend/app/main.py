@@ -97,6 +97,10 @@ app.include_router(security.router, prefix="/api/v1", tags=["security"])
 # Phase 4: Observability
 app.include_router(observability.router, prefix="/api/v1", tags=["observability"])
 
+# Cost Monitoring & Optimization
+from app.api.endpoints import cost_monitoring
+app.include_router(cost_monitoring.router, prefix="/api/v1", tags=["cost-optimization"])
+
 
 # Phase 1: ADK-based Orchestrator Integration
 from app.agents import (

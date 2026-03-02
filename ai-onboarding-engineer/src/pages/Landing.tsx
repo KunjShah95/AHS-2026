@@ -2,11 +2,13 @@ import { useRef, useEffect, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { 
   ArrowRight, Zap, Shield, Code2, Target, 
   Sparkles, Network,
   ChevronRight, BrainCircuit, Cpu, Layers,
-  Compass, Gauge, Star
+  Compass, Gauge, Star, Check, Rocket
 } from "lucide-react"
 
 // Aurora Wave Background Component
@@ -58,28 +60,28 @@ export default function Landing() {
       title: "Neural Repository Synthesis",
       description: "Industrial-grade AST parsing with multi-layer dependency mapping. Our engines resolve architectural intent where traditional tools see only files.",
       icon: Cpu,
-      metrics: ["SOC-II Certified", "AST Mastery"],
+      highlights: ["SOC-II Certified", "AST Mastery"],
       color: "from-cyan-600/20"
     },
     {
       title: "Living Context Pathways",
-      description: "Dynamic roadmaps that evolve with every commit. We transform unstructured institutional memory into high-bandwidth learning vectors.",
+      description: "Dynamic roadmaps that evolve with every commit. We transform unstructured institutional memory into learning vectors.",
       icon: Compass,
-      metrics: ["Zero maintenance", "Adaptive UI"],
+      highlights: ["Zero maintenance", "Adaptive UI"],
       color: "from-teal-600/20"
     },
     {
       title: "Architectural Tracer",
-      description: "Visualize the institutional DNA of your code. Identify critical risk zones and fragile dependency cycles before they stall your sprint.",
+      description: "Visualize the institutional DNA of your code. Identify critical risk zones before they stall your sprint.",
       icon: Network,
-      metrics: ["Real-time graph", "Risk Index"],
+      highlights: ["Real-time graph", "Risk Index"],
       color: "from-emerald-600/20"
     },
     {
       title: "Capability Analytics",
-      description: "Enterprise-grade performance dashboards. Quantify cohort progression and reclaim senior capacity through autonomous intelligence.",
+      description: "Enterprise dashboards. Quantify cohort progression and reclaim senior capacity through autonomous intelligence.",
       icon: Gauge,
-      metrics: ["Predictive ROI", "Cohort Audit"],
+      highlights: ["Predictive ROI", "Cohort Audit"],
       color: "from-cyan-600/20"
     }
   ]
@@ -122,16 +124,22 @@ export default function Landing() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="text-center relative z-20"
           >
-            {/* Star Rating Badge */}
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+            {/* Trust Badge */}
+            <motion.div 
+              className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              whileHover={{ scale: 1.02, backgroundColor: "rgba(255,255,255,0.08)" }}
+            >
               <div className="flex items-center gap-0.5">
                 {[1,2,3,4,5].map(i => (
                   <Star key={i} className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
                 ))}
               </div>
               <div className="w-px h-4 bg-white/20" />
-              <span className="text-xs text-gray-300 font-medium">Our Freight Forwarders bring up to 100% to revenue</span>
-            </div>
+              <span className="text-xs text-gray-300 font-medium">Trusted by 12,000+ engineering teams</span>
+            </motion.div>
 
             {/* Main Headline with Mixed Styling */}
             <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-medium mb-8 leading-[1.05] tracking-tight">
@@ -167,40 +175,56 @@ export default function Landing() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+            >
               <Link to="/analysis">
-                <Button className="h-14 px-8 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm rounded-xl transition-all shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_50px_rgba(6,182,212,0.5)] group flex items-center gap-3">
-                  Book a 20-minute Pipeline Audit
-                  <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <Button 
+                  size="lg" 
+                  className="h-14 px-10 bg-primary text-primary-foreground font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 group"
+                >
+                  Start Repository Scan
+                  <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link to="/pricing">
-                <Button variant="outline" className="h-14 px-8 bg-transparent border border-white/20 text-white font-medium text-sm rounded-xl hover:bg-white/5 hover:border-white/30 transition-all">
-                  See how the system works
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="h-14 px-10 border-white/10 hover:bg-white/5 font-semibold"
+                >
+                  See How It Works
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-            </div>
-
-            {/* Trust Badge */}
-            <div className="text-xs text-gray-500 mb-12">
-              You're in good hands
-            </div>
+            </motion.div>
 
             {/* Partner Logos */}
-            <div className="flex flex-wrap gap-8 md:gap-12 justify-center items-center text-gray-500">
-              {partners.map((partner, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 + idx * 0.1 }}
-                  className="flex items-center gap-2 text-sm font-medium hover:text-gray-300 transition-colors cursor-default"
-                >
-                  <span className="text-cyan-500/60">{partner.icon}</span>
-                  <span>{partner.name}</span>
-                </motion.div>
-              ))}
-            </div>
+            <motion.div 
+              className="space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+            >
+              <div className="text-xs text-gray-500 font-medium uppercase tracking-wider">Trusted by forward-thinking teams</div>
+              <div className="flex flex-wrap gap-6 md:gap-10 justify-center items-center">
+                {partners.map((partner, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 + idx * 0.08 }}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-300 transition-colors cursor-default"
+                  >
+                    <span className="text-cyan-500/70">{partner.icon}</span>
+                    <span>{partner.name}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -214,21 +238,17 @@ export default function Landing() {
             viewport={{ once: true }}
             className="space-y-8"
           >
-            <h2 className="text-4xl md:text-6xl font-medium tracking-tight">
-              If your pipeline depends on{" "}
-              <span className="italic text-cyan-400 font-light">referrals</span>
-              {" "}and{" "}
-              <span className="italic text-cyan-400 font-light">random outreach</span>
-              <span className="text-gray-400">,</span>
-              {" "}you
-              <br />
-              are{" "}
-              <span className="relative">
-                <span className="text-amber-400 underline decoration-amber-400/50 underline-offset-4 decoration-wavy">exposed</span>
-              </span>
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+              <span className="text-white">The challenge:</span>
+              {" "}
+              <span className="text-cyan-300">onboarding</span>
+              {" "}
+              <span className="text-white">hasn't scaled with your</span>
+              {" "}
+              <span className="italic text-gray-400">engineering complexity</span>
             </h2>
-            <p className="text-gray-500 text-lg font-medium">
-              Most engineering teams tell us:
+            <p className="text-gray-400 text-lg font-light max-w-2xl mx-auto">
+              Traditional approaches leave new engineers waiting weeks for context. We solve that in 3 weeks—permanently.
             </p>
           </motion.div>
 
@@ -241,14 +261,15 @@ export default function Landing() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="p-8 bg-white/2 border border-white/5 rounded-2xl text-left hover:bg-white/4 hover:border-white/10 transition-all group"
               >
-                <p className="text-gray-300 text-lg font-light italic leading-relaxed mb-4">
-                  "{item.quote}"
-                </p>
-                <p className="text-gray-600 text-sm">
-                  — {item.attribution}
-                </p>
+                <Card variant="minimal" className="p-8 text-left h-full">
+                  <p className="text-gray-300 text-lg font-light italic leading-relaxed mb-6">
+                    "{item.quote}"
+                  </p>
+                  <p className="text-gray-500 text-sm font-medium">
+                    — {item.attribution}
+                  </p>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -256,25 +277,28 @@ export default function Landing() {
       </section>
 
       {/* STATS SECTION */}
-      <section className="relative py-20 px-6 bg-linear-to-b from-transparent via-cyan-950/10 to-transparent">
+      <section className="relative py-20 px-6 md:py-32">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12">
             {stats.map((stat, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="text-center group"
+                transition={{ delay: idx * 0.1, duration: 0.6 }}
+                className="relative group"
               >
-                <div className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-3 text-white tabular-nums tracking-tight bg-linear-to-b from-white to-gray-400 bg-clip-text">
-                  {stat.value}
-                </div>
-                <div className="text-xs font-medium uppercase tracking-wider text-gray-500 flex items-center justify-center gap-2">
-                   <stat.icon className={`h-3.5 w-3.5 ${stat.color}`} />
-                   {stat.label}
-                </div>
+                <Card variant="minimal" className="p-6 md:p-8 text-center">
+                  <div className="text-3xl md:text-5xl font-bold mb-2 text-white tabular-nums">
+                    {stat.value.split(" ")[0]}
+                    <span className="text-2xl md:text-3xl text-gray-500">{stat.value.includes(" ") ? " " + stat.value.split(" ")[1] : ""}</span>
+                  </div>
+                  <div className="text-sm text-gray-400 mb-4 font-medium">{stat.label}</div>
+                  <div className="flex items-center justify-center">
+                    <stat.icon className={`h-4 w-4 ${stat.color}`} />
+                  </div>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -284,18 +308,30 @@ export default function Landing() {
       {/* FEATURES SECTION */}
       <section className="relative py-32 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20 space-y-6">
-            <div className="inline-block px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-500/20">
-              <span className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">Core Fabric</span>
-            </div>
-            <h2 className="text-4xl md:text-6xl font-medium tracking-tight">
-              Built for{" "}
-              <span className="bg-linear-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+          {/* Section Header */}
+          <motion.div 
+            className="text-center mb-20 space-y-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <Badge variant="accent" className="mx-auto">
+              <Sparkles className="h-3 w-3" />
+              Core Capabilities
+            </Badge>
+            <h2 className="text-4xl md:text-6xl font-bold tracking-tight">
+              <span className="text-white">Built for</span>
+              {" "}
+              <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
                 Industrial Scale
               </span>
             </h2>
-          </div>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              Military-grade infrastructure designed to handle the most complex architectural scenarios
+            </p>
+          </motion.div>
 
+          {/* Feature Grid */}
           <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
             {features.map((feature, idx) => (
               <motion.div
@@ -303,27 +339,45 @@ export default function Landing() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className={`group relative p-10 bg-linear-to-br ${feature.color} to-transparent border border-white/5 rounded-3xl hover:border-cyan-500/30 transition-all overflow-hidden`}
+                transition={{ delay: idx * 0.1, duration: 0.6 }}
+                whileHover={{ y: -4 }}
               >
-                <div className="relative z-10">
-                   <div className="h-14 w-14 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-cyan-500/30 transition-all">
-                      <feature.icon className="h-7 w-7 text-cyan-400" />
-                   </div>
-                   <h3 className="text-2xl font-semibold mb-4 text-white group-hover:text-cyan-300 transition-colors">
-                     {feature.title}
-                   </h3>
-                   <p className="text-gray-400 text-base mb-8 leading-relaxed font-light">
-                     {feature.description}
-                   </p>
-                   <div className="flex gap-3 pt-6 border-t border-white/5">
-                     {feature.metrics.map((metric, mIdx) => (
-                       <div key={mIdx} className="text-xs font-medium text-cyan-400 uppercase tracking-wide px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full">
-                         {metric}
-                       </div>
-                     ))}
-                   </div>
-                </div>
+                <Card 
+                  variant="glow"
+                  className="p-8 h-full flex flex-col relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{
+                    backgroundImage: `linear-gradient(135deg, ${idx % 2 === 0 ? 'rgba(6, 182, 212, 0.05)' : 'rgba(34, 197, 94, 0.05)'} 0%, transparent 100%)`
+                  }} />
+                  
+                  <div className="relative z-10">
+                    {/* Icon */}
+                    <motion.div 
+                      className="h-12 w-12 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </motion.div>
+
+                    {/* Content */}
+                    <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-cyan-300 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-400 text-base mb-6 leading-relaxed">
+                      {feature.description}
+                    </p>
+
+                    {/* Highlights */}
+                    <div className="flex flex-wrap gap-2 pt-6 border-t border-white/5">
+                      {feature.highlights.map((highlight, hIdx) => (
+                        <Badge key={hIdx} variant="outline" size="sm">
+                          <Check className="h-3 w-3 mr-1" />
+                          {highlight}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -331,99 +385,157 @@ export default function Landing() {
       </section>
 
       {/* HOW IT WORKS SECTION */}
-      <section className="relative py-32 bg-linear-to-b from-cyan-950/20 via-black to-black border-y border-white/5 overflow-hidden">
-         <div className="max-w-7xl mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-               <div className="space-y-12">
-                  <div className="space-y-4">
-                    <div className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">The Protocol</div>
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight">
-                      Context{" "}
-                      <span className="bg-linear-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
-                        Synthesis
-                      </span>
-                    </h2>
-                  </div>
-                  <div className="space-y-8">
-                     {steps.map((step, i) => (
-                        <motion.div 
-                          key={i} 
-                          className="flex gap-8 group"
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: i * 0.15 }}
-                        >
-                           <div className="text-3xl font-semibold text-gray-700 group-hover:text-cyan-400 transition-colors tabular-nums">{step.id}</div>
-                           <div className="space-y-2">
-                              <h4 className="text-lg font-semibold text-white group-hover:text-cyan-300 transition-colors">{step.title}</h4>
-                              <p className="text-gray-500 text-sm leading-relaxed max-w-sm font-light">{step.desc}</p>
-                           </div>
-                        </motion.div>
-                     ))}
-                  </div>
-               </div>
-               <motion.div 
-                 className="relative aspect-4/3 rounded-3xl bg-linear-to-br from-cyan-600 to-teal-700 overflow-hidden shadow-[0_0_80px_rgba(6,182,212,0.2)] border border-cyan-500/20 group"
-                 initial={{ opacity: 0, scale: 0.95 }}
-                 whileInView={{ opacity: 1, scale: 1 }}
-                 viewport={{ once: true }}
-               >
-                  <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1000')] bg-cover bg-center grayscale mix-blend-overlay opacity-40 transition-transform duration-1000 group-hover:scale-105" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                     <div className="h-20 w-20 rounded-full bg-white flex items-center justify-center text-black shadow-2xl transform transition-all group-hover:scale-110 group-hover:shadow-[0_0_60px_rgba(255,255,255,0.3)]">
-                        <ArrowRight className="h-8 w-8" />
-                     </div>
-                  </div>
-               </motion.div>
-            </div>
-         </div>
+      <section className="relative py-32 px-6 border-y border-white/5">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left Column */}
+            <motion.div 
+              className="space-y-12"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="space-y-4">
+                <Badge variant="accent" className="w-fit">
+                  <Rocket className="h-3 w-3" />
+                  The Protocol
+                </Badge>
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+                  <span className="text-white">Context</span>
+                  {" "}
+                  <span className="bg-gradient-to-r from-cyan-300 to-teal-300 bg-clip-text text-transparent">
+                    Synthesis
+                  </span>
+                </h2>
+              </div>
+
+              {/* Steps */}
+              <div className="space-y-8">
+                {steps.map((step, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="flex gap-8 group"
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.15 }}
+                    whileHover={{ x: 8 }}
+                  >
+                    <div className="flex-shrink-0">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/15 border border-primary/30 group-hover:scale-110 transition-transform">
+                        <span className="text-lg font-bold text-primary">{step.id}</span>
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                        {step.title}
+                      </h4>
+                      <p className="text-gray-400 text-base leading-relaxed">{step.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Right Column - Visual */}
+            <motion.div 
+              className="relative"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="relative aspect-square rounded-2xl overflow-hidden border border-primary/20">
+                {/* Background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/20 via-transparent to-teal-600/20" />
+                
+                {/* Grid pattern */}
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:40px_40px]" />
+
+                {/* Center visualization */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div 
+                    className="relative w-48 h-48"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  >
+                    {/* Rotating rings */}
+                    {[1, 2, 3].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute inset-0 rounded-full border border-cyan-500/20"
+                        style={{ 
+                          width: `${100 - i * 25}%`,
+                          height: `${100 - i * 25}%`,
+                          left: `${i * 12.5}%`,
+                          top: `${i * 12.5}%`
+                        }}
+                      />
+                    ))}
+                    
+                    {/* Center dot */}
+                    <motion.div 
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-primary shadow-lg shadow-primary/50"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </motion.div>
+                </div>
+              </div>
+
+              {/* Glow effect */}
+              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-600/20 to-teal-600/20 blur-2xl -z-10" />
+            </motion.div>
+          </div>
+        </div>
       </section>
 
       {/* FINAL CTA SECTION */}
       <section className="relative py-40 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-10 pb-24">
+        <div className="max-w-4xl mx-auto text-center space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="space-y-8"
           >
-            <h2 className="text-5xl md:text-7xl font-medium tracking-tight leading-[1.1]">
-              <span className="text-white">Stop Documenting.</span>
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
+              <span className="text-white">Stop documenting.</span>
               <br />
-              <span className="bg-linear-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">
-                Reclaim Flow.
+              <span className="bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-300 bg-clip-text text-transparent">
+                Reclaim flow.
               </span>
             </h2>
 
-            <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto mt-8">
-              Ready to optimize your institutional intelligence cycle? Join the engineering teams defining the future of autonomy.
+            <p className="text-xl text-gray-400 font-light max-w-2xl mx-auto">
+              Join the engineering teams defining the future of autonomous onboarding. Start your 3-week transformation today.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-5 justify-center pt-10">
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center pt-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
               <Link to="/analysis">
-                <Button className="h-16 px-12 bg-white text-black font-semibold text-sm rounded-2xl hover:bg-gray-100 transition-all shadow-[0_0_50px_rgba(255,255,255,0.15)] hover:shadow-[0_0_80px_rgba(255,255,255,0.25)] group">
+                <Button 
+                  size="xl" 
+                  className="h-14 px-12 bg-white text-black font-semibold hover:bg-gray-100 shadow-lg hover:shadow-xl hover:-translate-y-1 group"
+                >
                   Launch Initial Scan
-                  <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  <Rocket className="ml-2 h-5 w-5 group-hover:translate-y-0 group-hover:scale-110 transition-all" />
                 </Button>
               </Link>
-            </div>
-
-            <div className="pt-16 flex items-center justify-center gap-8">
-               <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className="h-10 w-10 rounded-full border-2 border-black bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center text-xs font-semibold text-gray-400">
-                      A{i}
-                    </div>
-                  ))}
-               </div>
-               <div className="text-left">
-                  <div className="flex items-center gap-0.5 pb-1">
-                     {[1,2,3,4,5].map(i => <Star key={i} className="h-3 w-3 text-cyan-400 fill-cyan-400" />)}
-                  </div>
-                  <div className="text-xs font-medium text-gray-600">Trusted by 12,000+ Grid Nodes</div>
-               </div>
-            </div>
+              <Link to="/pricing">
+                <Button 
+                  size="xl"
+                  variant="outline"
+                  className="h-14 px-12 border-white/10 hover:bg-white/5"
+                >
+                  View Pricing
+                </Button>
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>

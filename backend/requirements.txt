@@ -40,6 +40,18 @@ aiohttp==3.11.11
 
 resend==0.8.0
 
+# ============================================================================
+# Universal AI Provider Support - ALL MODELS, NO RESTRICTIONS
+# ============================================================================
+openai==1.57.4                      # OpenAI GPT-4o, GPT-4o-mini, o1
+anthropic==0.43.0                   # Anthropic Claude 3.5 Sonnet, Opus, Haiku
+google-generativeai==0.8.3          # Google Gemini 1.5 Pro/Flash
+# DeepSeek uses OpenAI-compatible API (use aiohttp)
+# Groq uses OpenAI-compatible API (use aiohttp)
+# Mistral uses OpenAI-compatible API (use aiohttp)
+# OpenRouter uses OpenAI-compatible API (use aiohttp)
+# Vercel AI SDK compatible via aiohttp
+
 pytest==8.3.3
 pytest-asyncio==0.24.0
 pytest-cov==6.0.0

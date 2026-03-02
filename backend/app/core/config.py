@@ -18,6 +18,20 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     VERTEX_AI_ENDPOINT: str = os.getenv("VERTEX_AI_ENDPOINT", "")
 
+    # Multi-Provider AI Configuration
+    OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    VERCEL_AI_API_KEY: str = os.getenv("VERCEL_AI_API_KEY", "")
+    VERCEL_AI_BASE_URL: str = os.getenv(
+        "VERCEL_AI_BASE_URL", "https://api.vercel.ai/v1"
+    )
+
+    # Default AI Model (uses OpenRouter by default - best pricing)
+    DEFAULT_AI_MODEL: str = os.getenv(
+        "DEFAULT_AI_MODEL", "openrouter/meta-llama/llama-3.3-70b-instruct"
+    )
+
     REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", 6379))
     REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "")

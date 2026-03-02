@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, Fingerprint, ArrowRight, ShieldCheck, Binary } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Loader2, Fingerprint, ArrowRight, ShieldCheck, Lock } from "lucide-react"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
@@ -54,101 +55,133 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 overflow-hidden">
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-indigo-900/20 via-black to-black pointer-events-none" />
-      <div className="fixed inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-20 pointer-events-none" />
-      
-      <div className="absolute top-0 right-0 w-160 h-160 bg-indigo-500/05 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-160 h-160 bg-purple-500/05 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-6 overflow-hidden py-12">
+      {/* Background gradients */}
+      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-160 h-160 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-160 h-160 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
 
       <motion.div 
+        className="relative z-10 w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-lg"
+        transition={{ duration: 0.6 }}
       >
+        {/* Header */}
         <div className="text-center space-y-8 mb-12">
-          <div className="inline-block px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-2 font-mono text-[10px] text-indigo-300 uppercase tracking-[0.2em]">
-            /gateway/identity-validation
-          </div>
+          <Badge variant="accent">
+            <Lock className="h-3 w-3" />
+            Identity Validation
+          </Badge>
           
           <div className="space-y-4">
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase leading-none italic">
-              Access <span className="not-italic text-gray-500">Node</span>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+              <span className="text-foreground">Access your</span>
+              <br />
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Fleet
+              </span>
             </h1>
-            <p className="text-xl text-gray-500 font-medium italic max-w-sm mx-auto leading-relaxed">
-              Initialize institutional session and synchronize architectural context.
+            <p className="text-base text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">
+              Initialize your session and synchronize with your architectural context.
             </p>
           </div>
         </div>
 
-        <Card className="bg-gray-900/40 border border-gray-800 rounded-[3rem] overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] backdrop-blur-3xl">
-          <CardContent className="p-12 space-y-10">
+        {/* Login Card */}
+        <Card variant="glow" className="rounded-2xl overflow-hidden shadow-xl backdrop-blur-xl">
+          <CardContent className="p-8 md:p-10 space-y-8">
+            {/* Error Message */}
             {error && (
               <motion.div 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center gap-4 group"
+                className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-3"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
               >
-                <div className="h-10 w-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
-                  <Binary className="h-5 w-5 text-rose-500" />
+                <div className="h-10 w-10 rounded-md bg-destructive/15 border border-destructive/20 flex items-center justify-center flex-shrink-0">
+                  <ShieldCheck className="h-5 w-5 text-destructive" />
                 </div>
-                <p className="text-rose-400 text-xs font-black uppercase tracking-widest italic">{error}</p>
+                <p className="text-sm text-destructive font-semibold">{error}</p>
               </motion.div>
             )}
 
-            <div className="space-y-6">
-              <div className="text-[10px] font-black text-gray-700 uppercase tracking-[0.4em] px-2 italic">Validation Protocol</div>
+            {/* Login Button */}
+            <div className="space-y-4">
+              <div className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">Authentication</div>
               
               <Button 
-                className="w-full h-20 bg-white text-black font-black uppercase tracking-[0.2em] text-[10px] rounded-2xl hover:bg-gray-200 transition-all shadow-2xl flex items-center justify-center gap-6 group/btn overflow-hidden relative"
+                size="lg"
+                className="w-full h-12 bg-foreground text-background font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 group flex items-center justify-center gap-3"
                 onClick={handleGoogleLogin} 
                 disabled={loading}
               >
-                <div className="absolute inset-0 bg-linear-to-r from-indigo-500/10 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" />
                 {loading ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
-                  <GoogleIcon className="h-6 w-6 group-hover/btn:scale-110 transition-transform" />
+                  <GoogleIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 )}
-                <span>Continue with Institutional ID</span>
-                <ArrowRight className="h-5 w-5 text-black/40 group-hover/btn:translate-x-1 group-hover/btn:text-black transition-all" />
+                <span>Continue with Google</span>
               </Button>
             </div>
 
-            <div className="flex items-center gap-6 pt-10 border-t border-gray-800/50">
-              <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 text-indigo-400">
-                <ShieldCheck className="h-6 w-6" />
+            {/* Security Features */}
+            <div className="flex items-start gap-3 pt-6 border-t border-border/30">
+              <motion.div 
+                className="h-10 w-10 rounded-lg bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0"
+                whileHover={{ scale: 1.1 }}
+              >
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </motion.div>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-foreground/70 uppercase tracking-widest">
+                  Secure & Encrypted
+                </p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Enterprise-grade authentication with multi-factor support
+                </p>
               </div>
-              <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest leading-relaxed italic">
-                Regulatory Grade Encryption • Neural Token Verification • Multi-Factor Institutional Auth
-              </p>
             </div>
           </CardContent>
         </Card>
 
-        <div className="mt-12 text-center space-y-6">
-           <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.3em] italic">
-             Restricted Enterprise Portal • v8.4.2
-           </p>
-           <p className="text-gray-500 text-xs font-medium italic">
-             New to the collective? <Link to="/register" className="text-indigo-400 hover:text-indigo-300 transition-colors underline underline-offset-8 decoration-indigo-500/30">Initialize Access</Link>
-           </p>
+        {/* Footer Links */}
+        <div className="mt-10 text-center space-y-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+            v8.4.2 • Enterprise Gateway
+          </p>
+          <p className="text-sm text-muted-foreground">
+            New member?{" "}
+            <Link 
+              to="/register" 
+              className="text-primary hover:text-accent font-semibold transition-colors underline underline-offset-4 decoration-primary/30"
+            >
+              Create Account
+            </Link>
+          </p>
         </div>
       </motion.div>
 
-      <footer className="footer-fixed flex items-center justify-between text-[10px] text-gray-800 font-black uppercase tracking-[0.3em] pt-12 border-t border-gray-900/50 px-12 pb-12 w-full absolute bottom-0 left-0">
-         <div className="flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
-            Gateway Operations Active
-         </div>
-         <div className="flex items-center gap-10">
-            <div className="flex items-center gap-2">
-               <Fingerprint className="h-3.5 w-3.5" />
-               Bio-Metric Ready
-            </div>
-            <div>Institutional Snapshot: {new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</div>
-         </div>
+      {/* Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between text-xs font-semibold uppercase tracking-widest px-6 md:px-8 py-4 bg-background/80 backdrop-blur-md border-t border-border/30 z-20">
+        <div className="flex items-center gap-3">
+          <motion.div 
+            className="h-2 w-2 rounded-full bg-primary shadow-lg shadow-primary/50"
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+          <span className="text-muted-foreground">Gateway Active</span>
+        </div>
+        
+        <div className="hidden md:flex items-center gap-4 text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Fingerprint className="h-4 w-4" />
+            <span>Biometric Ready</span>
+          </div>
+        </div>
       </footer>
+    </div>
+  )
+}
     </div>
   )
 }
