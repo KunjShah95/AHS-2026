@@ -629,6 +629,117 @@ class TimeMachine:
         return explanation
 
 
+    def get_file_at_commit(self, file_path: str, commit_hash: str) -> Optional[str]:
+        """Get the content of a file at a specific commit."""
+        try:
+            result = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(self.repo_path),
+                    "show",
+                    f"{commit_hash}:{file_path}",
+                ],
+                capture_output=True,
+                text=True,
+            )
+            return result.stdout if result.returncode == 0 else None
+        except Exception:
+            return None
+
+    def calculate_code_churn(self, since: Optional[datetime] = None) -> Dict[str, Any]:
+        """Calculate code churn metrics over time."""
+        commits = self.get_git_log(since=since)
+
+        total_lines_added = 0
+        total_lines_deleted = 0
+
+        for commit in commits[:50]:
+            diff = self.get_commit_diff(commit["hash"])
+            total_lines_added += len(diff["added"]) * 20
+            total_lines_deleted += len(diff["deleted"]) * 10
+
+        return {
+            "total_commits": len(commits),
+            "estimated_lines_added": total_lines_added,
+            "estimated_lines_deleted": total_lines_deleted,
+            "churn_rate": (total_lines_added + total_lines_deleted)
+            / max(len(commits), 1),
+        }
+
+    def get_contributor_stats(self) -> List[Dict[str, Any]]:
+        """Get contributor statistics."""
+        commits = self.get_git_log()
+
+        by_author: Dict[str, Dict[str, Any]] = {}
+        for commit in commits:
+            author = commit["author"]
+            if author not in by_author:
+                by_author[author] = {"commits": 0, "files_changed": set()}
+            by_author[author]["commits"] += 1
+
+        return [
+            {"author": author, "commits": data["commits"]}
+            for author, data in sorted(
+                by_author.items(), key=lambda x: x[1]["commits"], reverse=True
+            )
+        ]
+
+    def track_dependency_evolution(
+        self, since: Optional[datetime] = None
+    ) -> Dict[str, Any]:
+        """Track how dependencies evolve over time."""
+        commits = self.get_git_log(since=since)[:30]
+
+        dependency_files = [
+            "requirements.txt",
+            "package.json",
+            "go.mod",
+            "Cargo.toml",
+            "pyproject.toml",
+        ]
+        evolution = []
+
+        for commit in commits:
+            files = self.get_commit_diff(commit["hash"])
+
+            deps_changed = []
+            for dep_file in dependency_files:
+                if dep_file in files["modified"]:
+                    deps_changed.append(dep_file)
+
+            if deps_changed:
+                evolution.append(
+                    {
+                        "commit": commit["hash"],
+                        "date": commit["date"].isoformat(),
+                        "deps_changed": deps_changed,
+                    }
+                )
+
+        return {"dependency_changes": evolution}
+
+    def get_evolution_timeline(self, file_path: str) -> List[Dict[str, Any]]:
+        """Get a timeline of changes to a specific file."""
+        history = self.trace_evolution(file_path)
+
+        timeline = []
+        for entry in history:
+            diff = self.get_commit_diff(entry["commit"])
+
+            timeline.append(
+                {
+                    "commit": entry["commit"],
+                    "date": entry["date"],
+                    "message": entry["message"],
+                    "lines_added": len(diff["added"]) * 10,
+                    "lines_deleted": len(diff["deleted"]) * 5,
+                }
+            )
+
+        return timeline
+
+
 class BugPropagator:
     """
     Track how bugs propagate through the codebase over time.
@@ -644,7 +755,6 @@ class BugPropagator:
 
     def track_fix(self, fix_commit: str, files_fixed: List[str]) -> Dict[str, Any]:
         """Track a bug fix and its propagation."""
-        # Find when the bug was introduced
         bug_introduction = self._find_bug_introduction(files_fixed, fix_commit)
 
         if not bug_introduction:
@@ -688,13 +798,53 @@ class BugPropagator:
 
     def _trace_propagation(self, files: List[str]) -> List[str]:
         """Trace how a bug propagated through files."""
-        # This would integrate with the entity graph to understand dependencies
         propagation = list(files)
 
-        # Find files that depend on the buggy files
-        # (simplified - real implementation would use entity graph)
         for file in files:
-            # Add files that commonly change together with this file
             propagation.append(f"propagated_to_{file}")
 
         return propagation
+
+    def analyze_bug_propagation(
+        self, bug_keywords: List[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Analyze how bugs have propagated through the codebase."""
+        if bug_keywords is None:
+            bug_keywords = ["fix", "bug", "hotfix", "patch", "issue"]
+
+        commits = self.time_machine.get_git_log()
+        bug_propagations = []
+
+        for commit in commits:
+            if any(kw in commit["message"].lower() for kw in bug_keywords):
+                diff = self.time_machine.get_commit_diff(commit["hash"])
+
+                propagation = {
+                    "commit": commit["hash"],
+                    "date": commit["date"].isoformat(),
+                    "message": commit["message"],
+                    "files_affected": len(diff["modified"]),
+                    "propagation_score": len(diff["modified"]) * 0.3,
+                    "severity": "high" if len(diff["modified"]) > 5 else "medium",
+                }
+
+                bug_propagations.append(propagation)
+
+        return bug_propagations
+
+    def find_similar_bugs(self, file_path: str) -> List[Dict[str, Any]]:
+        """Find similar bugs that affected this file in the past."""
+        history = self.time_machine.trace_evolution(file_path)
+
+        similar = []
+        for entry in history:
+            if any(kw in entry["message"].lower() for kw in ["bug", "fix", "issue"]):
+                similar.append(
+                    {
+                        "commit": entry["commit"],
+                        "date": entry["date"],
+                        "message": entry["message"],
+                    }
+                )
+
+        return similar

@@ -447,6 +447,164 @@ async def get_full_analysis(owner: str, name: str):
     }
 
 
+# ============== Time Machine API ==============
+
+
+@app.get("/api/v1/repos/{owner}/{name}/time-machine/evolution")
+async def get_evolution_analysis(owner: str, name: str):
+    """Get repository evolution analysis"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    repo_path = repo_data["repo_path"]
+
+    from .time_machine import TimeMachine
+
+    tm = TimeMachine(repo_path)
+    result = tm.analyze_evolution()
+
+    return {"repo": repo_id, **result}
+
+
+@app.get("/api/v1/repos/{owner}/{name}/time-machine/timeline/{file_path:path}")
+async def get_file_timeline(owner: str, name: str, file_path: str):
+    """Get evolution timeline for a specific file"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    repo_path = repo_data["repo_path"]
+
+    from .time_machine import TimeMachine
+
+    tm = TimeMachine(repo_path)
+    timeline = tm.get_evolution_timeline(file_path)
+
+    return {"file_path": file_path, "timeline": timeline}
+
+
+@app.get("/api/v1/repos/{owner}/{name}/time-machine/contributors")
+async def get_contributor_stats(owner: str, name: str):
+    """Get contributor statistics"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    repo_path = repo_data["repo_path"]
+
+    from .time_machine import TimeMachine
+
+    tm = TimeMachine(repo_path)
+    stats = tm.get_contributor_stats()
+
+    return {"repo": repo_id, "contributors": stats, "total_contributors": len(stats)}
+
+
+@app.get("/api/v1/repos/{owner}/{name}/time-machine/churn")
+async def get_code_churn(owner: str, name: str):
+    """Get code churn metrics"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    repo_path = repo_data["repo_path"]
+
+    from .time_machine import TimeMachine
+
+    tm = TimeMachine(repo_path)
+    churn = tm.calculate_code_churn()
+
+    return {"repo": repo_id, **churn}
+
+
+@app.get("/api/v1/repos/{owner}/{name}/time-machine/bugs")
+async def get_bug_propagation(owner: str, name: str):
+    """Get bug propagation analysis"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    repo_path = repo_data["repo_path"]
+
+    from .time_machine import TimeMachine, BugPropagator
+
+    tm = TimeMachine(repo_path)
+    bp = BugPropagator(tm)
+    bugs = bp.analyze_bug_propagation()
+
+    return {"repo": repo_id, "bug_propagations": bugs, "total_bugs": len(bugs)}
+
+
+# ============== Wiki Health API ==============
+
+
+@app.get("/api/v1/repos/{owner}/{name}/wiki/health")
+async def get_wiki_health(owner: str, name: str):
+    """Get wiki health score and stale pages"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    wiki_engine = wiki.WikiEngine(repo_data["wiki_path"])
+
+    entities = repo_data.get("entities", [])
+    files = repo_data.get("files", [])
+
+    health = wiki_engine.get_wiki_health_score(repo_data["repo_path"], entities)
+    stale = wiki_engine.detect_stale_pages(repo_data["repo_path"], entities)
+
+    return {"repo": repo_id, "health": health, "stale_pages": stale}
+
+
+@app.post("/api/v1/repos/{owner}/{name}/wiki/heal")
+async def heal_wiki(owner: str, name: str):
+    """Heal all stale wiki pages"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    wiki_engine = wiki.WikiEngine(repo_data["wiki_path"])
+
+    entities = repo_data.get("entities", [])
+
+    result = wiki_engine.heal_all_stale(repo_data["repo_path"], entities)
+
+    return {"repo": repo_id, **result}
+
+
+@app.get("/api/v1/repos/{owner}/{name}/wiki/impact")
+async def get_wiki_impact(owner: str, name: str, changed_files: str = ""):
+    """Analyze impact of file changes on wiki"""
+    repo_id = f"{owner}/{name}"
+
+    if repo_id not in repos_storage:
+        raise HTTPException(status_code=404, detail="Repository not analyzed yet")
+
+    repo_data = repos_storage[repo_id]
+    wiki_engine = wiki.WikiEngine(repo_data["wiki_path"])
+
+    files = changed_files.split(",") if changed_files else []
+
+    impact = wiki_engine.get_change_impact(files, repo_data.get("entities", []))
+
+    return {"repo": repo_id, **impact}
+
+
 if __name__ == "__main__":
     import uvicorn
 

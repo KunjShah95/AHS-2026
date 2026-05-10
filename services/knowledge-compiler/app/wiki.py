@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from pathlib import Path
 import json
 from datetime import datetime
@@ -433,6 +433,195 @@ class WikiEngine:
     def get_all_pages(self) -> List[str]:
         """Get list of all wiki pages"""
         return list(self.pages.keys())
+
+    def detect_stale_pages(
+        self, repo_path: str, entities: List[dict]
+    ) -> List[Dict[str, Any]]:
+        """Detect wiki pages that are outdated"""
+        stale_pages = []
+
+        for page_name, page_content in self.pages.items():
+            file_path = self._page_name_to_path(page_name)
+
+            if (
+                not file_path
+                or file_path == "overview"
+                or file_path == "modules"
+                or file_path == "risk"
+            ):
+                continue
+
+            full_path = Path(repo_path) / file_path
+            if not full_path.exists():
+                stale_pages.append(
+                    {
+                        "page": page_name,
+                        "reason": "file_not_found",
+                        "file_path": file_path,
+                    }
+                )
+                continue
+
+            file_mtime = full_path.stat().st_mtime
+
+            page_meta = self.index.get(page_name, {})
+            wiki_mtime = page_meta.get("generated_at", 0)
+
+            if isinstance(wiki_mtime, str):
+                try:
+                    wiki_mtime = datetime.fromisoformat(wiki_mtime).timestamp()
+                except:
+                    wiki_mtime = 0
+
+            if file_mtime > wiki_mtime:
+                stale_pages.append(
+                    {
+                        "page": page_name,
+                        "reason": "source_updated",
+                        "file_path": file_path,
+                        "file_modified": datetime.fromtimestamp(file_mtime).isoformat(),
+                    }
+                )
+
+        return stale_pages
+
+    def _page_name_to_path(self, page_name: str) -> str:
+        """Convert page name back to file path"""
+        if page_name == "overview" or page_name == "modules" or page_name == "risk":
+            return page_name
+
+        return page_name.replace("_", "/") + ".py"
+
+    def heal_page(self, page_name: str, repo_path: str, entities: List[dict]) -> bool:
+        """Regenerate a stale wiki page"""
+        file_path = self._page_name_to_path(page_name)
+
+        if file_path in ["overview", "modules", "risk"]:
+            if file_path == "overview":
+                content = self._generate_overview(entities, [])
+            elif file_path == "modules":
+                entities_by_file = self._group_entities_by_file(entities)
+                content = self._generate_module_hierarchy(entities_by_file)
+            else:
+                content = self._generate_risk_assessment(entities)
+
+            self._save_page(page_name, content)
+            self.pages[page_name] = content
+            return True
+
+        file_entities = [e for e in entities if e.get("file", "") == file_path]
+
+        if file_entities:
+            content = self._generate_file_page(file_path, file_entities)
+            self._save_page(page_name, content)
+            self.pages[page_name] = content
+            return True
+
+        return False
+
+    def heal_all_stale(self, repo_path: str, entities: List[dict]) -> Dict[str, Any]:
+        """Heal all stale wiki pages"""
+        stale = self.detect_stale_pages(repo_path, entities)
+
+        healed = []
+        failed = []
+
+        for stale_page in stale:
+            page_name = stale_page["page"]
+            if self.heal_page(page_name, repo_path, entities):
+                healed.append(page_name)
+            else:
+                failed.append(page_name)
+
+        return {
+            "total_stale": len(stale),
+            "healed": healed,
+            "failed": failed,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+
+    def _group_entities_by_file(self, entities: List[dict]) -> Dict[str, List[dict]]:
+        """Group entities by file path"""
+        grouped = {}
+        for entity in entities:
+            file_path = entity.get("file", "")
+            if file_path not in grouped:
+                grouped[file_path] = []
+            grouped[file_path].append(entity)
+        return grouped
+
+    def get_wiki_health_score(
+        self, repo_path: str, entities: List[dict]
+    ) -> Dict[str, Any]:
+        """Calculate overall wiki health score"""
+        stale = self.detect_stale_pages(repo_path, entities)
+        total_pages = len(self.pages)
+
+        if total_pages == 0:
+            return {"score": 0, "status": "no_pages"}
+
+        stale_count = len(stale)
+        healthy_count = total_pages - stale_count
+
+        score = (healthy_count / total_pages) * 100
+
+        status = "healthy"
+        if score < 50:
+            status = "critical"
+        elif score < 75:
+            status = "warning"
+        elif score < 90:
+            status = "good"
+
+        return {
+            "score": round(score, 2),
+            "status": status,
+            "total_pages": total_pages,
+            "healthy_pages": healthy_count,
+            "stale_pages": stale_count,
+            "stale_details": stale[:5],
+        }
+
+    def schedule_healing(
+        self, repo_path: str, entities: List[dict], batch_size: int = 10
+    ) -> Dict[str, Any]:
+        """Schedule healing in batches for efficiency"""
+        stale = self.detect_stale_pages(repo_path, entities)
+
+        batches = []
+        for i in range(0, len(stale), batch_size):
+            batch = stale[i : i + batch_size]
+            batches.append([p["page"] for p in batch])
+
+        return {
+            "total_pages_to_heal": len(stale),
+            "batches": len(batches),
+            "batch_size": batch_size,
+            "batch_list": batches,
+        }
+
+    def get_change_impact(
+        self, changed_files: List[str], entities: List[dict]
+    ) -> Dict[str, Any]:
+        """Analyze impact of file changes on wiki"""
+        affected_pages = []
+
+        for file_path in changed_files:
+            page_name = self._path_to_page_name(file_path)
+            if page_name in self.pages:
+                affected_pages.append(page_name)
+
+        cross_refs = []
+        for page in affected_pages:
+            links = self.links.get(page, [])
+            cross_refs.extend([l for l in links if l not in affected_pages])
+
+        return {
+            "changed_files": changed_files,
+            "affected_pages": affected_pages,
+            "cross_references_affected": list(set(cross_refs)),
+            "total_impact_score": len(affected_pages) + len(set(cross_refs)),
+        }
 
 
 # Standalone functions
