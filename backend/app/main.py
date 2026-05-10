@@ -99,7 +99,10 @@ app.include_router(observability.router, prefix="/api/v1", tags=["observability"
 
 # Cost Monitoring & Optimization
 from app.api.endpoints import cost_monitoring
+from app.api import ai_costs
+
 app.include_router(cost_monitoring.router, prefix="/api/v1", tags=["cost-optimization"])
+app.include_router(ai_costs.router, prefix="/api/v1", tags=["ai-cost-tracking"])
 
 
 # Phase 1: ADK-based Orchestrator Integration

@@ -4,6 +4,9 @@ export default {
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
+    safelist: [
+        { pattern: /^(flex|inline-flex|items-|justify-|gap-|px-|py-|rounded-|w-|max-w-|min-w-|min-h-|border|bg-|text-|transition-|duration-|hover:|focus:|focus-visible:|animate-|opacity-|pointer-events-|cursor-|drop-shadow-|ring-|ring-offset-)/ },
+    ],
     theme: {
         extend: {
             fontFamily: {

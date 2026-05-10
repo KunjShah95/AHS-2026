@@ -18,7 +18,7 @@ from enum import Enum
 import json
 import logging
 
-from app.core.unified_ai_client import get_ai_client
+from app.core.agent_migration import get_unified_ai_client
 from app.core.prompts import (
     CODEBASE_ARCHITECT_SYSTEM,
     get_architecture_analysis_prompt,
@@ -86,7 +86,7 @@ class CodebaseArchitectAgent:
     """
 
     def __init__(self):
-        self.gemini = get_gemini_client()
+        self.gemini = get_unified_ai_client()  # Now supports all providers!
         self.analysis_cache: Dict[str, Any] = {}
 
     async def analyze_repository(

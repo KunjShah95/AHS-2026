@@ -63,6 +63,15 @@ class Settings(BaseSettings):
     AZURE_CLIENT_SECRET: str = os.getenv("AZURE_CLIENT_SECRET", "")
 
     CORS_ORIGINS: str = os.getenv("CORS_ORIGINS", "http://localhost:3000")
+    
+    # Firebase Configuration
+    FIREBASE_CREDENTIALS: Optional[str] = os.getenv("FIREBASE_CREDENTIALS", None)
+    
+    # GitHub Configuration
+    GITHUB_PAT: Optional[str] = os.getenv("GITHUB_PAT", None)
+    
+    # Frontend URLs
+    FRONTEND_URL_PROD: Optional[str] = os.getenv("FRONTEND_URL_PROD", None)
 
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
 

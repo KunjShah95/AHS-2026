@@ -18,8 +18,8 @@ import logging
 import json
 import uuid
 
-from app.core.unified_ai_client import (
-    get_ai_client,
+from app.core.agent_migration import (
+    get_unified_ai_client,
     generate_ai_response,
     generate_ai_json,
 )
@@ -108,7 +108,7 @@ class TaskGeneratorAgent:
     """
 
     def __init__(self):
-        self.gemini = get_ai_client()
+        self.gemini = get_unified_ai_client()  # Now supports all providers!
         self.task_templates = self._load_task_templates()
 
     async def generate_tasks(self, code_graph: Any) -> List[LearningTask]:

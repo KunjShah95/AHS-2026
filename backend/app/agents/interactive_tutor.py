@@ -16,7 +16,7 @@ from datetime import datetime
 import logging
 import json
 
-from app.core.unified_ai_client import get_ai_client
+from app.core.agent_migration import get_unified_ai_client
 from app.core.prompts import INTERACTIVE_TUTOR_SYSTEM, get_tutor_response_prompt
 
 logger = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class InteractiveTutorAgent:
     """
 
     def __init__(self):
-        self.gemini = get_ai_client()
+        self.gemini = get_unified_ai_client()  # Now supports all providers!
         self.conversations: Dict[
             str, List[ConversationMessage]
         ] = {}  # user_id -> messages

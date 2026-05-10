@@ -18,7 +18,7 @@ from enum import Enum
 import logging
 import json
 
-from app.core.unified_ai_client import get_ai_client
+from app.core.agent_migration import get_unified_ai_client
 from app.core.prompts import (
     LEARNING_PATH_SYSTEM,
     get_learning_path_prompt,
@@ -101,7 +101,7 @@ class LearningPathArchitectAgent:
     """
 
     def __init__(self):
-        self.gemini = get_ai_client()
+        self.gemini = get_unified_ai_client()  # Now supports all providers!
 
     async def generate_learning_path(
         self,

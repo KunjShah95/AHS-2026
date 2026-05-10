@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
-from sqlalchemy import Column, String, DateTime, Text, JSON, Boolean, ForeignKey, Index
+from sqlalchemy import Column, String, DateTime, Text, JSON, Boolean, ForeignKey, Index, Integer, Float, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -76,7 +76,7 @@ class OrganizationMember(Base):
     joined_at = Column(DateTime, default=datetime.utcnow)
 
     __table_args__ = (
-        Index("ix_org_members_org_user", ["organization_id", "user_id"], unique=True),
+        Index("ix_org_members_org_user", "organization_id", "user_id", unique=True),
     )
 
 
@@ -177,8 +177,145 @@ class UserProgress(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     __table_args__ = (
-        Index("ix_user_progress_user_task", ["user_id", "task_id"], unique=True),
+        Index("ix_user_progress_user_task", "user_id", "task_id", unique=True),
         Index("ix_user_progress_status"),
+    )
+
+
+class AIRequest(Base):
+    """Track individual AI API requests for cost monitoring and analytics."""
+    
+    __tablename__ = "ai_requests"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
+    
+    # Request details
+    provider = Column(String(50), nullable=False)  # openai, anthropic, gemini, etc
+    model = Column(String(100), nullable=False)    # gpt-4o, claude-3-5-sonnet, etc
+    task_type = Column(String(50), nullable=True)  # code_review, code_generation, etc
+    
+    # Token counts
+    input_tokens = Column(Integer, default=0)
+    output_tokens = Column(Integer, default=0)
+    total_tokens = Column(Integer, default=0)
+    
+    # Cost tracking
+    estimated_cost = Column(Float, default=0.0)    # Estimated cost before request
+    actual_cost = Column(Float, default=0.0)       # Actual cost from provider
+    currency = Column(String(3), default="USD")
+    
+    # Status
+    status = Column(String(20), default="pending")  # pending, completed, failed
+    error_message = Column(Text, nullable=True)
+    
+    # Performance
+    latency_ms = Column(Integer, nullable=True)    # Response time in milliseconds
+    
+    # Request/Response
+    prompt_hash = Column(String(64), nullable=True)  # Hash of prompt for deduplication
+    response_length = Column(Integer, default=0)
+    
+    # Metadata
+    request_metadata = Column(JSON, default=dict)  # Custom metadata, agent name, etc
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+
+    __table_args__ = (
+        Index("ix_ai_requests_user_id"),
+        Index("ix_ai_requests_project_id"),
+        Index("ix_ai_requests_provider"),
+        Index("ix_ai_requests_model"),
+        Index("ix_ai_requests_created_at"),
+        Index("ix_ai_requests_status"),
+    )
+
+
+class AICostSummary(Base):
+    """Aggregate daily cost summaries for reporting and monitoring."""
+    
+    __tablename__ = "ai_cost_summaries"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    project_id = Column(UUID(as_uuid=True), ForeignKey("projects.id"), nullable=True)
+    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True)
+    
+    # Date
+    date = Column(DateTime, nullable=False)  # Date of the summary
+    
+    # Cost aggregates
+    total_cost = Column(Float, default=0.0)
+    total_requests = Column(Integer, default=0)
+    total_tokens = Column(Integer, default=0)
+    total_input_tokens = Column(Integer, default=0)
+    total_output_tokens = Column(Integer, default=0)
+    
+    # Provider breakdown
+    cost_by_provider = Column(JSON, default=dict)  # {provider: cost}
+    requests_by_provider = Column(JSON, default=dict)  # {provider: count}
+    
+    # Task type breakdown
+    cost_by_task = Column(JSON, default=dict)  # {task_type: cost}
+    requests_by_task = Column(JSON, default=dict)  # {task_type: count}
+    
+    # Performance metrics
+    avg_latency_ms = Column(Float, nullable=True)
+    success_rate = Column(Float, default=1.0)
+    failed_requests = Column(Integer, default=0)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_core_cost_summary_user_date", "user_id", "date"),
+        Index("ix_ai_cost_summary_project_date", "project_id", "date"),
+        Index("ix_ai_cost_summary_org_date", "organization_id", "date"),
+        Index("ix_ai_cost_summary_date"),
+    )
+
+
+class AICostBudget(Base):
+    """Define and track cost budgets for users/organizations."""
+    
+    __tablename__ = "ai_cost_budgets"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    organization_id = Column(UUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True)
+    
+    # Budget settings
+    budget_amount = Column(Float, nullable=False)  # Monthly budget in USD
+    budget_period = Column(String(20), default="monthly")  # monthly, weekly, daily
+    currency = Column(String(3), default="USD")
+    
+    # Thresholds
+    warning_threshold = Column(Float, default=0.8)  # Alert at 80%
+    limit_threshold = Column(Float, default=1.0)   # Enforce limit at 100%
+    
+    # Status
+    is_active = Column(Boolean, default=True)
+    enforce_limit = Column(Boolean, default=False)  # Block requests if over budget
+    
+    # Tracking
+    spent_amount = Column(Float, default=0.0)
+    remaining_amount = Column(Float, nullable=False)  # budget_amount - spent_amount
+    percentage_used = Column(Float, default=0.0)
+    
+    # Dates
+    period_start = Column(DateTime, nullable=False)
+    period_end = Column(DateTime, nullable=False)
+    last_reset = Column(DateTime, default=datetime.utcnow)
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_ai_cost_budgets_user_id"),
+        Index("ix_ai_cost_budgets_org_id"),
+        Index("ix_ai_cost_budgets_active"),
     )
 
 

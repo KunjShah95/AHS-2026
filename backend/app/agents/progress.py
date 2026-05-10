@@ -19,7 +19,7 @@ from enum import Enum
 import logging
 import json
 
-from app.core.unified_ai_client import get_ai_client
+from app.core.agent_migration import get_unified_ai_client
 from app.core.prompts import PROGRESS_COACH_SYSTEM, get_progress_feedback_prompt
 
 logger = logging.getLogger(__name__)
@@ -107,7 +107,7 @@ class ProgressCoachAgent:
     """
 
     def __init__(self):
-        self.gemini = get_ai_client()
+        self.gemini = get_unified_ai_client()  # Now supports all providers!
         self.progress_store: Dict[str, DeveloperProgress] = {}
 
     def initialize_progress(
