@@ -1,6 +1,6 @@
 # CodeGenome - AI-Native Code Intelligence System
 
-> **Not another DeepWiki clone.** Building the next generation of code intelligence where repositories become living knowledge organisms.
+> **Not another DeepWiki clone.** Building the next generation of code intelligence where repositories become living knowledge organisms — powered by Phase 4 Intelligence Network.
 
 ## The Vision
 
@@ -33,6 +33,11 @@ API available at `http://localhost:3003/docs`
 | Self-healing docs | Generate once | None | **Continuous update** |
 | Decision tracking | None | None | **Full history** |
 | Bug propagation | None | None | **Traced over time** |
+| Cross-repo intelligence | None | None | **Pattern DB + unified graph** |
+| Team knowledge | None | None | **Expertise mapping + gaps** |
+| Personalization | None | None | **Dev profile + style adaptation** |
+| What-if simulation | None | None | **Hybrid rule + LLM** |
+| Live collaboration | None | None | **SSE + presence** |
 
 ## Architecture
 
@@ -42,24 +47,39 @@ API available at `http://localhost:3003/docs`
 │                                                                  │
 │  GitHub Repo → AST Parser → Entity Graph → Intent Layer → Wiki   │
 │                            ↓                                      │
-│         ┌──────────────┬──────────────┐                        │
-│         │   Time       │   Decision    │                        │
-│         │   Machine    │   Tracker     │                        │
-│         └──────────────┴──────────────┘                        │
-│                            ↓                                      │
+│         ┌──────────────┬──────────────┐  ┌──────────────────┐   │
+│         │   Time       │   Decision    │  │  Cross-Repo      │   │
+│         │   Machine    │   Tracker     │  │  Graph Store     │   │
+│         └──────────────┴──────────────┘  └──────────────────┘   │
+│                            ↓                     ↓               │
 │  ┌─────────┐  ┌─────────┐  ┌──────────┐  ┌─────────┐           │
 │  │Security │  │ Refactor│  │Architecture│ │   Docs │           │
 │  │ Agent   │  │  Agent  │  │   Agent   │  │  Agent  │           │
 │  └─────────┘  └─────────┘  └──────────┘  └─────────┘           │
 │                            ↓                                      │
-│         ┌──────────────────────────────┐                        │
-│         │     Architecture Drift +     │                        │
-│         │     Tech Debt Calculator     │                        │
-│         └──────────────────────────────┘                        │
+│         ┌──────────────────────────────┐  ┌───────────────┐   │
+│         │     Architecture Drift +     │  │  Simulation   │   │
+│         │     Tech Debt Calculator     │  │    Engine     │   │
+│         └──────────────────────────────┘  └───────────────┘   │
+│                            ↓                     ↓               │
+│    ┌──────────────────────────────────────────────────────┐   │
+│    │         TEAM KNOWLEDGE LAYER                           │   │
+│    │  Contributor Analysis │ Expertise │ Knowledge Gaps     │   │
+│    └──────────────────────────────────────────────────────┘   │
+│                            ↓                                      │
+│    ┌──────────────────────────────────────────────────────┐   │
+│    │         PERSONALIZATION LAYER                          │   │
+│    │  Dev Profiles │ Profile Builder │ Context Injector     │   │
+│    └──────────────────────────────────────────────────────┘   │
+│                            ↓                                      │
+│    ┌──────────────────────────────────────────────────────┐   │
+│    │         COLLABORATION LAYER                            │   │
+│    │  SSE Presence │ Collab Rooms │ Event Bus               │   │
+│    └──────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-## Core Modules
+## Core Modules (Phase 1-3)
 
 ### 1. Knowledge Compiler (`app/ingest.py`, `app/parser.py`, `app/entities.py`)
 Compiles codebases into persistent knowledge structures with multi-language AST parsing.
@@ -147,38 +167,19 @@ AI agent integration via Model Context Protocol.
 ```python
 from app.mcp_server import mcp
 
-# MCP tools exposed:
-# - query_knowledge: Hybrid search
-# - get_entity_context: 360° symbol view
-# - analyze_impact: Blast radius analysis
-# - get_intent: WHY code exists
-# - detect_changes: Git diff analysis
-# - find_related: Semantically related code
-# - get_architecture: Module boundaries
-# - time_machine: Evolution timeline
-# - get_decisions: Architectural decisions
-# - get_risk_assessment: Health + tech debt
+# MCP tools exposed (20 total):
+# Query & Context: query_knowledge, get_entity_context, get_intent, detect_changes
+# Analysis: analyze_impact, find_related, get_architecture
+# Evolution: time_machine, explain_commit, trace_evolution
+# Decision: get_decisions, get_risk_assessment
+# Cross-repo: find_cross_repo_pattern, get_cross_repo_entities, find_similar_across_repos
+# Team: get_module_ownership, find_expert, suggest_code_reviewers, detect_knowledge_gaps
+# Simulation: simulate_what_if, get_blast_radius, plan_migration
+# Collaboration: get_page_presence, get_live_collaborators
 ```
 
 ### 9. LLM Intent Inference (`app/llm_intent.py`)
-Auto-generate WHY.md, ASSUMPTIONS.md, TRADEOFFS.md from code.
-
-```python
-from app.llm_intent import infer_entity_intent
-
-result = await infer_entity_intent(
-    entity_id="src/payments.py:process_payment",
-    entity_type="function",
-    entity_name="process_payment",
-    file_path="src/payments.py",
-    code="def process_payment(amount): ...",
-    context={'complexity': 12, 'imports': ['stripe']},
-    provider="openai",
-    api_key="sk-..."
-)
-
-# Returns: IntentInferenceResult with purpose, assumptions, tradeoffs, confidence
-```
+Auto-generates WHY.md, ASSUMPTIONS.md, TRADEOFFS.md from code. Supports personalized explanations via developer profiles.
 
 ### 10. Agent Debate System (`app/debate.py`)
 Multi-agent debate with conflict resolution.
@@ -195,6 +196,91 @@ result = await debate_git_diff(diff_content, commit_message)
 # - summary: Markdown debate summary
 ```
 
+## Phase 4 Modules (Intelligence Network)
+
+### 11. Cross-Repo Intelligence (`app/cross_repo_graph.py`, `app/pattern_db.py`)
+Learn patterns across multiple codebases.
+
+```python
+from app.cross_repo_graph import CrossRepoGraphStore
+from app.pattern_db import PatternDatabase
+
+# Merge entity graphs across repos
+graph = CrossRepoGraphStore()
+graph.merge_repo_graph("my-org/my-repo", entities)
+
+# Find patterns across repos
+db = PatternDatabase()
+db.register_pattern(pattern_type="authentication", code_snippet=code, repo_id="...")
+results = db.search(pattern_type="authentication")
+```
+
+### 12. Team Knowledge Mapping (`app/team_knowledge.py`, `app/contributor.py`)
+Map expertise to modules. Who knows what about which code.
+
+```python
+from app.team_knowledge import TeamKnowledgeMapper
+
+mapper = TeamKnowledgeMapper("./my-repo")
+ownership = mapper.get_module_ownership()
+reviewers = mapper.suggest_reviewers("src/auth/login.py")
+gaps = mapper.get_knowledge_gaps()
+
+# Example output:
+# {
+#   "src/auth/*": {"primary": ["@alice", "@bob"], "secondary": ["@carol"]},
+#   "knowledge_gaps": [{"file": "src/legacy/payments.py", "risk": "high", "owner": "@dave"}]
+# }
+```
+
+### 13. Personal Engineering Brain (`app/dev_profile.py`, `app/profile_builder.py`, `app/context_injector.py`)
+Adapt every response to individual developer style.
+
+```python
+from app.profile_builder import ProfileBuilder
+from app.context_injector import ContextInjector
+
+builder = ProfileBuilder()
+profile = builder.build_profile(dev_id="alice", repo_path="./my-repo")
+# Detects: preferred paradigm (OOP/functional), naming conventions, commit style, explanation depth
+
+injector = ContextInjector(profile)
+context = injector.build_system_context()
+# "You are explaining code to a developer who prefers functional patterns..."
+```
+
+### 14. Architecture Simulation (`app/simulation/`)
+Hybrid rule-based + LLM what-if analysis for code changes.
+
+```python
+from app.simulation import SimulationEngine, BlastRadiusAnalyzer
+
+# Rule-based blast radius
+analyzer = BlastRadiusAnalyzer(graph)
+blast = analyzer.analyze_blast_radius("src/auth/", change_type="delete")
+
+# Full what-if with complexity routing
+engine = SimulationEngine()
+result = engine.simulate(
+    scenario="Extract auth service to microservices",
+    tier="full",
+    llm_client=client
+)
+```
+
+### 15. Real-Time Collaboration (`app/collaborate.py`)
+Live wiki editing with SSE presence awareness.
+
+```python
+from app.collaborate import CollaborationManager
+
+manager = CollaborationManager()
+room = manager.join_page("api/auth", user_id="alice")
+
+# SSE endpoint: GET /api/v1/wiki/{page}/presence
+# Returns live presence stream with heartbeat
+```
+
 ## API Endpoints
 
 ### Core Analysis
@@ -203,13 +289,60 @@ POST /api/v1/analyze              # Full pipeline: ingest → parse → graph �
 GET  /api/v1/repos/{owner}/{name}  # Get cached analysis
 ```
 
-### Advanced Analysis
+### Multi-Agent & Intelligence
 ```bash
 POST /api/v1/repos/{owner}/{name}/agents/analyze   # Multi-agent analysis
 GET  /api/v1/repos/{owner}/{name}/drift             # Architecture drift detection
 GET  /api/v1/repos/{owner}/{name}/tech-debt        # Tech debt financial model
 GET  /api/v1/repos/{owner}/{name}/intent            # Intent layer analysis
 GET  /api/v1/repos/{owner}/{name}/full-analysis    # Complete analysis report
+```
+
+### Cross-Repo Intelligence (Phase 4)
+```bash
+GET  /api/v1/repos/{owner}/{name}/cross-repo-graph  # Get merged cross-repo graph
+GET  /api/v1/cross-repo/graph                       # Full cross-repo graph
+GET  /api/v1/cross-repo/query                       # Query entities across repos
+GET  /api/v1/pattern/types                          # List pattern types
+POST /api/v1/pattern/search                        # Search patterns across repos
+POST /api/v1/pattern/register                      # Register a pattern
+```
+
+### Team Knowledge (Phase 4)
+```bash
+GET  /api/v1/repos/{owner}/{name}/team/analyze       # Analyze team knowledge
+GET  /api/v1/repos/{owner}/{name}/ownership          # Module ownership map
+GET  /api/v1/repos/{owner}/{name}/expertise/{author} # Contributor expertise
+GET  /api/v1/repos/{owner}/{name}/reviewers/{file}   # Suggest reviewers
+GET  /api/v1/repos/{owner}/{name}/knowledge-gaps    # Detect single points of failure
+GET  /api/v1/repos/{owner}/{name}/team/contributors  # All contributors
+```
+
+### Personalization (Phase 4)
+```bash
+POST /api/v1/repos/{owner}/{name}/profiles/{dev_id}/build  # Build profile from git
+GET  /api/v1/repos/{owner}/{name}/profiles/{dev_id}        # Get developer profile
+PUT  /api/v1/repos/{owner}/{name}/profiles/{dev_id}         # Update preferences
+GET  /api/v1/repos/{owner}/{name}/profiles                  # List all profiles
+```
+
+### Simulation (Phase 4)
+```bash
+POST /api/v1/simulate/what-if              # What-if analysis
+GET  /api/v1/simulate/{sim_id}            # Get simulation result
+GET  /api/v1/simulate/blast-radius/{file} # Blast radius for file change
+POST /api/v1/simulate/migration           # Migration path planning
+```
+
+### Collaboration (Phase 4)
+```bash
+GET  /api/v1/wiki/{page}/presence         # SSE presence stream
+POST /api/v1/wiki/{page}/join             # Join collaboration room
+POST /api/v1/wiki/{page}/leave            # Leave collaboration room
+POST /api/v1/wiki/{page}/edit             # Submit edit with version check
+GET  /api/v1/wiki/{page}/collaborators    # Get active collaborators
+GET  /api/v1/wiki/{page}/content          # Get current content + version
+GET  /api/v1/collaboration/active-pages  # All pages with collaborators
 ```
 
 ## Example Output
@@ -255,19 +388,21 @@ GET  /api/v1/repos/{owner}/{name}/full-analysis    # Complete analysis report
 - [x] Architecture drift detection
 - [x] LLM-powered intent inference
 
-### Phase 3: Autonomy ✓
-- [x] MCP server for AI agent integration
+### Phase 3: Autonomy ✓ (COMPLETE)
+- [x] MCP server for AI agent integration (20 tools)
 - [x] LLM intent inference engine
 - [x] Agent debate system
-- [ ] Architecture simulation
-- [ ] Self-healing wiki
-- [ ] Personal engineering brain
-- [ ] Bug propagation tracking
+- [x] Time Machine (commit history + pattern analysis)
+- [x] Self-healing wiki
+- [x] Bug propagation tracking
+- [x] Multi-agent swarm orchestration
 
-### Phase 4: Platform (Future)
-- [ ] Cross-repo intelligence
-- [ ] Team knowledge mapping
-- [ ] Real-time collaboration
+### Phase 4: Intelligence Network ✓ (IMPLEMENTED)
+- [x] Cross-repo intelligence (CrossRepoGraphStore + PatternDatabase)
+- [x] Team knowledge mapping (TeamKnowledgeMapper + ContributorTracker)
+- [x] Personal engineering brain (DevProfile + ProfileBuilder + ContextInjector)
+- [x] Architecture simulation (SimulationEngine + BlastRadiusAnalyzer)
+- [x] Real-time collaboration (CollaborationManager + SSE Presence)
 
 ## Why India is the Right Market
 

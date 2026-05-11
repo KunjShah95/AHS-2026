@@ -1,8 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+import time
+from collections import defaultdict
+from starlette.middleware.base import BaseHTTPMiddleware
 
 app = FastAPI(
     title="Team Analytics Service",
@@ -17,6 +20,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class RateLimitMiddleware(BaseHTTPMiddleware):
+    def __init__(self, app, requests_per_minute: int = 60):
+        super().__init__(app)
+        self.requests_per_minute = requests_per_minute
+        self.requests = defaultdict(list)
+
+    async def dispatch(self, request: Request, call_next):
+        client_ip = request.client.host if request.client else "unknown"
+        current_time = time.time()
+
+        self.requests[client_ip] = [
+            t for t in self.requests[client_ip] if current_time - t < 60
+        ]
+
+        if len(self.requests[client_ip]) >= self.requests_per_minute:
+            return HTTPException(
+                status_code=429, detail="Rate limit exceeded. Please try again later."
+            )
+
+        self.requests[client_ip].append(current_time)
+        response = await call_next(request)
+        response.headers["X-RateLimit-Limit"] = str(self.requests_per_minute)
+        response.headers["X-RateLimit-Remaining"] = str(
+            self.requests_per_minute - len(self.requests[client_ip])
+        )
+        return response
+
+
+app.add_middleware(RateLimitMiddleware, requests_per_minute=60)
 
 
 class TeamMember(BaseModel):

@@ -47,6 +47,9 @@ class IntentInferenceResult:
     model_used: str = ""
     tokens_used: int = 0
 
+    # Profile adaptation
+    personalized_for: str = ""
+
 
 # Prompt templates
 SYSTEM_PROMPT = """You are a senior software architect with 20 years of experience analyzing code.
@@ -289,6 +292,7 @@ class LLMIntentClient:
         file_path: str,
         code: str,
         context: Dict[str, Any],
+        profile: Any = None,
     ) -> IntentInferenceResult:
         """
         Infer intent for a code entity.
@@ -320,8 +324,16 @@ class LLMIntentClient:
             callees=", ".join(context.get("callees", [])[:10]),
         )
 
+        system = SYSTEM_PROMPT
+        if profile:
+            from .context_injector import ContextInjector
+
+            injector = ContextInjector()
+            profile_context = injector.build_system_context(profile)
+            system = f"{SYSTEM_PROMPT}\n{profile_context}"
+
         try:
-            response = await self.complete(prompt, SYSTEM_PROMPT)
+            response = await self.complete(prompt, system)
             result = self._parse_response(response)
 
             # Create inference result
@@ -335,6 +347,7 @@ class LLMIntentClient:
                 reasoning=result.get("reasoning", ""),
                 model_used=self.model,
                 tokens_used=len(prompt) + len(response),
+                personalized_for=profile.user_id if profile else "",
             )
 
             return inference
@@ -423,6 +436,7 @@ class IntentInferenceOrchestrator:
         file_path: str,
         code: str,
         context: Dict[str, Any],
+        profile: Any = None,
     ) -> IntentInferenceResult:
         """Infer intent for a single entity."""
         # Check cache first
@@ -449,6 +463,7 @@ class IntentInferenceOrchestrator:
             file_path=file_path,
             code=code,
             context=context,
+            profile=profile,
         )
 
         # Only cache high-confidence results
@@ -595,6 +610,7 @@ async def infer_entity_intent(
     context: Dict[str, Any],
     provider: str = "openai",
     api_key: str = None,
+    profile: Any = None,
 ) -> IntentInferenceResult:
     """
     Convenience function for single-entity intent inference.
@@ -609,4 +625,5 @@ async def infer_entity_intent(
         file_path=file_path,
         code=code,
         context=context,
+        profile=profile,
     )
