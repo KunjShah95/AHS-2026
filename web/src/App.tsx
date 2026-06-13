@@ -12,6 +12,10 @@ import Tasks from './pages/Tasks'
 import Roadmap from './pages/Roadmap'
 import TeamAnalytics from './pages/TeamAnalytics'
 import CTODashboard from './pages/CTODashboard'
+import ExplorePage from './pages/ExplorePage'
+import LearnPage from './pages/LearnPage'
+import FirstIssuePage from './pages/FirstIssuePage'
+import AskPage from './pages/AskPage'
 
 export default function App() {
   return (
@@ -28,6 +32,10 @@ export default function App() {
           <Route path="roadmap" element={<Roadmap />} />
           <Route path="team" element={<TeamAnalytics />} />
           <Route path="cto" element={<CTODashboard />} />
+          <Route path="explore" element={<ExplorePage />} />
+          <Route path="learn" element={<LearnPage />} />
+          <Route path="first-issue" element={<FirstIssuePage />} />
+          <Route path="ask" element={<AskPage />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
